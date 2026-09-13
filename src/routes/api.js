@@ -1,0 +1,162 @@
+const express=require('express');
+const config=require('../config');
+const state=require('../state');
+const{getPool,hasDbConfig}=require('../db');
+const{requireAuth,requireActiveUser,requireAdmin}=require('../middleware/auth');
+const requireDb=require('../middleware/db-ready');
+const{verifyToken}=require('../middleware/csrf');
+const resolver=require('../services/apk-resolver');
+const media=require('../services/apk-media');
+const updates=require('../services/apk-updates');
+const publishing=require('../services/publishing');
+const maintenance=require('../services/maintenance');
+const backups=require('../services/backups');
+const users=require('../services/users');
+const claims=require('../services/app-claims');
+const activity=require('../services/activity');
+const notifications=require('../services/notifications');
+const r2=require('../services/r2');
+const {appSlug,appIdFromSlug}=require('../utils/app-slug');
+const sourceHistory=require('../services/apk-history');
+const apkFields=require('../services/apk-fields');
+
+const router=express.Router();router.use(requireDb,requireAuth,requireActiveUser);const mutate=[verifyToken];
+function parseObject(v){if(!v)return{};if(typeof v==='object'&&!Array.isArray(v))return v;try{const o=JSON.parse(v);return o&&typeof o==='object'&&!Array.isArray(o)?o:{}}catch{return{}}}
+function parseTags(v){if(!v)return[];try{const a=JSON.parse(v);return Array.isArray(a)?a:[]}catch{return[]}}
+function dateOnly(v){if(!v)return null;if(typeof v==='string'){const m=v.match(/^(\d{4}-\d{2}-\d{2})/);if(m)return m[1]}const d=new Date(v);return Number.isNaN(d.getTime())?null:d.toISOString().slice(0,10)}
+function completeness(r){const checks=[r.name,r.source_page_url,r.current_version,r.category,r.developer,r.file_size_bytes,r.minimum_os_version,r.apk_type,r.source_metadata_json];return Math.round(checks.filter(Boolean).length/checks.length*100)}
+function claimFromRow(r){if(!r.work_claim_user_id)return null;return{appId:Number(r.id),userId:Number(r.work_claim_user_id),name:r.work_claim_user_name||'User',role:r.work_claim_user_role||'partner',roleLabel:r.work_claim_user_role==='admin'?'Admin':'Partner',claimedAt:r.work_claimed_at||null,lastHeartbeatAt:r.work_claim_heartbeat_at||null}}
+function verifiedPlayUrl(value){try{const u=new URL(value);return u.protocol==='https:'&&u.hostname==='play.google.com'&&u.pathname==='/store/apps/details'&&u.searchParams.get('id')?u.toString():null}catch{return null}}
+function firstParsedBytes(...values){for(const value of values){const bytes=apkFields.parseBytes(value);if(bytes)return bytes}return null}
+function appJson(r){
+ const m=parseObject(r.source_metadata_json);delete m.directDownloadUrl;
+ const sourcePageUrl=r.source_page_url||m.sourcePageUrl||null;
+ const sourceVersion=m.version||r.latest_version||r.current_version||null;
+ const managedVersion=r.current_version||null;
+ const sourceDiffers=Boolean(sourceVersion&&managedVersion&&sourceVersion!==managedVersion);
+ const sourceDate=dateOnly(m.updatedDate||m.updated)||(sourceDiffers?null:dateOnly(r.source_updated_at));
+ const rawSizeLabel=[m.fileSizeRaw,m.size,m.fileSize,m.apkSize,m.appSize,m.downloadSize,m.packageSize].find(v=>typeof v==='string'&&apkFields.parseBytes(v))||null;
+ const rawMetaSize=firstParsedBytes(m.fileSizeBytes,m.fileSizeRaw,m.size,m.fileSize,m.file_size,m.apkSize,m.appSize,m.downloadSize,m.packageSize);
+ // Source metadata belongs to sourceVersion and is safe to display with that
+ // version even when the managed database version has not been advanced yet.
+ const fileSize=rawMetaSize||(sourceDiffers?null:(r.file_size_bytes==null?null:Number(r.file_size_bytes)));
+ return{id:Number(r.id),slug:appSlug(r),url:`/apps/${appSlug(r)}`,packageId:r.package_id,sourcePackageId:r.source_package_id||m.sourcePackageId||null,
+ sourcePageUrl,sourceUpdatedAt:sourceDate,sourceMeta:m,
+ media:{iconUrl:m.iconUrl||null,coverImageUrl:m.coverImageUrl||null,screenshots:m.screenshots||[]},name:r.name,sourceVersion,managedVersion,developer:r.developer||m.developer||'',version:r.current_version||m.version||'',category:r.category||m.category||'Other',sourceSection:r.source_section||'apps',categorySlug:r.category_slug||null,categoryUrl:r.category_url||null,
+ ratingValue:r.rating_value==null?null:Number(r.rating_value),ratingCount:r.rating_count==null?null:Number(r.rating_count),modInfo:r.mod_info||null,popularityRank:r.source_popularity_rank==null?null:Number(r.source_popularity_rank),trendingRank:r.source_trending_rank==null?null:Number(r.source_trending_rank),popularityScore:Number(r.popularity_score||0),trendingScore:Number(r.trending_score||0),description:r.description||m.description||null,
+ metaTitle:m.metaTitle||null,metaDescription:m.metaDescription||null,sourceContentText:m.sourceContentText||null,descriptionSectionText:m.descriptionSectionText||null,modInfoText:m.modInfoText||null,
+ officialUrl:verifiedPlayUrl(m.playStoreUrl)||verifiedPlayUrl(r.official_url)||null,apkType:r.apk_type||'APK',architecture:r.architecture||'Android',fileSizeBytes:fileSize,fileSizeLabel:rawSizeLabel,minimumOsVersion:r.minimum_os_version||null,language:r.language||'English',licenseName:r.license_name||null,downloadCount:r.download_count==null?(m.downloadCount==null?null:Number(m.downloadCount)):Number(r.download_count),viewCount:m.viewCount==null?null:Number(m.viewCount),downloadCountLabel:m.downloadCountLabel||null,
+ tags:parseTags(r.tags_json),published:Boolean(r.published),publishedAt:r.published_at||null,importedAt:r.workspace_added_at||r.created_at||null,latestVersion:r.latest_version||null,updateAvailable:Boolean(r.update_available),lastCheckedAt:r.last_checked_at||null,updateError:r.update_error||null,metadataStatus:r.metadata_status||'ready',metadataRevision:Number(r.metadata_revision||1),metadataError:r.metadata_error||null,metadataUpdatedAt:r.metadata_updated_at||null,createdAt:r.created_at||null,updatedAt:r.updated_at||null,completeness:completeness(r),claim:claimFromRow(r)}
+}
+function sourceVersionUrl(value,base){return sourceHistory.safeVersionUrl(value,base)}
+function sourceVersionLinks(app,rows){
+ const meta=app.sourceMeta||{},current=app.sourcePageUrl,versions=new Map();
+ for(const v of [...(Array.isArray(meta.oldVersions)?meta.oldVersions:[]),...rows]){
+  const url=sourceVersionUrl(v.sourcePageUrl,current);
+  if(!v.version||!url||v.version===app.version||v.version===app.sourceVersion||sourceHistory.samePage(url,current)||sourceHistory.isHistoryOnlyUrl(url))continue;
+  if(!versions.has(String(v.version).toLowerCase()))versions.set(String(v.version).toLowerCase(),{version:v.version,sourcePageUrl:url,fileSizeBytes:v.fileSizeBytes==null?null:Number(v.fileSizeBytes),architecture:v.architecture||null,apkType:v.apkType||null,updatedDate:dateOnly(v.updatedDate||v.release_date),dateSource:v.dateSource||v.release_date_source||null});
+ }
+ return [...versions.values()].slice(0,25);
+}
+
+async function counts(){const[[r]]=await getPool().query(`SELECT COUNT(*) total,SUM(published=0) drafts,SUM(published=1) published,SUM(update_available=1) updates,SUM(metadata_status='ready' AND current_version IS NOT NULL AND source_page_url IS NOT NULL) ready FROM apps`);return{total:Number(r?.total||0),drafts:Number(r?.drafts||0),published:Number(r?.published||0),updates:Number(r?.updates||0),ready:Number(r?.ready||0)}}
+async function appRow(id){await claims.pruneStaleClaims(getPool(),Number(id));const[[r]]=await getPool().query(`SELECT a.*,c.user_id work_claim_user_id,c.claimed_at work_claimed_at,c.last_heartbeat_at work_claim_heartbeat_at,u.name work_claim_user_name,u.role work_claim_user_role FROM apps a LEFT JOIN app_work_claims c ON c.app_id=a.id LEFT JOIN users u ON u.id=c.user_id WHERE a.id=? LIMIT 1`,[Number(id)]);return r||null}
+async function appRowWithMedia(id){const r=await appRow(id);if(!r)return null;const[items]=await getPool().query('SELECT media_type,remote_url,sort_order FROM apk_media WHERE app_id=? ORDER BY FIELD(media_type,\'icon\',\'cover\',\'screenshot\'),sort_order,id',[Number(id)]);if(items.length){const meta=parseObject(r.source_metadata_json),shots=items.filter(x=>x.media_type==='screenshot').map(x=>x.remote_url);meta.iconUrl=meta.iconUrl||items.find(x=>x.media_type==='icon')?.remote_url||null;meta.coverImageUrl=meta.coverImageUrl||items.find(x=>x.media_type==='cover')?.remote_url||null;if(!Array.isArray(meta.screenshots)||!meta.screenshots.length)meta.screenshots=shots;r.source_metadata_json=JSON.stringify(meta)}return r}
+function userJson(row){return users.publicUser({...row,avatar_blob:row.has_avatar?Buffer.from([1]):row.avatar_blob})}
+function lockedResponse(res,claim){return res.status(423).json({ok:false,error:`${claim?.name||'Another user'} is currently working on this app.`,claim})}
+
+router.get('/bootstrap',async(req,res,next)=>{try{const admin=req.currentUser.role==='admin';res.json({ok:true,version:config.appVersion,buildId:config.buildId,csrfToken:req.session.csrfToken,user:userJson({...req.currentUser,has_avatar:req.currentUser.has_avatar}),counts:await counts(),config:{resolverBaseUrl:resolver.BASE_URL,resolverDailyPages:config.apkResolverDailyPages,...(admin?{nodeEnv:config.nodeEnv,dbName:config.db.database}:{})},resolverSync:await resolver.getSyncState(),updateScan:await updates.state(),backup:admin?await backups.state():null,notificationSummary:await notifications.summary(req.currentUser.id)})}catch(e){next(e)}});
+
+router.get('/activity',async(req,res,next)=>{try{const data=await activity.list({viewer:req.currentUser,limit:req.query.limit,offset:req.query.offset,action:req.query.action,userId:req.query.userId,q:req.query.q,from:req.query.from,to:req.query.to,includeTransient:req.currentUser.role==='admin'&&String(req.query.includeTransient||'')==='1'});res.json({ok:true,...data,filters:await activity.filters(req.currentUser)})}catch(e){next(e)}});
+router.get('/activity/recent',async(req,res,next)=>{try{res.json({ok:true,...await activity.recent(req.currentUser,Math.min(12,Number(req.query.limit||8)))})}catch(e){next(e)}});
+router.get('/notifications',async(req,res,next)=>{try{res.json({ok:true,items:await notifications.list(req.currentUser.id,{limit:req.query.limit,unreadOnly:String(req.query.unreadOnly||'')==='1'}),summary:await notifications.summary(req.currentUser.id)})}catch(e){next(e)}});
+router.post('/notifications/read',...mutate,async(req,res,next)=>{try{if(req.body?.all)await notifications.markAllRead(req.currentUser.id);else await notifications.markRead(req.currentUser.id,req.body?.ids||[]);res.json({ok:true,summary:await notifications.summary(req.currentUser.id)})}catch(e){next(e)}});
+
+router.get('/apps',async(req,res,next)=>{try{
+  const scope=String(req.query.scope||'all').toLowerCase(),q=String(req.query.q||'').trim().slice(0,120),section=String(req.query.section||'all').toLowerCase(),category=String(req.query.category||'').trim().slice(0,160),sort=String(req.query.sort||'latest').toLowerCase();
+  const perPage=Math.max(1,Math.min(100,Number(req.query.perPage||req.query.limit||20)||20)),requestedPage=Math.max(1,Number(req.query.page||1)||1),where=[],params=[];
+  if(scope==='drafts'||scope==='unpublished')where.push('a.published=0');else if(scope==='published')where.push('a.published=1');else if(scope==='updates')where.push('a.update_available=1');
+  if(section==='apps'||section==='games'){where.push('a.source_section=?');params.push(section)}
+  if(category){const slugs=await resolver.categoryDescendants(section,category);where.push(`a.category_slug IN (${slugs.map(()=>'?').join(',')})`);params.push(...slugs)}
+  if(q){where.push('(a.name LIKE ? OR a.developer LIKE ? OR a.source_package_id LIKE ? OR a.package_id LIKE ? OR a.category LIKE ?)');const like=`%${q}%`;params.push(like,like,like,like,like)}
+  const ws=where.length?`WHERE ${where.join(' AND ')}`:'';const [[totalRow]]=await getPool().query(`SELECT COUNT(*) total FROM apps a ${ws}`,params);const total=Number(totalRow?.total||0),pages=Math.max(1,Math.ceil(total/perPage)),page=Math.min(requestedPage,pages),offset=(page-1)*perPage;
+  const orders={popular:'CASE WHEN a.source_popularity_rank IS NULL THEN 1 ELSE 0 END,a.source_popularity_rank ASC,a.popularity_score DESC,a.download_count DESC,a.id DESC',trending:'CASE WHEN a.source_trending_rank IS NULL THEN 1 ELSE 0 END,a.source_trending_rank ASC,a.trending_score DESC,a.source_updated_at DESC,a.id DESC',name:'a.name ASC,a.id ASC',latest:'COALESCE(a.source_updated_at,DATE(a.updated_at)) DESC,a.updated_at DESC,a.id DESC'};const order=orders[sort]||orders.latest;
+  const[rows]=await getPool().query(`SELECT a.*,c.user_id work_claim_user_id,c.claimed_at work_claimed_at,c.last_heartbeat_at work_claim_heartbeat_at,u.name work_claim_user_name,u.role work_claim_user_role FROM apps a LEFT JOIN app_work_claims c ON c.app_id=a.id LEFT JOIN users u ON u.id=c.user_id ${ws} ORDER BY ${order} LIMIT ? OFFSET ?`,[...params,perPage,offset]);
+  res.json({ok:true,apps:rows.map(appJson),counts:await counts(),pagination:{page,perPage,total,pages,from:total?offset+1:0,to:Math.min(offset+rows.length,total)},filters:{scope,section,category,sort,q}})
+}catch(e){next(e)}});
+router.get('/apps/by-slug/:slug',async(req,res,next)=>{try{
+  const id=appIdFromSlug(req.params.slug);
+  if(!id)return res.status(404).json({ok:false,error:'App not found.'});
+  const row=await appRow(id);
+  if(!row)return res.status(404).json({ok:false,error:'App not found.'});
+  res.json({ok:true,id:Number(row.id),slug:appSlug(row),url:`/apps/${appSlug(row)}`});
+}catch(e){next(e)}});
+router.get('/apps/:id',async(req,res,next)=>{try{const row=await appRowWithMedia(req.params.id);if(!row)return res.status(404).json({ok:false,error:'App not found.'});const[versions]=await getPool().query('SELECT version,source_page_url,file_size_bytes,architecture,apk_type,release_date,release_date_source FROM apk_versions WHERE app_id=? ORDER BY COALESCE(release_date,\'1900-01-01\') DESC,id DESC LIMIT 25',[Number(req.params.id)]);const app=appJson(row);app.versions=sourceVersionLinks(app,versions.map(v=>({version:v.version,sourcePageUrl:v.source_page_url,fileSizeBytes:v.file_size_bytes,architecture:v.architecture,apkType:v.apk_type,updatedDate:v.release_date,dateSource:v.release_date_source})));app.historyPageUrl=sourceVersionUrl(app.sourceMeta.historyPageUrl,app.sourcePageUrl);res.json({ok:true,app})}catch(e){next(e)}});
+
+router.post('/apps/import',...mutate,async(req,res,next)=>{try{const sourcePageUrl=resolver.normalizeSourceUrl(req.body?.sourcePageUrl||'');if(!sourcePageUrl)return res.status(400).json({ok:false,error:'Enter a valid APK source page URL.'});const app=await resolver.ensureManagedFromUrl(sourcePageUrl);await activity.record(req.currentUser.id,'app_imported',{appId:app.id,details:{sourcePageUrl}});res.json({ok:true,app:appJson(await appRow(app.id))})}catch(e){next(e)}});
+router.post('/apps/:id/media/refresh',...mutate,async(req,res,next)=>{try{await claims.ensureNotOwnedByOther(req.params.id,req.currentUser);const result=await resolver.refreshMediaForApp(Number(req.params.id),{kinds:req.body?.kinds});const row=await appRowWithMedia(req.params.id);res.json({ok:true,...result,app:appJson(row)})}catch(e){if(e.status===423)return lockedResponse(res,e.claim);next(e)}});
+router.post('/apps/:id/refresh',...mutate,async(req,res,next)=>{try{const claim=await claims.ensureNotOwnedByOther(req.params.id,req.currentUser);if(claim&&claim.userId!==Number(req.currentUser.id))return lockedResponse(res,claim);const app=await resolver.enrichManagedAppById(Number(req.params.id));res.json({ok:true,app:appJson(await appRow(app.id))})}catch(e){if(e.status===423)return lockedResponse(res,e.claim);next(e)}});
+router.post('/apps/:id/toggle-published',...mutate,async(req,res,next)=>{try{const row=await appRow(req.params.id);if(!row)return res.status(404).json({ok:false,error:'App not found.'});const claim=await claims.ensureNotOwnedByOther(req.params.id,req.currentUser);if(claim&&claim.userId!==Number(req.currentUser.id))return lockedResponse(res,claim);const target=!Boolean(row.published);if(target){const prep=await resolver.prepareApp(Number(req.params.id));if(!prep.app.current_version||!prep.app.source_page_url)return res.status(409).json({ok:false,error:prep.warning||'A current version and APK source page are required before publishing.'})}await publishing.setPublished(Number(req.params.id),target,req.currentUser.id);await claims.releaseOwned(req.params.id,req.currentUser.id);res.json({ok:true,published:target,counts:await counts()})}catch(e){if(e.status===423)return lockedResponse(res,e.claim);next(e)}});
+router.post('/apps/:id/mark-updated',...mutate,async(req,res,next)=>{try{await claims.ensureNotOwnedByOther(req.params.id,req.currentUser);await updates.markUpdated(Number(req.params.id));await activity.record(req.currentUser.id,'app_marked_updated',{appId:Number(req.params.id)});res.json({ok:true})}catch(e){if(e.status===423)return lockedResponse(res,e.claim);next(e)}});
+router.get('/apps/:id/media/icon',async(req,res,next)=>{try{const row=await appRowWithMedia(req.params.id);if(!row)return res.status(404).json({ok:false,error:'App not found.'});const file=await media.iconDownload(row);if(String(req.query.inline||'')==='1')res.setHeader('Content-Disposition',`inline; filename="${file.filename}"`);else res.attachment(file.filename);res.type(file.mime).send(file.buffer)}catch(e){next(e)}});
+router.get('/apps/:id/media/cover',async(req,res,next)=>{try{const row=await appRowWithMedia(req.params.id);if(!row)return res.status(404).json({ok:false,error:'App not found.'});const file=await media.coverDownload(row);if(String(req.query.inline||'')==='1')res.setHeader('Content-Disposition',`inline; filename="${file.filename}"`);else res.attachment(file.filename);res.type(file.mime).send(file.buffer)}catch(e){next(e)}});
+router.get('/apps/:id/media/screenshot/:index',async(req,res,next)=>{try{const row=await appRowWithMedia(req.params.id);if(!row)return res.status(404).json({ok:false,error:'App not found.'});const file=await media.screenshotDownload(row,Number(req.params.index));if(String(req.query.inline||'')==='1')res.setHeader('Content-Disposition',`inline; filename="${file.filename}"`);else res.attachment(file.filename);res.type(file.mime).send(file.buffer)}catch(e){next(e)}});
+router.get('/apps/:id/media.zip',async(req,res,next)=>{try{const row=await appRowWithMedia(req.params.id);if(!row)return res.status(404).json({ok:false,error:'App not found.'});const file=await media.mediaPack(row);res.attachment(file.filename);res.type('application/zip').send(file.buffer)}catch(e){next(e)}});
+
+router.get('/taxonomy',async(req,res,next)=>{try{res.json({ok:true,...await resolver.taxonomyState()})}catch(e){next(e)}});
+router.post('/taxonomy/refresh',...mutate,requireAdmin,async(req,res,next)=>{try{const taxonomy=await resolver.refreshTaxonomy({force:req.body?.force===true});res.json({ok:true,...taxonomy})}catch(e){next(e)}});
+router.post('/rankings/refresh',...mutate,requireAdmin,async(req,res,next)=>{try{res.json({ok:true,...await resolver.refreshRankings(Number(req.body?.limit||120))})}catch(e){next(e)}});
+
+router.get('/resolver/search',async(req,res,next)=>{try{res.json({ok:true,results:await resolver.searchCatalog(req.query.q||'',30)})}catch(e){next(e)}});
+router.get('/resolver/state',async(req,res,next)=>{try{res.json({ok:true,state:await resolver.getSyncState()})}catch(e){next(e)}});
+router.post('/resolver/sync',...mutate,requireAdmin,async(req,res,next)=>{try{res.json({ok:true,state:await resolver.startSync({mode:String(req.body?.mode||'daily'),requestedBy:req.currentUser.id,force:Boolean(req.body?.force),limit:req.body?.limit})})}catch(e){next(e)}});
+router.post('/resolver/step',...mutate,requireAdmin,async(req,res,next)=>{try{res.json({ok:true,state:await resolver.step()})}catch(e){next(e)}});
+router.post('/resolver/stop',...mutate,requireAdmin,async(req,res,next)=>{try{res.json({ok:true,state:await resolver.stopSync()})}catch(e){next(e)}});
+router.get('/updates/state',async(req,res,next)=>{try{res.json({ok:true,state:await updates.state()})}catch(e){next(e)}});
+router.post('/updates/start',...mutate,async(req,res,next)=>{try{res.json({ok:true,state:await updates.start(req.currentUser.id,req.body?.limit)})}catch(e){next(e)}});
+router.post('/updates/step',...mutate,async(req,res,next)=>{try{res.json({ok:true,state:await updates.step()})}catch(e){next(e)}});
+router.post('/updates/stop',...mutate,async(req,res,next)=>{try{res.json({ok:true,state:await updates.stop()})}catch(e){next(e)}});
+
+router.post('/apps/:id/claim',...mutate,async(req,res,next)=>{try{const out=await claims.claimApp(req.params.id,req.currentUser);if(!out.ok)return lockedResponse(res,out.claim);res.json({ok:true,claim:out.claim})}catch(e){next(e)}});
+router.post('/apps/:id/heartbeat',...mutate,async(req,res,next)=>{try{const out=await claims.heartbeat(req.params.id,req.currentUser.id);if(!out.ok)return res.status(out.claim?423:409).json({ok:false,error:out.claim?`${out.claim.name} is working on this app.`:'Your app lock is no longer active.',claim:out.claim||null});res.json({ok:true,claim:out.claim})}catch(e){next(e)}});
+router.post('/apps/:id/release',...mutate,async(req,res,next)=>{try{res.json({ok:true,...await claims.release(req.params.id,req.currentUser,{force:Boolean(req.body?.force)})})}catch(e){if(e.status===423)return lockedResponse(res,e.claim);next(e)}});
+router.post('/apps/:id/takeover',...mutate,requireAdmin,async(req,res,next)=>{try{res.json(await claims.takeover(req.params.id,req.currentUser))}catch(e){next(e)}});
+router.get('/claims',async(req,res,next)=>{try{res.json({ok:true,claims:await claims.listActiveClaims()})}catch(e){next(e)}});
+
+
+router.get('/r2/state',requireAdmin,async(req,res,next)=>{try{const appHost=`${req.protocol}://${req.get('host')}`;res.json({ok:true,state:await r2.state(appHost),accounts:await r2.accounts(),domains:await r2.domains(appHost),uploads:await r2.listUploads(20)})}catch(e){next(e)}});
+router.get('/r2/accounts',requireAdmin,async(req,res,next)=>{try{res.json({ok:true,accounts:await r2.accounts()})}catch(e){next(e)}});
+router.post('/r2/accounts',...mutate,requireAdmin,async(req,res,next)=>{try{const account=await r2.saveAccount(req.body||{});await activity.record(req.currentUser.id,'r2_account_created',{details:{accountId:account.id,label:account.label,bucket:account.bucket}});res.json({ok:true,account})}catch(e){next(e)}});
+router.post('/r2/accounts/:id',...mutate,requireAdmin,async(req,res,next)=>{try{const account=await r2.saveAccount(req.body||{},Number(req.params.id));await activity.record(req.currentUser.id,'r2_account_updated',{details:{accountId:account.id,label:account.label,bucket:account.bucket}});res.json({ok:true,account})}catch(e){next(e)}});
+router.delete('/r2/accounts/:id',...mutate,requireAdmin,async(req,res,next)=>{try{await r2.removeAccount(req.params.id);await activity.record(req.currentUser.id,'r2_account_removed',{details:{accountId:Number(req.params.id)}});res.json({ok:true})}catch(e){next(e)}});
+router.post('/r2/accounts/:id/test',...mutate,requireAdmin,async(req,res,next)=>{try{const result=await r2.testAccount(req.params.id);res.json({ok:true,...result})}catch(e){next(e)}});
+router.post('/r2/accounts/:id/sync',...mutate,requireAdmin,async(req,res,next)=>{try{const result=await r2.syncAccount(req.params.id);await activity.record(req.currentUser.id,'r2_account_synced',{details:{accountId:Number(req.params.id),count:result.count,bytes:result.bytes}});res.json({ok:true,...result})}catch(e){next(e)}});
+router.get('/r2/domains',requireAdmin,async(req,res,next)=>{try{res.json({ok:true,domains:await r2.domains(`${req.protocol}://${req.get('host')}`)})}catch(e){next(e)}});
+router.post('/r2/domains',...mutate,requireAdmin,async(req,res,next)=>{try{const domain=await r2.addDomain(req.body?.hostname,`${req.protocol}://${req.get('host')}`);await activity.record(req.currentUser.id,'r2_domain_added',{details:{domainId:domain.id,hostname:domain.hostname}});res.json({ok:true,domain})}catch(e){next(e)}});
+router.post('/r2/domains/:id/verify',...mutate,requireAdmin,async(req,res,next)=>{try{const domain=await r2.verifyDomain(req.params.id,`${req.protocol}://${req.get('host')}`);await activity.record(req.currentUser.id,'r2_domain_verified',{details:{domainId:domain.id,hostname:domain.hostname}});res.json({ok:true,domain})}catch(e){next(e)}});
+router.delete('/r2/domains/:id',...mutate,requireAdmin,async(req,res,next)=>{try{await r2.removeDomain(req.params.id);await activity.record(req.currentUser.id,'r2_domain_removed',{details:{domainId:Number(req.params.id)}});res.json({ok:true})}catch(e){next(e)}});
+router.get('/r2/objects',requireAdmin,async(req,res,next)=>{try{res.json({ok:true,...await r2.listObjects({accountId:req.query.accountId,q:req.query.q,limit:req.query.limit,offset:req.query.offset})})}catch(e){next(e)}});
+router.delete('/r2/objects/:id',...mutate,requireAdmin,async(req,res,next)=>{try{await r2.deleteObject(req.params.id);await activity.record(req.currentUser.id,'r2_object_deleted',{details:{objectId:Number(req.params.id)}});res.json({ok:true})}catch(e){next(e)}});
+router.get('/r2/uploads',requireAdmin,async(req,res,next)=>{try{res.json({ok:true,uploads:await r2.listUploads(req.query.limit)})}catch(e){next(e)}});
+router.get('/r2/uploads/:token',requireAdmin,async(req,res,next)=>{try{const upload=await r2.getUpload(req.params.token);if(!upload)return res.status(404).json({ok:false,error:'Upload session not found.'});res.json({ok:true,upload})}catch(e){next(e)}});
+router.post('/r2/uploads/start',...mutate,requireAdmin,async(req,res,next)=>{try{const upload=await r2.startUpload({...req.body,createdBy:req.currentUser.id});await activity.record(req.currentUser.id,'r2_upload_started',{details:{uploadId:upload.id,filename:upload.filename,size:upload.size,accountId:upload.accountId}});res.json({ok:true,upload})}catch(e){next(e)}});
+router.put('/r2/uploads/:token/parts/:partNumber',express.raw({type:'application/octet-stream',limit:'70mb'}),...mutate,requireAdmin,async(req,res,next)=>{try{const out=await r2.uploadPart(req.params.token,req.params.partNumber,req.body);res.json({ok:true,...out})}catch(e){next(e)}});
+router.post('/r2/uploads/:token/complete',...mutate,requireAdmin,async(req,res,next)=>{try{const upload=await r2.completeUpload(req.params.token);await activity.record(req.currentUser.id,'r2_upload_completed',{details:{uploadId:upload.id,filename:upload.filename,size:upload.size,accountId:upload.accountId}});res.json({ok:true,upload})}catch(e){next(e)}});
+router.delete('/r2/uploads/:token',...mutate,requireAdmin,async(req,res,next)=>{try{const upload=await r2.abortUpload(req.params.token);await activity.record(req.currentUser.id,'r2_upload_aborted',{details:{uploadId:upload.id,filename:upload.filename}});res.json({ok:true,upload})}catch(e){next(e)}});
+
+router.get('/users',requireAdmin,async(req,res,next)=>{try{res.json({ok:true,users:await users.listUsers()})}catch(e){next(e)}});
+router.get('/users/:id/avatar',async(req,res,next)=>{try{const out=await users.avatar(req.params.id);if(!out)return res.status(404).end();res.type(out.mime).send(out.buffer)}catch(e){next(e)}});
+router.post('/users/partner',...mutate,requireAdmin,async(req,res,next)=>{try{const u=await users.createPartner({name:req.body?.name,email:req.body?.email,password:req.body?.password,createdBy:req.currentUser.id});await activity.record(req.currentUser.id,'partner_created',{targetUserId:u.id});res.json({ok:true,user:u})}catch(e){next(e)}});
+router.post('/users/:id',...mutate,requireAdmin,async(req,res,next)=>{try{const id=Number(req.params.id);const target=id===Number(req.currentUser.id)?await users.updateOwnAdmin(id,req.body||{}):await users.updatePartner(id,req.body||{});await activity.record(req.currentUser.id,id===Number(req.currentUser.id)?'admin_profile_updated':'partner_updated',{targetUserId:id});res.json({ok:true,user:target})}catch(e){next(e)}});
+router.post('/users/:id/status',...mutate,requireAdmin,async(req,res,next)=>{try{const active=Boolean(req.body?.active),u=await users.setPartnerActive(req.params.id,active);await activity.record(req.currentUser.id,active?'partner_enabled':'partner_disabled',{targetUserId:u.id});res.json({ok:true,user:u})}catch(e){next(e)}});
+router.post('/users/:id/avatar',express.raw({type:['image/jpeg','image/png','image/webp'],limit:'2mb'}),...mutate,async(req,res,next)=>{try{const id=Number(req.params.id);if(id!==Number(req.currentUser.id)&&req.currentUser.role!=='admin')return res.status(403).json({ok:false,error:'You can only update your own profile photo.'});const u=await users.setAvatar(id,req.body,req.headers['content-type']);await activity.record(req.currentUser.id,'profile_photo_updated',{targetUserId:id});res.json({ok:true,user:u})}catch(e){next(e)}});
+router.delete('/users/:id/avatar',...mutate,async(req,res,next)=>{try{const id=Number(req.params.id);if(id!==Number(req.currentUser.id)&&req.currentUser.role!=='admin')return res.status(403).json({ok:false,error:'You can only remove your own profile photo.'});const u=await users.removeAvatar(id);await activity.record(req.currentUser.id,'profile_photo_removed',{targetUserId:id});res.json({ok:true,user:u})}catch(e){next(e)}});
+
+router.get('/backups/state',requireAdmin,async(req,res,next)=>{try{res.json({ok:true,backup:await backups.state()})}catch(e){next(e)}});
+router.post('/backups/create',...mutate,requireAdmin,async(req,res,next)=>{try{const b=await backups.createBackup('manual');await activity.record(req.currentUser.id,'backup_created',{details:{kind:'manual',filename:b.filename}});res.json({ok:true,backup:b,state:await backups.state()})}catch(e){next(e)}});
+router.get('/backups/:id/download',requireAdmin,async(req,res,next)=>{try{const f=await backups.getBackupFile(req.params.id);if(!f)return res.status(404).send('Backup not found.');await backups.markDownloaded(req.params.id);res.download(f.filepath,f.filename)}catch(e){next(e)}});
+router.post('/backups/restore',express.raw({type:'application/octet-stream',limit:'50mb'}),...mutate,requireAdmin,async(req,res,next)=>{try{let payload;try{payload=JSON.parse(Buffer.isBuffer(req.body)?req.body.toString('utf8'):String(req.body||''))}catch{throw Object.assign(new Error('Backup JSON is invalid.'),{status:400})}const out=await backups.restoreBackup(payload);await activity.record(req.currentUser.id,'backup_restored',{details:{restoredApps:out.restoredApps}});res.json({ok:true,...out})}catch(e){next(e)}});
+router.post('/maintenance/clear-drafts',...mutate,requireAdmin,async(req,res,next)=>{try{const out=await maintenance.clearDraftApps();await activity.record(req.currentUser.id,'new_apps_cleared',{details:out});res.json({ok:true,...out,counts:await counts()})}catch(e){next(e)}});
+router.post('/maintenance/reset',...mutate,requireAdmin,async(req,res,next)=>{try{await maintenance.resetAllData();await activity.record(req.currentUser.id,'app_data_reset');res.json({ok:true,counts:await counts()})}catch(e){next(e)}});
+router.get('/health',requireAdmin,async(req,res,next)=>{try{const checks=[{name:'Runtime',status:'pass',detail:`Node ${process.version}`},{name:'Database',status:hasDbConfig()&&state.dbReady?'pass':'fail',detail:state.dbReady?'Connected':state.dbError||'Not configured'},{name:'Schema',status:state.schemaVersion>=123?'pass':'fail',detail:`Appbit schema ${state.schemaVersion||0}`},{name:'APK Resolver',status:'pass',detail:'Android APK resolver and publishing workspace only'},{name:'Theme',status:'pass',detail:'Dark-only Appbit interface'}];res.json({ok:true,checks})}catch(e){next(e)}});
+module.exports=router;
