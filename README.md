@@ -1,8 +1,8 @@
-# Appbit V2.9
+# Appbit V2.10
 
 **APK Publishing Workspace — Next.js / Hostinger build**
 
-V2.9 converts the Appbit web runtime from Astro middleware to **Next.js 16.3.3** while preserving the existing Appbit Express API, authentication, MySQL schema/migrations, APK resolver, publishing/update workflows, and Cloudflare R2 Accounts + File Manager introduced in V2.8.
+V2.10 keeps the V2.9 Next.js runtime and fixes Hostinger production builds by forcing Webpack. V2.9 converted the Appbit web runtime from Astro middleware to **Next.js 16.3.3** while preserving the existing Appbit Express API, authentication, MySQL schema/migrations, APK resolver, publishing/update workflows, and Cloudflare R2 Accounts + File Manager introduced in V2.8.
 
 ## Framework and runtime
 
@@ -39,4 +39,4 @@ npm run build
 npm start
 ```
 
-Visible release version: **V2.9**. Database schema remains **130**; the framework conversion does not require a destructive migration.
+Visible release version: **V2.10**. Database schema remains **130**; the framework conversion does not require a destructive migration.

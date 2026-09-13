@@ -1,6 +1,6 @@
-# Appbit V2.9 local Docker
+# Appbit V2.10 local Docker
 
-V2.9 uses Next.js with the existing Express backend. Docker is optional for local use; Hostinger deployment does not use `docker-compose.yml`.
+V2.10 uses Next.js with the existing Express backend. Docker is optional for local use; Hostinger deployment does not use `docker-compose.yml`.
 
 ```powershell
 cd C:\Appbit

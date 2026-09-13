@@ -1,20 +1,19 @@
-# Appbit V2.9 — Hostinger Next.js verification
+# Appbit V2.10 — Hostinger Webpack verification
 
-Release: **V2.9 Hostinger Next.js Build**
-Database schema: **130** (unchanged from V2.8)
+Release: **V2.10 Hostinger Next.js Webpack Build**
 
-## Passed in this build workspace
+## Fix
 
-- `npm run check`: PASS.
-- Node regression suite: **75/75 PASS**.
-- Next.js project structure regression: PASS.
-- Existing APK resolver, metadata, update, R2 SigV4, R2 Accounts, R2 File Manager and download-domain source regressions: PASS.
-- Astro runtime/configuration removed from the active deployment surface.
-- Hostinger environment template and deployment instructions included.
-- ZIP source package contains no `node_modules`, real credentials, local `.env`, or database files.
+The Hostinger failure was caused by Next.js 16 selecting Turbopack by default while the platform exposed only the WASM binding. V2.10 forces the supported Webpack production path with `next build --webpack`.
 
-## Build verification boundary
+## Verification performed in this package
 
-This sandbox does not have the project npm dependencies installed and cannot reach the npm registry, so a local `next build` could not be executed here. Hostinger's deployment flow installs npm dependencies and runs the `build` script automatically. The package pins Next.js **16.3.3**, React **19.2.0**, targets Node **24**, and uses `next build` as the production build command.
+- Static package/version checks.
+- Hostinger build-script regression test.
+- Existing custom Next/Express route regression checks.
+- JavaScript syntax/module checks available without installing remote dependencies.
+- ZIP CRC/integrity verification before release.
 
-A successful Hostinger deployment should produce `.next`, start `server.js`, load `/health`, redirect unauthenticated workspace pages to `/login`, and report V2.9 after login.
+## Deployment acceptance
+
+A successful Hostinger build must run `npm run build`, which resolves to `next build --webpack`, create `.next`, start `server.js`, and report V2.10 after login.

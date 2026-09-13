@@ -1,8 +1,8 @@
 {
-  "version": "2.9",
+  "version": "2.10",
   "schemaVersion": 130,
-  "release": "V2.9 Hostinger Next.js Build",
-  "buildId": "v2.9-hostinger-nextjs",
+  "release": "V2.10 Hostinger Next.js Webpack Build",
+  "buildId": "v2.10-hostinger-nextjs-webpack",
   "built_at": "2026-09-13",
   "builtAt": "2026-09-13T09:55:00+00:00"
 }

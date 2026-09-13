@@ -1,3 +1,13 @@
+# Appbit V2.10
+
+## V2.10 — Hostinger Webpack Build Compatibility
+
+- Fixed Hostinger deployment failure caused by Next.js 16 defaulting production builds to Turbopack.
+- `npm run build` now executes `next build --webpack`.
+- Added an explicit `build:hostinger` alias using Webpack.
+- Keeps Next.js 16.3.3 and the existing custom Express server; no application feature or database schema is removed.
+- Visible release version is `V2.10`.
+
 # Appbit V2.9
 
 ## V2.9 — Hostinger Next.js Build
