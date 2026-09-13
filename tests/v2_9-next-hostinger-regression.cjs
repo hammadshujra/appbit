@@ -5,15 +5,15 @@ const path=require('node:path');
 const root=path.resolve(__dirname,'..');
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
-test('V2.11 is a Next.js Hostinger Webpack package',()=>{
+test('current release is a Next.js Hostinger Webpack package',()=>{
   const pkg=JSON.parse(read('package.json'));
-  assert.equal(pkg.version,'2.11.0');
+  assert.equal(pkg.version,'2.12.0');
   assert.equal(pkg.dependencies.next,'16.3.3');
   assert.equal(pkg.dependencies.react,'19.2.0');
   assert.equal(pkg.scripts.build,'next build --webpack');
-  assert.equal(pkg.scripts['build:hostinger'],'next build --webpack');
+  assert.match(pkg.scripts['build:hostinger'],/^next build --webpack/);
   assert.equal(pkg.scripts.start,'next start');
-  assert.equal(read('VERSION').trim(),'2.11');
+  assert.equal(read('VERSION').trim(),'2.12');
   assert.ok(fs.existsSync(path.join(root,'next.config.js')));
   assert.ok(fs.existsSync(path.join(root,'pages','[[...path]].jsx')));
   assert.ok(!fs.existsSync(path.join(root,'astro.config.mjs')));

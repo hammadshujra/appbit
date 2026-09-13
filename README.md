@@ -1,3 +1,20 @@
+# Appbit V2.12
+
+Current release: **V2.12**. This Hostinger repair keeps the managed Next.js deployment, makes the API catch-all an explicit ESM `.mjs` route, and finalizes `.next/server` with compatibility release metadata after each build.
+
+V2.12 specifically fixes the deployment sequence where V2.11 failed during Hostinger's build and therefore never replaced the older V2.10 runtime that still emitted `.next/server/VERSION` errors.
+
+## Hostinger runtime
+
+- Framework preset: Next.js
+- Node.js: 20.x
+- Build command: `npm run build`
+- Production bundler: Webpack (`next build --webpack`)
+- Output directory: `.next`
+- Runtime: Hostinger-managed `next start`
+- API bridge: `pages/api/[...path].mjs`
+- Postbuild finalizer: `scripts/hostinger-postbuild.js`
+
 # Appbit V2.11
 
 **APK Publishing Workspace — Hostinger Native Next.js Runtime**
@@ -37,4 +54,4 @@ npm start
 
 `npm run build` intentionally uses Webpack on Next.js 16 for Hostinger compatibility.
 
-Visible release version: **V2.11**.
+Visible release version: **V2.12**.

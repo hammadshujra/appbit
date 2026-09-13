@@ -1,7 +1,7 @@
 {
-  "version": "2.11",
+  "version": "2.12",
   "schemaVersion": 130,
-  "release": "V2.11 Hostinger native Next.js runtime repair",
-  "buildId": "2.11-hostinger-native-next-runtime",
+  "release": "V2.12 Hostinger module + output metadata repair",
+  "buildId": "2.12-hostinger-module-output-repair",
   "built_at": "2026-09-13"
 }

@@ -1,3 +1,13 @@
+# Appbit V2.12
+
+## V2.12 — Hostinger Module + Output Metadata Repair
+- Replaced the mixed-module `pages/api/[[...path]].js` bridge with an explicit ESM `pages/api/[...path].mjs` route for Hostinger/Next build compatibility.
+- Added `.mjs` to Next page extensions while keeping the existing Appbit backend CommonJS.
+- Added a postbuild finalizer that places compatibility copies of `VERSION` and `BUILD-INFO.json` inside `.next/server` after every production build.
+- Kept release identity bundled in SSR/API runtime code so normal requests do not depend on loose project files.
+- Kept Webpack production builds (`next build --webpack`) and Hostinger managed Next.js runtime.
+- Visible release version is `V2.12`.
+
 # Appbit V2.11
 
 ## V2.11 — Hostinger Native Next.js Runtime Repair
