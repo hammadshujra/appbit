@@ -7,19 +7,19 @@ const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
 test('release identity is bundled and never reads loose VERSION at runtime',()=>{
   const version=read('src/version.js');
-  assert.match(version,/version:'2\.12'/);
-  assert.match(version,/buildId:'2\.12-hostinger-module-output-repair'/);
+  assert.match(version,/version:'2\.13'/);
+  assert.match(version,/buildId:'2\.13-hostinger-next-esm-route-repair'/);
   assert.doesNotMatch(version,/readFileSync|node:fs|BUILD-INFO\.json|path\.join/);
   const page=read('pages/[[...path]].jsx');
-  assert.match(page,/APP_VERSION='2\.12'/);
+  assert.match(page,/APP_VERSION='2\.13'/);
   assert.doesNotMatch(page,/readFileSync|node:fs|BUILD-INFO\.json/);
 });
 
 test('Hostinger Next preset starts native Next and has an API catch-all around the existing Appbit backend',()=>{
   const pkg=JSON.parse(read('package.json'));
   assert.equal(pkg.scripts.start,'next start');
-  assert.ok(fs.existsSync(path.join(root,'pages','api','[...path].mjs')));
-  const route=read('pages/api/[...path].mjs');
+  assert.ok(fs.existsSync(path.join(root,'pages','api','[[...path]].js')));
+  const route=read('pages/api/[[...path]].js');
   const backend=read('src/next-api-app.js');
   assert.match(route,/bodyParser:\s*false/);
   assert.match(route,/responseLimit:\s*false/);

@@ -1,7 +1,7 @@
 {
-  "version": "2.12",
+  "version": "2.13",
   "schemaVersion": 130,
-  "release": "V2.12 Hostinger module + output metadata repair",
-  "buildId": "2.12-hostinger-module-output-repair",
+  "release": "V2.13 Hostinger Next.js module-context repair",
+  "buildId": "2.13-hostinger-next-esm-route-repair",
   "built_at": "2026-09-13"
 }

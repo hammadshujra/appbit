@@ -1,6 +1,6 @@
-# Appbit V2.12 local Docker
+# Appbit V2.13 local Docker
 
-V2.12 uses the same native Next.js runtime locally and on Hostinger. Docker remains optional for local use; Hostinger deployment does not use `docker-compose.yml`.
+V2.13 uses the same native Next.js runtime locally and on Hostinger. Docker remains optional for local use; Hostinger deployment does not use `docker-compose.yml`.
 
 ```powershell
 cd C:\Appbit

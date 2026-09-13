@@ -1,15 +1,18 @@
-const backend=require('../../src/next-api-app');
+import backendModule from '../../src/next-api-app.js';
 
-// Let Express parse request bodies itself. This is also required for streamed
-// and large R2/file requests so Next does not buffer or truncate them first.
-export const config={
-  api:{
-    bodyParser:false,
-    responseLimit:false,
-    externalResolver:true
+// Standard Next.js Pages API route. This source file intentionally uses the
+// module syntax documented by Next.js. package.json does not force .js files
+// into CommonJS mode, so Hostinger/webpack can compile this route normally.
+const backend = backendModule?.default || backendModule;
+
+export const config = {
+  api: {
+    bodyParser: false,
+    responseLimit: false,
+    externalResolver: true
   }
 };
 
-export default function appbitApi(req,res){
-  return backend(req,res);
+export default function appbitApi(req, res) {
+  return backend(req, res);
 }

@@ -1,3 +1,14 @@
+# Appbit V2.13
+
+## V2.13 — Hostinger API Module-Context Repair
+- Fixed the Hostinger Webpack parse failure reported for `pages/api/[[...path]].js`.
+- Removed the package-wide `"type": "commonjs"` declaration that explicitly classified the Next.js route as CommonJS.
+- Restored one standard Next.js Pages API catch-all using module syntax only (`import`, `export const config`, `export default`).
+- Removed the V2.12 `.mjs` catch-all so only one API bridge can be discovered.
+- Added a prebuild guard that rejects stale or duplicate API catch-all files before compilation.
+- Kept `next build --webpack`, the managed Hostinger Next.js runtime, and the `.next/server` metadata finalizer.
+- Node 24 remains supported. Database schema remains 130. Visible version is `V2.13`.
+
 # Appbit V2.12
 
 ## V2.12 — Hostinger Module + Output Metadata Repair

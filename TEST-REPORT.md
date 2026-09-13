@@ -1,29 +1,36 @@
-# Appbit V2.12 — Hostinger Repair Verification
+# Appbit V2.13 — Hostinger Module-Context Verification
 
 ## Reproduced cause
 
-The V2.11 API bridge was a `.js` file inside a package explicitly marked `type: commonjs`, but that file used ESM `export` syntax. Running Node's parser against the old route reproduces the same class of module-format failure: `Unexpected token 'export'`. Because V2.11 failed during build, Hostinger kept serving the prior successful V2.10 deployment, which is why Runtime Logs continued to show the old `.next/server/VERSION` ENOENT stack trace.
+The failing V2.11 API route was `pages/api/[[...path]].js`. It used Next.js ESM exports while `package.json` explicitly forced all `.js` files into `"type": "commonjs"`. Hostinger reported that exact route as a Webpack module-parse failure. Node 24 is within Appbit's supported engine range and is not the cause of that syntax classification error.
 
-## V2.12 repair
+The later `.next/server/VERSION` stack trace is from the previous successful V2.10 runtime remaining active when the newer build fails.
 
-- Native API bridge is now explicit ESM: `pages/api/[...path].mjs`.
-- `.mjs` is explicitly enabled in `next.config.js` page extensions.
-- The bridge has no CommonJS `require()` statement and passes `node --check` as an ES module.
-- Production still forces Webpack with `next build --webpack`.
-- npm `postbuild` writes compatibility copies of `VERSION` and `BUILD-INFO.json` into `.next/server` after a successful Next build.
-- Release identity remains bundled in `src/version.js` and the SSR shell, so normal runtime code does not depend on those compatibility files.
+## V2.13 repair
 
-## Completed checks
+- Exactly one API catch-all exists: `pages/api/[[...path]].js`.
+- The route uses standard Next.js `import`, `export const config`, and `export default` syntax only.
+- `package.json` no longer declares a package-wide `type`, avoiding the explicit CommonJS classification that triggered the Hostinger parse path.
+- The V2.12 `.mjs` catch-all is removed; there is no duplicate API catch-all.
+- `pageExtensions` is returned to the project JavaScript/JSX set.
+- `prebuild` validates the route layout and aborts with an Appbit-specific error if a legacy or duplicate catch-all reappears.
+- Production continues using Webpack: `next build --webpack`.
+- Postbuild still copies release metadata into `.next/server` as a compatibility safeguard.
 
-- `npm run check`: PASS.
-- Node regression suite: **84/84 passed**.
+## Verification performed
+
+- Standard JavaScript/CommonJS syntax checks for server/backend files.
+- V2.13 API route parsed with Node's module parser (`--input-type=module --check`).
+- V2.13 prebuild guard executed successfully.
+- Full Node regression suite: **85/85 passed** after the V2.13 changes.
 - `tests/parser-browser.py`: PASS.
 - `tests/v2_1_parser_browser.py`: PASS.
 - `tests/v2_4_parser_browser.py`: PASS.
 - `tests/v2_6_parser_browser.py`: PASS.
-- Postbuild finalizer executed against a synthetic `.next/server` directory and produced both compatibility metadata files with version **2.12**.
-- Final ZIP CRC integrity: verified during packaging.
+- `npm run check`: PASS.
+- Synthetic `.next/server` postbuild finalization: PASS with V2.13 metadata.
+- Final ZIP CRC integrity verified during packaging.
 
 ## Environment limitation
 
-This sandbox cannot resolve `registry.npmjs.org`, so it cannot install a fresh Next.js dependency tree and run the real `next build --webpack`. Hostinger remains the production compiler. V2.12 therefore adds direct module-format parsing tests for the exact V2.11 failure plus the postbuild compatibility guard for the exact V2.10 runtime failure.
+This sandbox cannot reach `registry.npmjs.org`, so a clean dependency installation and full local `next build --webpack` cannot be performed here. Hostinger remains the final production compiler. The V2.13 prebuild signature makes it possible to verify unambiguously that Hostinger is compiling the new package rather than an older failed deployment source.

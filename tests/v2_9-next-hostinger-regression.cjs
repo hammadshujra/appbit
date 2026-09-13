@@ -7,13 +7,13 @@ const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
 test('current release is a Next.js Hostinger Webpack package',()=>{
   const pkg=JSON.parse(read('package.json'));
-  assert.equal(pkg.version,'2.12.0');
+  assert.equal(pkg.version,'2.13.0');
   assert.equal(pkg.dependencies.next,'16.3.3');
   assert.equal(pkg.dependencies.react,'19.2.0');
   assert.equal(pkg.scripts.build,'next build --webpack');
-  assert.match(pkg.scripts['build:hostinger'],/^next build --webpack/);
+  assert.equal(pkg.scripts['build:hostinger'],'npm run build');
   assert.equal(pkg.scripts.start,'next start');
-  assert.equal(read('VERSION').trim(),'2.12');
+  assert.equal(read('VERSION').trim(),'2.13');
   assert.ok(fs.existsSync(path.join(root,'next.config.js')));
   assert.ok(fs.existsSync(path.join(root,'pages','[[...path]].jsx')));
   assert.ok(!fs.existsSync(path.join(root,'astro.config.mjs')));
@@ -35,7 +35,7 @@ test('Hostinger instructions force Webpack and use the managed Next.js runtime',
   const doc=read('HOSTINGER-DEPLOY.md');
   assert.match(doc,/Framework preset: \*\*Next\.js\*\*/);
   assert.match(doc,/Output directory: \*\*\.next\*\*/);
-  assert.match(doc,/Node\.js: \*\*20\.x\*\*/);
+  assert.match(doc,/Node\.js: \*\*24\.x\*\*/);
   assert.match(doc,/Build command: \*\*npm run build\*\*/);
   assert.match(doc,/next build --webpack/);
   assert.match(doc,/do not need a custom Entry File/i);
