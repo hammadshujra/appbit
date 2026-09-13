@@ -1,8 +1,9 @@
 'use strict';
-const fs=require('node:fs');
-const path=require('node:path');
-const root=path.resolve(__dirname,'..');
-const version=fs.readFileSync(path.join(root,'VERSION'),'utf8').trim();
-let buildId=version;
-try{const info=JSON.parse(fs.readFileSync(path.join(root,'BUILD-INFO.json'),'utf8'));buildId=String(info.buildId||version)}catch{}
-module.exports={version,buildId};
+// Hostinger's managed Next.js runtime may execute bundled server modules from
+// .next/server without copying loose project metadata files beside them.
+// Keep release identity inside the module so SSR/API bundles never depend on
+// runtime filesystem reads of loose release metadata.
+module.exports=Object.freeze({
+  version:'2.11',
+  buildId:'2.11-hostinger-native-next-runtime'
+});

@@ -1,3 +1,17 @@
+# Appbit V2.11
+
+## V2.11 — Hostinger Native Next.js Runtime Repair
+
+- Fixed the production HTTP 500 caused by compiled SSR code trying to read `.next/server/VERSION` on Hostinger.
+- Release/build identity is now bundled into runtime modules; no loose VERSION/BUILD-INFO filesystem file is required by SSR.
+- Added native `pages/api/[[...path]].js` integration so Hostinger's managed Next.js runtime serves the existing Appbit Express API stack.
+- Added native Next.js sign-in flow with existing Appbit session/CSRF authentication handlers.
+- Preserved opaque R2 `/d/<token>` links through a Next.js rewrite to the streaming download API.
+- Database-not-ready API requests now return JSON rather than attempting to render unavailable EJS templates from `.next/server`.
+- Production `start` now uses `next start`; the old custom server remains only as an optional compatibility entry.
+- Keeps V2.10's `next build --webpack` Hostinger build fix.
+- Database schema remains 130. Visible version is `V2.11`.
+
 # Appbit V2.10
 
 ## V2.10 — Hostinger Webpack Build Compatibility

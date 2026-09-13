@@ -1,36 +1,32 @@
-# Appbit V2.10
+# Appbit V2.11
 
-**APK Publishing Workspace — Next.js / Hostinger build**
+**APK Publishing Workspace — Hostinger Native Next.js Runtime**
 
-V2.10 keeps the V2.9 Next.js runtime and fixes Hostinger production builds by forcing Webpack. V2.9 converted the Appbit web runtime from Astro middleware to **Next.js 16.3.3** while preserving the existing Appbit Express API, authentication, MySQL schema/migrations, APK resolver, publishing/update workflows, and Cloudflare R2 Accounts + File Manager introduced in V2.8.
+V2.11 fixes the Hostinger production 500 reported after the successful V2.10 Webpack build. Hostinger's managed Next.js runtime executes compiled server modules from `.next/server`; V2.10 still attempted to read a loose `VERSION` file from that directory and failed with `ENOENT`. V2.11 bundles release identity into the server code and runs Appbit's backend through native Next.js API routes.
 
-## Framework and runtime
+## Hostinger architecture
 
-- Next.js 16.3.3
-- React 19.2
-- Express 5 custom server (`server.js`)
-- MySQL / MariaDB through `mysql2`
-- Node.js 20.9–24 (Hostinger deployment target: Node 24)
-- Cloudflare R2 multi-account manager and multipart uploader
+- Next.js **16.3.3** / React **19.2**.
+- Production build: `next build --webpack`.
+- Production runtime: `next start`.
+- Hostinger Framework preset: **Next.js**.
+- Output directory: **.next**.
+- Existing Appbit Express routers/services are hosted behind `pages/api/[[...path]].js`.
+- MySQL schema remains **130**.
+- Existing APK resolver, Publishing, Update Center, R2 Accounts/File Manager, authentication, backups and app metadata functionality are preserved.
 
-The Next.js page layer serves the authenticated Appbit workspace shell. Existing `/api/*`, login, health and opaque download routes continue through Appbit's Express backend.
+## Current navigation
 
-## Hostinger
+- Dashboard
+- App Library
+- Publishing
+- Update Center
+- R2 Account
+  - Accounts
+  - File Manager
+- Settings
 
-See `HOSTINGER-DEPLOY.md`. Recommended build settings:
-
-- Framework: Next.js
-- Node: 24
-- Build script: `build`
-- Output directory: `.next`
-- Entry file: `server.js`
-- Package manager: npm
-
-Use `hostinger.env.example` as the environment-variable template. Keep all real credentials in Hostinger's Environment Variables UI.
-
-## Local/Docker
-
-Docker remains supported. The Dockerfile now runs the Next.js build. Existing MySQL/R2 data is preserved when you keep your Docker volumes and environment file.
+## Local production
 
 ```bash
 npm install
@@ -39,4 +35,6 @@ npm run build
 npm start
 ```
 
-Visible release version: **V2.10**. Database schema remains **130**; the framework conversion does not require a destructive migration.
+`npm run build` intentionally uses Webpack on Next.js 16 for Hostinger compatibility.
+
+Visible release version: **V2.11**.

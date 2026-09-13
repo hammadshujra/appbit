@@ -1,31 +1,38 @@
-# Appbit V2.10 — Hostinger Next.js deployment
+# Appbit V2.11 — Hostinger Next.js deployment
 
-This package fixes the Hostinger build error where Next.js 16 tried to use Turbopack but the Hostinger Linux/x64 build environment exposed only the WASM compiler binding. V2.10 explicitly builds with Webpack.
+V2.11 is built specifically for Hostinger's managed **Next.js** runtime. It fixes the runtime `ENOENT ... /.next/server/VERSION` 500 and no longer depends on Hostinger starting Appbit's custom `server.js`.
 
 ## Hostinger build settings
 
-Use these values in hPanel:
+Keep the same values shown in hPanel:
 
-- Framework: **Next.js**
-- Node.js: **24.x**
-- Package manager: **npm**
-- Root directory: **.**
+- Framework preset: **Next.js**
+- Node.js: **20.x** is supported for this package (22.x or 24.x are also acceptable)
+- Branch: **main**
+- Root directory: **./**
 - Build command: **npm run build**
+- Package manager: **npm**
 - Output directory: **.next**
-- Start command: **npm start**
-- Entry file: **server.js**
 
-`npm run build` is intentionally defined as:
+`npm run build` resolves to:
 
 ```bash
 next build --webpack
 ```
 
-Do **not** replace it with plain `next build` on this Hostinger deployment, because Next.js 16 defaults plain builds to Turbopack.
+Do **not** change it to plain `next build`; V2.11 intentionally keeps the Webpack override that fixed Hostinger's Turbopack native-binding build failure.
+
+With the **Next.js** preset you do not need a custom Entry File. The package now uses the normal managed Next runtime (`next start`) and exposes the Appbit backend through native Next.js API routes.
+
+## Why V2.10 returned HTTP 500
+
+V2.10 compiled `src/version.js` into `.next/server` but that module still read a loose `VERSION` file from the filesystem. Hostinger runs the compiled Next server from a generated deployment directory, so the runtime looked for `.next/server/VERSION` and crashed when it was not present.
+
+V2.11 bundles the visible version/build identity directly into the server code. It also mounts Appbit's API/auth/R2 services through `pages/api/[[...path]].js`, because Hostinger's Next.js preset starts the managed Next runtime rather than the old custom `server.js` process.
 
 ## Environment variables
 
-Use your existing production values. At minimum configure:
+Keep your existing production values. At minimum configure:
 
 ```env
 NODE_ENV=production
@@ -43,15 +50,16 @@ DB_SSL=false
 TRUST_PROXY=1
 ```
 
-Keep the same MySQL database if you are upgrading from V2.9. Database schema remains **130**.
+Keep the same MySQL database if you are upgrading from V2.10. Database schema remains **130**.
 
 ## Deployment verification
 
-1. Upload/deploy this V2.10 package.
-2. Confirm the build log contains a Webpack build and does not fail with the Turbopack native-bindings message.
-3. Start the application with `npm start`.
-4. Open `/health`.
-5. Log in and confirm the sidebar reports **V2.10**.
-6. Verify App Library, Publishing, Update Center, R2 Accounts, and File Manager.
+1. Upload/deploy the **V2.11** ZIP.
+2. Keep Framework preset **Next.js**, Build command **npm run build**, Output directory **.next**.
+3. Confirm the build uses Webpack and completes.
+4. Open `/login` and sign in.
+5. Confirm the sidebar reports **V2.11**.
+6. Verify Dashboard, App Library, Publishing, Update Center, R2 Accounts, and File Manager.
+7. Check Runtime Logs. The old `ENOENT ... .next/server/VERSION` message must not appear.
 
-If Hostinger provides a custom Build Command field, keep it as **`npm run build`**. Do not enter `next build` manually.
+If the database variables are wrong, Appbit now returns a clear database-not-ready API message instead of trying to render missing server-side template files from `.next/server`.

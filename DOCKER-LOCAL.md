@@ -1,10 +1,10 @@
-# Appbit V2.10 local Docker
+# Appbit V2.11 local Docker
 
-V2.10 uses Next.js with the existing Express backend. Docker is optional for local use; Hostinger deployment does not use `docker-compose.yml`.
+V2.11 uses the same native Next.js runtime locally and on Hostinger. Docker remains optional for local use; Hostinger deployment does not use `docker-compose.yml`.
 
 ```powershell
 cd C:\Appbit
-Docker compose up -d --build
+docker compose up -d --build
 ```
 
-The Docker image installs dependencies, attempts to install Playwright Chromium with its Linux dependencies, runs Appbit checks, builds Next.js, and starts `server.js` on port 3000. Keep `.env.docker` and the MySQL volume when upgrading an existing local installation.
+The Docker image runs `npm run build` (Webpack) followed by `npm start`, which now resolves to `next start`. The Appbit backend is mounted through the native Next.js API adapter, matching the Hostinger runtime architecture.

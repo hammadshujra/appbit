@@ -1,6 +1,7 @@
 import Head from 'next/head';
+const APP_VERSION='2.11';
 
-export default function AppbitShell({ appVersion }) {
+export default function AppbitShell({appVersion}) {
   return (
     <>
       <Head>
@@ -21,7 +22,9 @@ export default function AppbitShell({ appVersion }) {
   );
 }
 
-export async function getServerSideProps() {
-  const release = require('../src/version');
-  return { props: { appVersion: release.version } };
+// Keep the release value inside the compiled page bundle. Hostinger runs
+// .next/server from a generated deployment directory where loose root files
+// such metadata files are not guaranteed to exist.
+export async function getServerSideProps(){
+  return {props:{appVersion:APP_VERSION}};
 }

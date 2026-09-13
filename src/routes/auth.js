@@ -12,6 +12,7 @@ const router = express.Router();
 const loginLimiter = rateLimit({ windowMs: 10 * 60 * 1000, limit: 20, standardHeaders: true, legacyHeaders: false });
 
 router.get('/login', guestOnly, async (req, res) => {
+  if (req.baseUrl === '/api/auth') return res.status(405).json({ ok: false, error: 'Use the Appbit sign-in page.' });
   let hasUsers = false;
   if (state.dbReady) {
     try { const [[row]] = await getPool().query('SELECT COUNT(*) AS c FROM users WHERE is_active=1'); hasUsers = Number(row.c) > 0; } catch {}
@@ -21,12 +22,16 @@ router.get('/login', guestOnly, async (req, res) => {
 
 router.post('/login', loginLimiter, verifyToken, guestOnly, async (req, res, next) => {
   try {
-    if (!state.dbReady) return res.status(503).render('db-unavailable', { title: 'Setup required', state, layout: false });
+    if (!state.dbReady) {
+      if (req.baseUrl === '/api/auth') return res.redirect(303, '/login?error=db');
+      return res.status(503).render('db-unavailable', { title: 'Setup required', state, layout: false });
+    }
     const email = String(req.body.email || '').trim().toLowerCase();
     const password = String(req.body.password || '');
     const [rows] = await getPool().query("SELECT id,name,email,password_hash,role,is_active FROM users WHERE email=? LIMIT 1", [email]);
     const user = rows[0];
     if (!user || !user.is_active || !['admin','partner'].includes(String(user.role)) || !(await bcrypt.compare(password, user.password_hash))) {
+      if (req.baseUrl === '/api/auth') return res.redirect(303, '/login?error=invalid');
       return res.status(401).render('login', { title: 'Sign in', error: 'Invalid email or password.', next: req.body.next || '/', state, hasUsers: true });
     }
     await getPool().query('UPDATE users SET last_login_at=NOW() WHERE id=?', [user.id]);
