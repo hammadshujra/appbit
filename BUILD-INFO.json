@@ -1,7 +1,7 @@
 {
-  "version": "2.22",
+  "version": "2.23",
   "schemaVersion": 133,
-  "release": "V2.22 approved responsive R2 file manager",
-  "buildId": "2.22-approved-responsive-file-manager",
+  "release": "V2.23 three-layer folder composition fix",
+  "buildId": "2.23-three-layer-folder-fix",
   "built_at": "2026-09-14"
 }

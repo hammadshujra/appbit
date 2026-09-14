@@ -45,7 +45,7 @@ test('V2.21 custom download domain uses one CNAME record and no TXT setup UI',()
 test('V2.21 schema and release metadata are current',()=>{
   const pkg=JSON.parse(read('package.json'));
   const migration=read('src/migrations.js');
-  assert.equal(pkg.version,'2.22.0');
-  assert.equal(read('VERSION').trim(),'2.22');
+  assert.equal(pkg.version,'2.23.0');
+  assert.equal(read('VERSION').trim(),'2.23');
   assert.match(migration,/SCHEMA_VERSION = 133/);
 });

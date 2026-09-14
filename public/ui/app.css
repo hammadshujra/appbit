@@ -1132,3 +1132,34 @@ body.standalone{min-height:100vh;background:radial-gradient(circle at 50% -15%,r
 @media(max-width:900px){.content.r2-wide-content{padding:16px}.r2-file-manager-v222 .r2-folder-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.r2-file-manager-v222 .r2-disk-grid{grid-template-columns:1fr}.r2-stat-card{min-height:102px}.r2-workspace-head{padding:17px}.r2-workspace-body,.r2-file-manager-v222 .r2-file-browser{padding:17px}}
 @media(max-width:680px){.content.r2-wide-content{padding:12px}.r2-file-manager-v222 .r2-stats-premium{grid-template-columns:1fr 1fr;gap:9px}.r2-file-manager-v222 .r2-stat-card{min-height:92px;padding:12px;grid-template-columns:42px minmax(0,1fr);gap:10px;border-radius:12px}.r2-stat-icon{width:42px;height:42px;border-radius:10px}.r2-stat-copy>b{font-size:16px}.r2-stat-copy .r2-domain-stat{font-size:10px}.r2-stat-copy>small{font-size:8px}.r2-workspace-head{padding:14px;gap:12px}.r2-account-heading-icon{width:40px;height:40px}.r2-workspace-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.r2-new-folder-btn{height:44px;padding:0 13px}.r2-search-shortcut{display:none}.r2-manager-search{padding-right:13px!important}.r2-file-manager-v222 .r2-folder-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.r2-file-manager-v222 .r2-folder-tile{min-height:172px;padding:12px 8px}.r2-file-manager-v222 .r2-folder-visual{width:104px;height:90px}.r2-file-manager-v222 .r2-folder-art{width:96px;height:79px;left:4px}.r2-file-manager-v222 .r2-folder-app-icon{width:59px;height:59px;border-radius:13px}.r2-file-manager-v222 .r2-file-browser{padding:14px}.r2-browser-toolbar{align-items:flex-start}.r2-explorer-table{min-width:650px}}
 @media(max-width:430px){.r2-file-manager-v222 .r2-stats-premium{grid-template-columns:1fr}.r2-workspace-tools{grid-template-columns:1fr}.r2-new-folder-btn{width:100%;justify-content:center}.r2-file-manager-v222 .r2-folder-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.r2-file-manager-v222 .r2-folder-name{font-size:10px!important}.r2-file-manager-v222 .r2-folder-tile>small{font-size:8px}.r2-account-heading{align-items:flex-start}}
+
+/* Appbit V2.23 — exact three-layer folder composition */
+/* Folder cards are deliberately composed in this z-order:
+   1) supplied back folder artwork, 2) user-supplied app icon, 3) supplied blue/front artwork. */
+.r2-file-manager-v222 .r2-folder-visual{position:relative;width:132px;height:112px;overflow:visible;isolation:isolate}
+.r2-file-manager-v222 .r2-folder-back-layer{position:absolute;z-index:1;left:4px;bottom:12px;width:124px;height:auto;object-fit:contain;pointer-events:none;user-select:none}
+.r2-file-manager-v222 .r2-folder-app-icon{position:absolute;z-index:2;left:50%;top:20px;width:72px;height:72px;transform:translateX(-50%);border:0;border-radius:16px;object-fit:cover;background:transparent;box-shadow:0 6px 18px rgba(0,0,0,.38);pointer-events:none;user-select:none}
+.r2-file-manager-v222 .r2-folder-front-layer{position:absolute;z-index:3;left:10px;bottom:16px;width:112px;height:auto;object-fit:contain;opacity:.86;filter:blur(.15px) drop-shadow(0 0 5px rgba(55,112,238,.48));pointer-events:none;user-select:none}
+.r2-file-manager-v222 .r2-folder-tile:hover .r2-folder-app-icon,.r2-file-manager-v222 .r2-folder-tile:focus-visible .r2-folder-app-icon{top:20px;transform:translateX(-50%)}
+
+/* New/change-icon dialogs use the same three physical layers as the folder card. */
+.r2-icon-folder-preview{position:relative;width:104px;height:88px;isolation:isolate}
+.r2-icon-preview-back{position:absolute;z-index:1;left:4px;bottom:10px;width:96px;height:auto;object-fit:contain;pointer-events:none}
+.r2-icon-preview-app{display:none;position:absolute;z-index:2;left:50%;top:18px;width:56px;height:56px;transform:translateX(-50%);border:0;border-radius:13px;object-fit:cover;background:transparent;box-shadow:0 4px 12px rgba(0,0,0,.34)}
+.r2-icon-preview-app.show{display:block}
+.r2-icon-preview-front{position:absolute;z-index:3;left:9px;bottom:13px;width:86px;height:auto;object-fit:contain;opacity:.86;filter:blur(.12px) drop-shadow(0 0 4px rgba(55,112,238,.45));pointer-events:none}
+.r2-icon-preview-folder{display:none!important}
+
+/* Account One keeps the normal folder artwork, but there is no circular badge behind it. */
+.r2-account-heading-icon{width:48px;height:40px;border-radius:0!important;background:transparent!important;display:grid;place-items:center;flex:0 0 auto;overflow:visible!important}
+.r2-account-heading-icon img{width:46px;height:36px;object-fit:contain}
+
+@media(max-width:680px){
+  .r2-file-manager-v222 .r2-folder-visual{width:104px;height:90px}
+  .r2-file-manager-v222 .r2-folder-back-layer{left:3px;bottom:10px;width:98px}
+  .r2-file-manager-v222 .r2-folder-app-icon{top:17px;width:58px;height:58px;border-radius:13px}
+  .r2-file-manager-v222 .r2-folder-front-layer{left:8px;bottom:13px;width:88px}
+  .r2-file-manager-v222 .r2-folder-tile:hover .r2-folder-app-icon,.r2-file-manager-v222 .r2-folder-tile:focus-visible .r2-folder-app-icon{top:17px}
+  .r2-account-heading-icon{width:42px;height:35px}
+  .r2-account-heading-icon img{width:40px;height:31px}
+}

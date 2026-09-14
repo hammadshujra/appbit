@@ -4,6 +4,6 @@
 // Keep release identity inside the module so SSR/API bundles never depend on
 // runtime filesystem reads of loose release metadata.
 module.exports=Object.freeze({
-  version:'2.22',
-  buildId:'2.22-approved-responsive-file-manager'
+  version:'2.23',
+  buildId:'2.23-three-layer-folder-fix'
 });

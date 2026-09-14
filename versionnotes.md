@@ -1,9 +1,9 @@
-# Appbit V2.22
+# Appbit V2.23
 
-V2.22 is the approved mockup implementation for the R2 File Manager. The page now uses the available viewport instead of leaving large empty gutters, while keeping the existing Appbit sidebar and navigation model.
+V2.23 is a focused visual correction on top of the approved mockup and V2.22 File Manager. Folder cards now render from the two supplied SVG parts plus the user-selected app icon as a strict three-layer stack.
 
-The four summary cards sit across the top. The account workspace beneath them has a single background layer, one breadcrumb row, account-scoped search, and a New Folder button. The duplicate All Disks, Up, and Refresh controls are removed. Global search is available from the File Manager root and can jump to the folder that contains a matching file.
+The layer order is fixed: the supplied folder back SVG is the bottom layer, the manually uploaded app icon is the middle layer, and the supplied small blue/front SVG is the top layer. This prevents the app icon from being pushed behind or to the end of the folder artwork. The same composition is shown in the New Folder and Change Icon previews.
 
-Folder tiles use the supplied base folder artwork. Custom app icons are manual only: Appbit never chooses or extracts an icon automatically. A folder can be created without an icon, and its icon can be added, replaced, or removed later. Right-click folder and file context menus add the missing rename/delete workflows.
+The Account One heading no longer places its folder icon inside a circular badge. The folder itself remains unchanged, with a transparent background around it.
 
-Responsive CSS is tuned for wide desktop, standard laptop, tablet, and mobile widths.
+All V2.22 File Manager behavior remains intact: responsive layout, four summary cards, global/account search, sidebar tree, right-click folder/file actions, drag-and-drop upload inside folders, and filename-only public download links. Database schema remains 133.
