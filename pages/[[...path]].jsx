@@ -1,5 +1,5 @@
 import Head from 'next/head';
-const APP_VERSION='2.17';
+const APP_VERSION='2.18';
 
 export default function AppbitShell({appVersion}) {
   return (
@@ -22,9 +22,66 @@ export default function AppbitShell({appVersion}) {
   );
 }
 
-// Keep the release value inside the compiled page bundle. Hostinger runs
-// .next/server from a generated deployment directory where loose root files
-// such metadata files are not guaranteed to exist.
-export async function getServerSideProps(){
+function downloadDisposition(name){
+  const safe=String(name||'download').replace(/["\\\r\n]/g,'_');
+  return `attachment; filename="${safe}"; filename*=UTF-8''${encodeURIComponent(String(name||'download'))}`;
+}
+
+async function streamDownloadResponse(context,key){
+  const {Readable}=require('node:stream');
+  const r2=require('../src/services/r2');
+  const {initializeDatabase}=require('../src/init');
+  const state=require('../src/state');
+  if(!state.dbReady)await initializeDatabase();
+  const out=await r2.streamByPath(key,{range:context.req.headers.range||'',head:context.req.method==='HEAD'});
+  const upstream=out.response;
+  context.res.statusCode=upstream.status;
+  for(const h of ['content-length','content-range','accept-ranges','etag','last-modified','cache-control']){
+    const v=upstream.headers.get(h);if(v)context.res.setHeader(h,v);
+  }
+  context.res.setHeader('Content-Type',out.contentType||'application/octet-stream');
+  context.res.setHeader('Content-Disposition',downloadDisposition(out.filename));
+  context.res.setHeader('X-Content-Type-Options','nosniff');
+  if(context.req.method==='HEAD'||!upstream.body){context.res.end();return;}
+  await new Promise((resolve,reject)=>{
+    const stream=Readable.fromWeb(upstream.body);
+    stream.on('error',reject);
+    context.res.on('finish',resolve);
+    context.res.on('close',resolve);
+    stream.pipe(context.res);
+  });
+}
+
+// Hostinger runs the native Next.js Pages runtime. The catch-all page therefore
+// also acts as the public filename gateway. A verified download hostname treats
+// every non-empty path as a file path; on the normal Appbit host, filename-like
+// paths (for example /tiktok.apk) are also resolved before the UI is rendered.
+export async function getServerSideProps(context){
+  const parts=Array.isArray(context.params?.path)?context.params.path:[];
+  const key=parts.map(part=>String(part)).join('/');
+  if(key){
+    const host=String(context.req.headers.host||'').replace(/:\d+$/,'').toLowerCase();
+    let dedicated=false;
+    try{
+      const r2=require('../src/services/r2');
+      const {initializeDatabase}=require('../src/init');
+      const state=require('../src/state');
+      if(!state.dbReady)await initializeDatabase();
+      dedicated=await r2.isActiveDownloadHost(host);
+      const filenameLike=/\.[a-z0-9]{1,16}$/i.test(parts[parts.length-1]||'');
+      if(dedicated||filenameLike){
+        await streamDownloadResponse(context,key);
+        return {props:{appVersion:APP_VERSION}};
+      }
+    }catch(error){
+      if(dedicated){
+        context.res.statusCode=Number(error?.status||404);
+        context.res.setHeader('Content-Type','text/plain; charset=utf-8');
+        context.res.end(error?.status===404?'File not found.':'Download failed.');
+        return {props:{appVersion:APP_VERSION}};
+      }
+      if(Number(error?.status||0)!==404)console.error('[Appbit] Direct download lookup failed:',error);
+    }
+  }
   return {props:{appVersion:APP_VERSION}};
 }

@@ -7,7 +7,7 @@ const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
 test('V2.8 adds download-domain schema and domain API',()=>{
   const m=read('src/migrations.js'),api=read('src/routes/api.js');
-  assert.match(m,/SCHEMA_VERSION = 130/);
+  assert.match(m,/SCHEMA_VERSION = 131/);
   assert.match(m,/CREATE TABLE IF NOT EXISTS r2_download_domains/);
   for(const route of ["/r2/domains","/r2/domains/:id/verify"])assert.ok(api.includes(route),route);
 });
@@ -57,13 +57,14 @@ test('download domain creates TXT verification and CNAME instructions',()=>{
 
 test('file manager keeps search, folders, bulk upload, resume, and delete',()=>{
   const ui=read('public/ui/app.js');
-  assert.match(ui,/Search files by name/);
-  assert.match(ui,/Upload files/);
+  assert.match(ui,/Search this disk/);
+  assert.match(ui,/Drop files here to upload/);
   assert.match(ui,/New folder/);
   assert.match(ui,/\/api\/r2\/folders/);
   assert.match(ui,/appbit:r2:resume/);
   assert.match(ui,/appbit:r2:resumes/);
   assert.doesNotMatch(ui,/data-r2-replace/);
   assert.match(ui,/Delete/);
-  assert.match(ui,/keyMode:replaceObjectId\?'opaque':'name'/);
+  assert.match(ui,/keyMode:'name'/);
+  assert.match(ui,/objectKey/);
 });

@@ -78,7 +78,7 @@ test('migration repairs before category initialization and never re-enters legac
   const db={async query(sql,args=[]){const s=sql.replace(/\s+/g,' ').trim();events.push(s);if(s.includes('MAX(version)'))return[[{version:126}]];if(s.includes('information_schema.TABLES'))return[[{found:1}]];if(s.includes('information_schema.COLUMNS'))return[appColumns];return[[]];}};
   const module={exports:{}};
   vm.runInNewContext(file,{module,exports:module.exports,require:id=>id==='./db'?{getPool:()=>db}:id==='./schema-collations'?{normalizeAppbitCollations:async()=>{events.push('NORMALIZE');return{}}}:id==='./services/apk-fields'?require('../src/services/apk-fields'):require(id),console}, {filename:'migrations.js'});
-  assert.equal(await module.exports.migrate(),130);
+  assert.equal(await module.exports.migrate(),131);
  assert.ok(events.indexOf('NORMALIZE')<events.findIndex(s=>s.includes('UPDATE apk_categories SET parent_slug')));
  assert.ok(!events.some(s=>/DROP TABLE|DELETE FROM schema_migrations|SET FOREIGN_KEY_CHECKS=0/.test(s)));
  assert.equal(events.filter(s=>s==='NORMALIZE').length,2);
@@ -94,11 +94,11 @@ test('accepts a valid existing apps table with no migration marker, but rejects 
   const createDb=version=>{const events=[];const db={events,async query(sql){const s=sql.replace(/\s+/g,' ').trim();events.push(s);if(s.includes('MAX(version)'))return[[{version}]];if(s.includes('information_schema.TABLES'))return[[{found:1}]];if(s.includes('information_schema.COLUMNS'))return[columns];return[[]];}};return db;};
   const db=createDb(0),module={exports:{}};
   vm.runInNewContext(file,{module,exports:module.exports,require:id=>id==='./db'?{getPool:()=>db}:id==='./schema-collations'?{normalizeAppbitCollations:async()=>{db.events.push('NORMALIZE');return{}}}:id==='./services/apk-fields'?require('../src/services/apk-fields'):require(id),console});
-  assert.equal(await module.exports.migrate(),130);
+  assert.equal(await module.exports.migrate(),131);
   assert.ok(db.events.some(s=>s.includes('INSERT IGNORE INTO schema_migrations')));
   assert.ok(!db.events.some(s=>/DROP TABLE|DELETE FROM schema_migrations|SET FOREIGN_KEY_CHECKS=0/.test(s)));
 
-  const future=createDb(131),module2={exports:{}};
+  const future=createDb(132),module2={exports:{}};
   vm.runInNewContext(file,{module:module2,exports:module2.exports,require:id=>id==='./db'?{getPool:()=>future}:id==='./schema-collations'?{normalizeAppbitCollations:async()=>{throw Error('must not run')}}:id==='./services/apk-fields'?require('../src/services/apk-fields'):require(id),console});
   await assert.rejects(module2.exports.migrate(),/unrecognized schema version/);
 });

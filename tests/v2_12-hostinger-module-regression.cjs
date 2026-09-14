@@ -14,5 +14,5 @@ test('V2.12 postbuild compatibility guard remains in current release',()=>{
   assert.match(post,/VERSION/);
   assert.match(post,/BUILD-INFO\.json/);
   assert.match(post,/writeFileSync/);
-  assert.equal(read('VERSION').trim(),'2.17');
+  assert.equal(read('VERSION').trim(),'2.18');
 });

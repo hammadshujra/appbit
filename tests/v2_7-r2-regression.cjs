@@ -8,7 +8,7 @@ const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
 test('R2 schema keeps V2.7 tables in current schema',()=>{
   const m=read('src/migrations.js');
-  assert.match(m,/SCHEMA_VERSION = 130/);
+  assert.match(m,/SCHEMA_VERSION = 131/);
   for(const table of ['r2_accounts','r2_objects','r2_uploads'])assert.match(m,new RegExp(`CREATE TABLE IF NOT EXISTS ${table}`));
 });
 
@@ -42,10 +42,11 @@ test('R2 API is admin-only and supports account, sync, upload, replace/delete fl
   assert.match(api,/requireAdmin/);
 });
 
-test('Public opaque download gateway does not expose R2 credentials',()=>{
+test('Public download gateway keeps legacy tokens and adds direct paths without exposing R2 credentials',()=>{
   const d=read('src/routes/downloads.js');
   assert.match(d,/\/d\/:token/);
   assert.match(d,/streamByToken/);
+  assert.match(d,/streamByPath/);
   assert.doesNotMatch(d,/accessKeyId|secretAccessKey/);
 });
 
@@ -60,7 +61,8 @@ test('R2 UI is nested under Update Center and has resumable multipart upload',()
   assert.match(ui,/multiple/);
   assert.match(ui,/data-r2-folder/);
   assert.match(ui,/appbit:r2:resumes/);
-  assert.match(ui,/download="/);
+  assert.match(ui,/id="r2Dropzone"/);
+  assert.match(ui,/Copy link/);
   assert.doesNotMatch(ui,/data-r2-replace/);
   assert.match(ui,/Delete/);
 });

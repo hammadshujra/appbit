@@ -1,4 +1,4 @@
-# Appbit V2.17 — Hostinger App Hosting
+# Appbit V2.18 — Hostinger App Hosting
 
 Push the repository contents to the `main` branch selected by Hostinger and use the settings below.
 
@@ -44,25 +44,25 @@ Keep `SESSION_SECRET` and `R2_CREDENTIALS_KEY` long and stable. Never place thei
 The build should contain:
 
 ```text
-[Appbit] Hostinger prebuild V2.17: API route verified — pages/api/[[...path]].js (Next.js module syntax).
-[Appbit] Hostinger output finalized for V2.17.
+[Appbit] Hostinger prebuild V2.18: API route verified — pages/api/[[...path]].js (Next.js module syntax).
+[Appbit] Hostinger output finalized for V2.18.
 ```
 
 After runtime initialization, the database line should report:
 
 ```text
-[Appbit] Database ready. Schema v130.
+[Appbit] Database ready. Schema v131.
 ```
 
 ## Existing database safety
 
-The release continues the reviewed handling for an existing Appbit database where `apps` already contains Appbit records but `schema_migrations` is empty or older. It verifies the recognized Appbit table signature, performs idempotent reconciliation, and records schema `130`.
+The release continues the reviewed handling for an existing Appbit database where `apps` already contains Appbit records but `schema_migrations` is empty or older. It verifies the recognized Appbit table signature, performs idempotent reconciliation, and records schema `131`.
 
-This path does not reset the database, delete rows, or run the old legacy migration. Do not remove the existing database variables. A partial/unrelated `apps` table or a marker newer than `130` still stops for manual review.
+This path does not reset the database, delete rows, or run the old legacy migration. Do not remove the existing database variables. A partial/unrelated `apps` table or a marker newer than `131` still stops for manual review.
 
 ## First deployment checks
 
-1. Push the V2.17 files to the exact `main` branch selected in Hostinger.
+1. Push the V2.18 files to the exact `main` branch selected in Hostinger.
 2. Start a fresh deployment with the settings above.
 3. Open `/health`. Wait until Database and Schema show passing.
 4. Open `/login` and sign in.
@@ -77,13 +77,13 @@ In Appbit, open **R2 Account → Accounts**, add the hostname, and copy the exac
 1. Add the TXT name/value to prove ownership.
 2. Add the CNAME from the subdomain to the Appbit Hostinger hostname.
 3. Wait for propagation and click **Check DNS again**.
-4. When active, newly copied links use `https://downloads.example.com/d/<token>`.
+4. When active, newly copied links use the real R2 path, for example `https://downloads.example.com/tiktok.apk` or `https://downloads.example.com/TikTok/tiktok.apk`.
 
 TXT verification and CNAME routing are separate. If a hostname is deleted and later added again, copy the new displayed TXT record before verifying. Removing the hostname never deletes R2 objects, but old links using the removed hostname cannot resolve until that hostname is active again.
 
 ## Upload and link checks
 
-- File Manager supports folders, search, bulk selection, and files up to 10 GB per file.
+- File Manager shows each R2 account as a disk, supports Windows-style folders/search, drag-and-drop multi-file queues, and files up to 10 GB per file.
 - Uploads are sent as small multipart requests through the Appbit API; a temporary network failure retries the current part.
-- Use **Download** for the automatic APK download, **Copy link** to share it, and **Open** to inspect the endpoint in a new tab.
+- Use **Copy link** to copy the direct `domain/path/filename` URL. Opening that URL streams the R2 object as an attachment download. Use **Delete** to remove a file from R2.
 - The fallback Appbit-host link remains available before a custom hostname is verified.

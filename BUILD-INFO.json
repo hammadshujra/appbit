@@ -1,7 +1,7 @@
 {
-  "version": "2.17",
-  "schemaVersion": 130,
-  "release": "V2.17 file manager, download gateway, and deployment health",
-  "buildId": "2.17-file-manager-download-health",
+  "version": "2.18",
+  "schemaVersion": 131,
+  "release": "V2.18 disk file manager and direct filename downloads",
+  "buildId": "2.18-disk-file-manager-direct-links",
   "built_at": "2026-09-14"
 }
