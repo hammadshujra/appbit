@@ -1,7 +1,7 @@
 {
-  "version": "2.23",
+  "version": "2.24",
   "schemaVersion": 133,
-  "release": "V2.23 three-layer folder composition fix",
-  "buildId": "2.23-three-layer-folder-fix",
+  "release": "V2.24 unified responsive UI, sidebar rail, app-icon folder cards",
+  "buildId": "2.24-unified-ui-sidebar-app-icon-folders",
   "built_at": "2026-09-14"
 }

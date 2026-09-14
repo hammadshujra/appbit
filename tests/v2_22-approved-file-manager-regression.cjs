@@ -5,7 +5,7 @@ const path=require('node:path');
 const root=path.resolve(__dirname,'..');
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
-test('V2.23 matches the approved full-width responsive File Manager structure',()=>{
+test('V2.24 matches the approved full-width responsive File Manager structure',()=>{
   const ui=read('public/ui/app.js'),css=read('public/ui/app.css');
   assert.match(ui,/r2-file-manager-v222/);
   assert.match(ui,/r2-stats-premium/);
@@ -17,14 +17,14 @@ test('V2.23 matches the approved full-width responsive File Manager structure',(
   assert.match(css,/@media\(max-width:430px\)/);
 });
 
-test('V2.23 account toolbar is reduced to search and New Folder',()=>{
+test('V2.24 account toolbar is reduced to search and New Folder',()=>{
   const ui=read('public/ui/app.js');
   assert.match(ui,/Search this account/);
   assert.match(ui,/id="r2NewFolder"/);
   assert.doesNotMatch(ui,/id="r2BackDisks"|id="r2UpFolder"|id="r2ReloadFiles"|id="r2ReloadDisks"/);
 });
 
-test('V2.23 has global search that can jump to files and folders',()=>{
+test('V2.24 has global search that can jump to files and folders',()=>{
   const ui=read('public/ui/app.js');
   assert.match(ui,/Search all R2 files and folders/);
   assert.match(ui,/runR2ManagerSearch/);
@@ -33,17 +33,17 @@ test('V2.23 has global search that can jump to files and folders',()=>{
   assert.match(ui,/S\.r2\.prefix=r2ParentPath\(b\.dataset\.r2SearchKey\)/);
 });
 
-test('V2.23 folder icons are manual only and use the supplied base folder artwork',()=>{
+test('V2.24 folder app icons are manual only and folder artwork is not rendered',()=>{
   const ui=read('public/ui/app.js');
   assert.ok(fs.existsSync(path.join(root,'public','folder-icon.svg')));
-  assert.match(ui,/Appbit will never insert an app icon automatically/);
+  assert.match(ui,/No folder artwork is added automatically/);
   assert.match(ui,/right-click → Change Icon/);
   assert.match(ui,/id="r2FolderIcon"/);
   assert.match(ui,/\/api\/r2\/folders\/icon/);
   assert.doesNotMatch(ui,/extract.*apk.*icon|apk.*icon.*extract/i);
 });
 
-test('V2.23 right-click management supports folder and file rename/delete',()=>{
+test('V2.24 right-click management supports folder and file rename/delete',()=>{
   const ui=read('public/ui/app.js'),api=read('src/routes/api.js'),service=read('src/services/r2.js');
   assert.match(ui,/oncontextmenu/);
   assert.match(ui,/openR2FolderRenameModal/);
@@ -57,10 +57,10 @@ test('V2.23 right-click management supports folder and file rename/delete',()=>{
   assert.match(service,/async function renameObject/);
 });
 
-test('V2.23 release metadata is consistent',()=>{
+test('V2.24 release metadata is consistent',()=>{
   const pkg=JSON.parse(read('package.json'));
-  assert.equal(pkg.version,'2.23.0');
-  assert.equal(read('VERSION').trim(),'2.23');
-  assert.match(read('src/version.js'),/version:'2\.23'/);
-  assert.match(read('pages/[[...path]].jsx'),/APP_VERSION='2\.23'/);
+  assert.equal(pkg.version,'2.24.0');
+  assert.equal(read('VERSION').trim(),'2.24');
+  assert.match(read('src/version.js'),/version:'2\.24'/);
+  assert.match(read('pages/[[...path]].jsx'),/APP_VERSION='2\.24'/);
 });

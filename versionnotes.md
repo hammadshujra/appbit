@@ -1,9 +1,13 @@
-# Appbit V2.23
+# Appbit V2.24
 
-V2.23 is a focused visual correction on top of the approved mockup and V2.22 File Manager. Folder cards now render from the two supplied SVG parts plus the user-selected app icon as a strict three-layer stack.
+V2.24 is a UI consistency and File Manager folder-card correction release.
 
-The layer order is fixed: the supplied folder back SVG is the bottom layer, the manually uploaded app icon is the middle layer, and the supplied small blue/front SVG is the top layer. This prevents the app icon from being pushed behind or to the end of the folder artwork. The same composition is shown in the New Folder and Change Icon previews.
-
-The Account One heading no longer places its folder icon inside a circular badge. The folder itself remains unchanged, with a transparent background around it.
-
-All V2.22 File Manager behavior remains intact: responsive layout, four summary cards, global/account search, sidebar tree, right-click folder/file actions, drag-and-drop upload inside folders, and filename-only public download links. Database schema remains 133.
+- Removed the V2.23 three-layer folder artwork from folder cards.
+- Folder cards now display only a manually assigned app icon, folder name, and file count.
+- Removed folder artwork from New Folder / Change Icon previews.
+- Unified App Library and the rest of Appbit with the same full-width page spacing used by File Manager.
+- Standardized card, button, input, and panel radii across the product.
+- Added a working sidebar rail toggle. Expanded mode shows the full sidebar; collapsed mode shows navigation icons only.
+- Moved sidebar control away from the page-title area and persisted the desktop state.
+- Preserved full sidebar behavior on mobile.
+- No database migration. Schema remains 133.

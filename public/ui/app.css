@@ -1133,33 +1133,248 @@ body.standalone{min-height:100vh;background:radial-gradient(circle at 50% -15%,r
 @media(max-width:680px){.content.r2-wide-content{padding:12px}.r2-file-manager-v222 .r2-stats-premium{grid-template-columns:1fr 1fr;gap:9px}.r2-file-manager-v222 .r2-stat-card{min-height:92px;padding:12px;grid-template-columns:42px minmax(0,1fr);gap:10px;border-radius:12px}.r2-stat-icon{width:42px;height:42px;border-radius:10px}.r2-stat-copy>b{font-size:16px}.r2-stat-copy .r2-domain-stat{font-size:10px}.r2-stat-copy>small{font-size:8px}.r2-workspace-head{padding:14px;gap:12px}.r2-account-heading-icon{width:40px;height:40px}.r2-workspace-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.r2-new-folder-btn{height:44px;padding:0 13px}.r2-search-shortcut{display:none}.r2-manager-search{padding-right:13px!important}.r2-file-manager-v222 .r2-folder-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.r2-file-manager-v222 .r2-folder-tile{min-height:172px;padding:12px 8px}.r2-file-manager-v222 .r2-folder-visual{width:104px;height:90px}.r2-file-manager-v222 .r2-folder-art{width:96px;height:79px;left:4px}.r2-file-manager-v222 .r2-folder-app-icon{width:59px;height:59px;border-radius:13px}.r2-file-manager-v222 .r2-file-browser{padding:14px}.r2-browser-toolbar{align-items:flex-start}.r2-explorer-table{min-width:650px}}
 @media(max-width:430px){.r2-file-manager-v222 .r2-stats-premium{grid-template-columns:1fr}.r2-workspace-tools{grid-template-columns:1fr}.r2-new-folder-btn{width:100%;justify-content:center}.r2-file-manager-v222 .r2-folder-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.r2-file-manager-v222 .r2-folder-name{font-size:10px!important}.r2-file-manager-v222 .r2-folder-tile>small{font-size:8px}.r2-account-heading{align-items:flex-start}}
 
-/* Appbit V2.23 — exact three-layer folder composition */
-/* Folder cards are deliberately composed in this z-order:
-   1) supplied back folder artwork, 2) user-supplied app icon, 3) supplied blue/front artwork. */
-.r2-file-manager-v222 .r2-folder-visual{position:relative;width:132px;height:112px;overflow:visible;isolation:isolate}
-.r2-file-manager-v222 .r2-folder-back-layer{position:absolute;z-index:1;left:4px;bottom:12px;width:124px;height:auto;object-fit:contain;pointer-events:none;user-select:none}
-.r2-file-manager-v222 .r2-folder-app-icon{position:absolute;z-index:2;left:50%;top:20px;width:72px;height:72px;transform:translateX(-50%);border:0;border-radius:16px;object-fit:cover;background:transparent;box-shadow:0 6px 18px rgba(0,0,0,.38);pointer-events:none;user-select:none}
-.r2-file-manager-v222 .r2-folder-front-layer{position:absolute;z-index:3;left:10px;bottom:16px;width:112px;height:auto;object-fit:contain;opacity:.86;filter:blur(.15px) drop-shadow(0 0 5px rgba(55,112,238,.48));pointer-events:none;user-select:none}
-.r2-file-manager-v222 .r2-folder-tile:hover .r2-folder-app-icon,.r2-file-manager-v222 .r2-folder-tile:focus-visible .r2-folder-app-icon{top:20px;transform:translateX(-50%)}
+/* ===================================================================
+   Appbit V2.24 — unified workspace, real sidebar rail, app-icon folders
+   =================================================================== */
+:root{
+  --app-sidebar-expanded:276px;
+  --app-sidebar-collapsed:78px;
+  --app-page-pad:clamp(18px,2.2vw,38px);
+  --app-card-bg:linear-gradient(155deg,#101722 0%,#0c121a 100%);
+  --app-card-border:#26303a;
+  --app-card-radius:14px;
+  --app-control-radius:9px;
+}
 
-/* New/change-icon dialogs use the same three physical layers as the folder card. */
-.r2-icon-folder-preview{position:relative;width:104px;height:88px;isolation:isolate}
-.r2-icon-preview-back{position:absolute;z-index:1;left:4px;bottom:10px;width:96px;height:auto;object-fit:contain;pointer-events:none}
-.r2-icon-preview-app{display:none;position:absolute;z-index:2;left:50%;top:18px;width:56px;height:56px;transform:translateX(-50%);border:0;border-radius:13px;object-fit:cover;background:transparent;box-shadow:0 4px 12px rgba(0,0,0,.34)}
-.r2-icon-preview-app.show{display:block}
-.r2-icon-preview-front{position:absolute;z-index:3;left:9px;bottom:13px;width:86px;height:auto;object-fit:contain;opacity:.86;filter:blur(.12px) drop-shadow(0 0 4px rgba(55,112,238,.45));pointer-events:none}
+/* One page geometry everywhere — no centered max-width gutters. */
+.content,.content.r2-wide-content{
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:22px var(--app-page-pad) 40px;
+}
+.r2-page,.app-workspace{max-width:none;width:100%;margin:0}
+.library-import-panel,.library-results,.app-detail-panel,.r2-workspace-panel{width:100%}
+
+/* One card language across Dashboard, Library, Publishing, R2 and Settings. */
+.panel,.stat,.library-toolbar,.library-results,.library-import-panel,.app-detail-panel,
+.r2-panel,.r2-stat-card,.r2-account-card,.app-card,.team-card,.backup-latest,.workspace-summary>div{
+  background:var(--app-card-bg);
+  border-color:var(--app-card-border);
+  border-radius:var(--app-card-radius);
+  box-shadow:none;
+}
+.panel-head,.library-results-head,.app-detail-header{background:transparent;border-color:#242c36}
+.app-card-visual{background:#151d28!important}
+
+/* One button/input shape. Action controls use a restrained radius, not mixed pills. */
+.btn,.btn.primary,.btn.success,.btn.danger,.btn.small,.btn.tiny,.btn.icon-btn,
+.library-tab,.section-chip,.page-btn,.tab,.input,select.input,textarea.input{
+  border-radius:var(--app-control-radius)!important;
+}
+.tabs,.library-tabs,.library-sections{border-radius:11px!important}
+.btn{min-height:36px}
+.btn.icon-btn{width:36px;padding:0}
+
+/* Full-width App Library follows the File Manager alignment. */
+.library-import-panel{margin-bottom:14px}
+.library-results{margin-bottom:0}
+.library-import-card{padding:18px 20px}
+.library-results-head{padding:17px 20px 12px}
+.library-results .library-filterbar{padding:0 20px 16px}
+.library-card-grid{
+  grid-template-columns:repeat(auto-fill,minmax(150px,180px));
+  justify-content:start;
+  gap:14px;
+  padding:18px 20px 20px;
+}
+.library-card-grid .app-card{min-width:0;border-radius:13px}
+.library-card-grid .app-card-visual{margin:8px 8px 0;border-radius:10px}
+.library-card-grid .app-card-footer .btn{border-radius:var(--app-control-radius)!important}
+
+/* Sidebar edge toggle: not beside the page title. */
+.sidebar,.main,.sidebar-edge-toggle{transition:width .2s ease,margin-left .2s ease,left .2s ease,transform .2s ease}
+.sidebar{width:var(--app-sidebar-expanded)}
+.main{margin-left:var(--app-sidebar-expanded)}
+.sidebar-edge-toggle{
+  position:fixed;
+  z-index:70;
+  top:18px;
+  left:calc(var(--app-sidebar-expanded) - 17px);
+  width:34px;
+  height:34px;
+  border:1px solid #303947;
+  border-radius:10px;
+  background:#111821;
+  color:#dce5f0;
+  display:grid;
+  place-items:center;
+  box-shadow:0 8px 24px rgba(0,0,0,.28);
+  font-size:22px;
+  line-height:1;
+  padding:0;
+}
+.sidebar-edge-toggle:hover{background:#192331;border-color:#3c4a5c}
+.topbar-title-wrap{display:flex;align-items:center;min-width:0}
+.mobile-menu{display:none!important}
+
+/* Desktop collapsed rail: navigation icons only. */
+.shell.sidebar-collapsed .sidebar{width:var(--app-sidebar-collapsed)}
+.shell.sidebar-collapsed .main{margin-left:var(--app-sidebar-collapsed)}
+.shell.sidebar-collapsed .sidebar-edge-toggle{left:calc(var(--app-sidebar-collapsed) - 17px)}
+.shell.sidebar-collapsed .side-scroll{padding:16px 10px}
+.shell.sidebar-collapsed .brand{align-items:center;padding:8px 0 18px;gap:0}
+.shell.sidebar-collapsed .brand-logo{width:48px;height:48px;object-position:center}
+.shell.sidebar-collapsed .brand-sub,
+.shell.sidebar-collapsed .brand-version,
+.shell.sidebar-collapsed .nav-label,
+.shell.sidebar-collapsed .nav-label-text,
+.shell.sidebar-collapsed .nav-btn .badge,
+.shell.sidebar-collapsed .r2-side-tree,
+.shell.sidebar-collapsed .profile-main,
+.shell.sidebar-collapsed .profile-divider,
+.shell.sidebar-collapsed .profile-signout{display:none!important}
+.shell.sidebar-collapsed .nav-btn,
+.shell.sidebar-collapsed .nav-btn.nav-sub{
+  width:46px;
+  height:44px;
+  min-height:44px;
+  margin:3px auto;
+  padding:0;
+  justify-content:center;
+  border-radius:10px;
+}
+.shell.sidebar-collapsed .nav-btn>span:first-child{gap:0;justify-content:center;width:100%}
+.shell.sidebar-collapsed .nav-icon{width:22px;font-size:18px}
+.shell.sidebar-collapsed .nav-btn.nav-sub{margin-left:auto}
+.shell.sidebar-collapsed .sidebar-foot{padding:10px}
+.shell.sidebar-collapsed .profile-card{border:0;background:transparent;border-radius:10px}
+.shell.sidebar-collapsed .profile-top{display:flex;justify-content:center;padding:0}
+.shell.sidebar-collapsed .profile-media{width:42px;min-width:42px}
+.shell.sidebar-collapsed .profile-avatar{width:42px;height:42px;border-radius:10px}
+
+/* Folder cards are now app-icon cards. No folder artwork/layers are rendered. */
+.r2-file-manager-v222 .r2-folder-grid{grid-template-columns:repeat(auto-fill,minmax(160px,190px));justify-content:start;gap:14px}
+.r2-file-manager-v222 .r2-folder-tile{
+  min-height:190px;
+  padding:20px 14px 16px;
+  border-radius:13px;
+}
+.r2-file-manager-v222 .r2-folder-visual{
+  position:relative;
+  width:92px;
+  height:92px;
+  display:grid;
+  place-items:center;
+  overflow:visible;
+  isolation:auto;
+  margin:0 auto 4px;
+}
+.r2-file-manager-v222 .r2-folder-back-layer,
+.r2-file-manager-v222 .r2-folder-front-layer,
+.r2-icon-preview-back,
+.r2-icon-preview-front,
 .r2-icon-preview-folder{display:none!important}
+.r2-file-manager-v222 .r2-folder-app-icon{
+  position:static!important;
+  z-index:auto!important;
+  left:auto!important;
+  top:auto!important;
+  width:86px!important;
+  height:86px!important;
+  transform:none!important;
+  object-fit:cover;
+  border-radius:20px!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  background:#10161f!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.28)!important;
+}
+.r2-file-manager-v222 .r2-folder-tile:hover .r2-folder-app-icon,
+.r2-file-manager-v222 .r2-folder-tile:focus-visible .r2-folder-app-icon{top:auto!important;transform:none!important}
+.r2-folder-empty-app-icon{
+  width:86px;
+  height:86px;
+  border:1px dashed #3a4656;
+  border-radius:20px;
+  display:block;
+  background:#10161f;
+}
+.r2-file-manager-v222 .r2-folder-name{font-size:12px!important;margin-top:2px}
 
-/* Account One keeps the normal folder artwork, but there is no circular badge behind it. */
-.r2-account-heading-icon{width:48px;height:40px;border-radius:0!important;background:transparent!important;display:grid;place-items:center;flex:0 0 auto;overflow:visible!important}
-.r2-account-heading-icon img{width:46px;height:36px;object-fit:contain}
+/* Icon picker previews the app icon itself, not a folder composition. */
+.r2-icon-folder-preview.r2-icon-app-only-preview{
+  position:relative;
+  width:104px;
+  height:104px;
+  display:grid;
+  place-items:center;
+  border:1px dashed #364354;
+  border-radius:20px;
+  background:#10161f;
+  overflow:hidden;
+}
+.r2-icon-app-only-preview .r2-icon-preview-app{
+  position:static!important;
+  width:96px!important;
+  height:96px!important;
+  transform:none!important;
+  border-radius:18px!important;
+  object-fit:cover;
+  box-shadow:none!important;
+}
+.r2-icon-preview-empty{position:absolute;inset:7px;border:1px dashed #3a4656;border-radius:16px;background:#10161f;pointer-events:none}
+.r2-icon-app-only-preview .r2-icon-preview-app.show~.r2-icon-preview-empty{display:none}
 
+/* Sidebar folder children use the user's app icon when available; no folder asset. */
+.r2-side-link:not(.disk) img.r2-side-app-icon{width:18px;height:18px;border-radius:5px;object-fit:cover}
+.r2-side-empty-icon{width:13px;height:13px;border:1px solid #405066;border-radius:4px;background:#111821;justify-self:center}
+
+/* Keep the account/disk folder identity, without a circular badge. */
+.r2-account-heading-icon{background:transparent!important;border-radius:0!important}
+
+@media(max-width:1180px){
+  .content,.content.r2-wide-content{padding:20px}
+  .library-card-grid{grid-template-columns:repeat(auto-fill,minmax(145px,1fr));justify-content:stretch}
+}
+@media(max-width:900px){
+  .content,.content.r2-wide-content{padding:16px}
+  .main,.shell.sidebar-collapsed .main{margin-left:0}
+  .sidebar,.shell.sidebar-collapsed .sidebar{width:var(--app-sidebar-expanded);transform:translateX(-100%)}
+  .sidebar.open,.shell.sidebar-collapsed .sidebar.open{transform:translateX(0)}
+  .sidebar-edge-toggle,.shell.sidebar-collapsed .sidebar-edge-toggle{left:12px;top:18px}
+  .shell.mobile-sidebar-open .sidebar-edge-toggle{left:calc(var(--app-sidebar-expanded) - 17px)}
+  /* Mobile always opens the full sidebar, regardless of desktop rail preference. */
+  .shell.sidebar-collapsed .side-scroll{padding:20px 16px}
+  .shell.sidebar-collapsed .brand{align-items:flex-start;padding:8px 10px 24px;gap:8px}
+  .shell.sidebar-collapsed .brand-logo{width:132px;height:84px;object-position:left center}
+  .shell.sidebar-collapsed .brand-sub{display:block!important}
+  .shell.sidebar-collapsed .brand-version{display:inline-flex!important}
+  .shell.sidebar-collapsed .nav-label{display:block!important}
+  .shell.sidebar-collapsed .nav-label-text{display:inline!important}
+  .shell.sidebar-collapsed .nav-btn .badge{display:inline-flex!important}
+  .shell.sidebar-collapsed .profile-main{display:block!important}
+  .shell.sidebar-collapsed .profile-divider{display:block!important}
+  .shell.sidebar-collapsed .profile-signout{display:flex!important}
+  .shell.sidebar-collapsed .r2-side-tree{display:block!important}
+  .shell.sidebar-collapsed .nav-btn,.shell.sidebar-collapsed .nav-btn.nav-sub{width:100%;min-height:44px;margin:2px 0;padding:0 12px;justify-content:space-between;border-radius:11px}
+  .shell.sidebar-collapsed .nav-btn.nav-sub{margin-left:20px;width:calc(100% - 20px)}
+  .shell.sidebar-collapsed .nav-btn>span:first-child{gap:11px;justify-content:flex-start;width:auto}
+  .shell.sidebar-collapsed .nav-icon{width:18px;font-size:inherit}
+  .shell.sidebar-collapsed .sidebar-foot{padding:12px}
+  .shell.sidebar-collapsed .profile-card{border:1px solid var(--hairline);background:var(--surface);border-radius:20px}
+  .shell.sidebar-collapsed .profile-top{display:grid;justify-content:normal;padding:14px 14px 12px}
+  .shell.sidebar-collapsed .profile-media{width:72px;min-width:72px}
+  .shell.sidebar-collapsed .profile-avatar{width:72px;height:72px;border-radius:16px}
+  .library-card-grid{grid-template-columns:repeat(4,minmax(0,1fr));padding:14px}
+}
 @media(max-width:680px){
-  .r2-file-manager-v222 .r2-folder-visual{width:104px;height:90px}
-  .r2-file-manager-v222 .r2-folder-back-layer{left:3px;bottom:10px;width:98px}
-  .r2-file-manager-v222 .r2-folder-app-icon{top:17px;width:58px;height:58px;border-radius:13px}
-  .r2-file-manager-v222 .r2-folder-front-layer{left:8px;bottom:13px;width:88px}
-  .r2-file-manager-v222 .r2-folder-tile:hover .r2-folder-app-icon,.r2-file-manager-v222 .r2-folder-tile:focus-visible .r2-folder-app-icon{top:17px}
-  .r2-account-heading-icon{width:42px;height:35px}
-  .r2-account-heading-icon img{width:40px;height:31px}
+  .content,.content.r2-wide-content{padding:12px}
+  .library-card-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;padding:12px}
+  .r2-file-manager-v222 .r2-folder-grid{grid-template-columns:repeat(2,minmax(0,1fr));justify-content:stretch;gap:9px}
+  .r2-file-manager-v222 .r2-folder-tile{min-height:160px;padding:14px 8px 12px}
+  .r2-file-manager-v222 .r2-folder-visual{width:72px;height:72px}
+  .r2-file-manager-v222 .r2-folder-app-icon,.r2-folder-empty-app-icon{width:68px!important;height:68px!important;border-radius:16px!important}
+}
+@media(max-width:470px){
+  .library-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }

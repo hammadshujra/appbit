@@ -15,7 +15,7 @@ test('V2.19 uses the supplied folder SVG for disks and Windows-style folder tile
   assert.match(css,/\.r2-folder-art\{display:block;width:90px;height:74px/);
 });
 
-test('V2.23 disk root is folder-only with one breadcrumb, global search, and no root uploader/activity panel',()=>{
+test('V2.24 disk root is folder-only with one breadcrumb, global search, and no root uploader/activity panel',()=>{
   const ui=read('public/ui/app.js');
   assert.match(ui,/Search all R2 files and folders/);
   assert.doesNotMatch(ui,/id="r2UploadPath"/);

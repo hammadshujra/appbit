@@ -1,6 +1,6 @@
 {
   "name": "appbit",
-  "version": "2.23.0",
+  "version": "2.24.0",
   "private": true,
   "description": "Appbit APK Publishing Workspace — Hostinger-managed Next.js runtime.",
   "scripts": {

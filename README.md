@@ -1,16 +1,18 @@
-# Appbit V2.23
+# Appbit V2.24
 
-V2.23 keeps the approved V2.22 responsive R2 File Manager layout and fixes the folder artwork composition exactly as requested.
+V2.24 unifies the whole Appbit workspace around the finalized R2 File Manager layout and removes the layered folder artwork from app folders.
 
-## V2.23 focus
+## V2.24 focus
 
-- Created folder cards now use three fixed visual layers: supplied folder back artwork, the manually uploaded app icon in the middle, and the supplied small blue/front artwork above it.
-- Appbit does not generate or extract folder app icons automatically. The icon is still chosen by the user when creating a folder or through right-click → Change Icon.
-- The app icon can no longer fall behind the whole folder artwork; its z-order is locked between the back and front layers.
-- New Folder and Change Icon previews use the same three-layer composition as the actual folder card.
-- The Account One heading keeps the normal folder icon but removes the circular badge/background around it.
-- The approved V2.22 status cards, search, sidebar tree, right-click actions, responsive layout, and filename-only public downloads are preserved.
+- Folder cards no longer render any folder SVG/background layer. A folder shows only the app icon that you upload manually, plus the folder name and file count.
+- New Folder and Change Icon previews now show the app icon itself rather than a folder composition.
+- The R2 sidebar tree uses the manual app icon when one exists; Account/Disk identity keeps its normal disk/folder icon.
+- All major pages now use the same full-width content geometry as File Manager, eliminating the large unused side gutters seen in App Library.
+- Panels/cards/buttons/inputs now share one consistent corner radius and visual treatment across Dashboard, App Library, Publishing, Update Center, R2, and Settings.
+- The old title-bar menu control was removed. A real sidebar edge toggle now supports a compact icon-only desktop rail and a full sidebar. The preference is persisted in local storage.
+- On mobile/tablet the same edge control opens the complete sidebar rather than forcing the desktop icon-only rail.
+- Existing R2 uploads, filename-only download links, global search, folder rename/delete, custom icons, and right-click actions remain intact.
 
 ## Deployment
 
-Use Node 20–24 with the included lockfile and the normal Hostinger Next.js build. Database schema remains 133; V2.23 does not require a new table migration.
+Use Node 20–24 with the included lockfile and the normal Hostinger Next.js build. Database schema remains 133; V2.24 does not require a new database migration.
