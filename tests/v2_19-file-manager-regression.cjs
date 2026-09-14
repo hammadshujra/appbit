@@ -46,7 +46,8 @@ test('V2.19 upload progress remains inside opened folders and root upload is blo
 test('V2.19 public links ignore internal folder paths and resolve by filename',()=>{
   const service=read('src/services/r2.js');
   assert.match(service,/function publicFilename/);
-  assert.match(service,/const filename=encodeURIComponent\(publicFilename\(key\)\)/);
+  assert.match(service,/function publicUrlForFilename/);
+  assert.match(service,/publicUrl:publicUrlForFilename\(row\.filename,downloadHost\)/);
   assert.match(service,/WHERE o\.filename=\?/);
   assert.match(service,/V2\.18 compatibility/);
   assert.match(service,/requested\.includes\('\/'\)/);

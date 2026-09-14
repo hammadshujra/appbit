@@ -1,3 +1,12 @@
+# Appbit V2.20
+
+- Fixed Copy link so it is generated from the real uploaded filename, never from the internal R2 object key or old random object leaf.
+- A file stored internally under any folder/random legacy key now copies as `https://domain/ActualFileName.apk`.
+- Direct `.apk`/file-like requests can no longer fall through to the Appbit application page. Missing download filenames return a plain 404 instead.
+- Custom download hostnames now require both the TXT ownership check and a live HTTPS Appbit gateway check before Appbit marks them active. This prevents broken 525/SSL hostnames from being used in copied links. Schema 132 deactivates older TXT-only active hostnames once so they must pass the new HTTPS check.
+- Download responses continue to force `Content-Disposition: attachment`, including range requests.
+- Legacy `/d/<token>` and old exact object-key paths remain readable for backward compatibility, but Appbit no longer generates them for Copy link.
+
 # Appbit V2.19 — Explorer File Manager & Filename-Only Downloads
 
 ## Release identity

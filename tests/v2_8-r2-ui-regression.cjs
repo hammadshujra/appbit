@@ -7,7 +7,7 @@ const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
 test('V2.8 adds download-domain schema and domain API',()=>{
   const m=read('src/migrations.js'),api=read('src/routes/api.js');
-  assert.match(m,/SCHEMA_VERSION = 131/);
+  assert.match(m,/SCHEMA_VERSION = 132/);
   assert.match(m,/CREATE TABLE IF NOT EXISTS r2_download_domains/);
   for(const route of ["/r2/domains","/r2/domains/:id/verify"])assert.ok(api.includes(route),route);
 });
@@ -51,8 +51,8 @@ test('download domain creates TXT verification and CNAME instructions',()=>{
   assert.match(ui,/TXT name/);
   assert.match(ui,/TXT value/);
   assert.match(ui,/CNAME/);
-  assert.match(ui,/Check DNS again/);
-  assert.match(ui,/Activate download hostname/);
+  assert.match(ui,/Verify DNS \+ HTTPS/);
+  assert.match(ui,/valid HTTPS certificate/);
 });
 
 test('file manager keeps folders, folder-only bulk upload, resume, and delete without a search bar',()=>{

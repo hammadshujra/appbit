@@ -1,4 +1,4 @@
-# Appbit V2.19 — Hostinger App Hosting
+# Appbit V2.20 — Hostinger App Hosting
 
 Push the repository contents to the `main` branch selected by Hostinger and use the settings below.
 
@@ -44,8 +44,8 @@ Keep `SESSION_SECRET` and `R2_CREDENTIALS_KEY` long and stable. Never place thei
 The build should contain:
 
 ```text
-[Appbit] Hostinger prebuild V2.19: API route verified — pages/api/[[...path]].js (Next.js module syntax).
-[Appbit] Hostinger output finalized for V2.19.
+[Appbit] Hostinger prebuild V2.20: API route verified — pages/api/[[...path]].js (Next.js module syntax).
+[Appbit] Hostinger output finalized for V2.20.
 ```
 
 After runtime initialization, the database line should report:
@@ -62,7 +62,7 @@ This path does not reset the database, delete rows, or run the old legacy migrat
 
 ## First deployment checks
 
-1. Push the V2.19 files to the exact `main` branch selected in Hostinger.
+1. Push the V2.20 files to the exact `main` branch selected in Hostinger.
 2. Start a fresh deployment with the settings above.
 3. Open `/health`. Wait until Database and Schema show passing.
 4. Open `/login` and sign in.
@@ -70,20 +70,20 @@ This path does not reset the database, delete rows, or run the old legacy migrat
 
 ## R2 download hostname
 
-A hostname such as `downloads.example.com` is for download links only. It does not need a website, homepage, separate hosting, or an A record for Appbit.
+A hostname such as `downloads.example.com` is for download links only. It does not need a homepage, but it **does** need working HTTPS routing to the Appbit deployment. DNS ownership alone cannot create an SSL certificate or make Hostinger accept an unknown hostname.
 
 In Appbit, open **R2 Account → Accounts**, add the hostname, and copy the exact generated records:
 
 1. Add the TXT name/value to prove ownership.
-2. Add the CNAME from the subdomain to the Appbit Hostinger hostname.
-3. Wait for propagation and click **Check DNS again**.
-4. When active, newly copied links use the real R2 path, for example `https://downloads.example.com/tiktok.apk` or `https://downloads.example.com/TikTok/tiktok.apk`.
+2. Point the hostname to the Appbit gateway and configure the hosting/Cloudflare side so `https://downloads.example.com/api/health/public` reaches this Appbit deployment with a valid TLS certificate.
+3. Wait for propagation and click **Verify DNS + HTTPS**.
+4. Appbit activates the hostname only after both checks pass. Newly copied links then use only the real filename, for example `https://downloads.example.com/tiktok.apk`.
 
-TXT verification and CNAME routing are separate. If a hostname is deleted and later added again, copy the new displayed TXT record before verifying. Removing the hostname never deletes R2 objects, but old links using the removed hostname cannot resolve until that hostname is active again.
+If Cloudflare shows **525 SSL handshake failed**, fix the TLS/hostname routing at the origin first; Appbit will intentionally leave that hostname inactive and fall back to its normal Hostinger domain. Schema 132 also clears old V2.19 TXT-only activations once so a previously broken hostname cannot keep generating bad links. Removing the hostname never deletes R2 objects.
 
 ## Upload and link checks
 
-- File Manager shows each R2 account as a disk, supports Windows-style folders/search, drag-and-drop multi-file queues, and files up to 10 GB per file.
+- File Manager shows each R2 account as a disk, supports Windows-style folders, drag-and-drop multi-file queues inside folders, and files up to 10 GB per file.
 - Uploads are sent as small multipart requests through the Appbit API; a temporary network failure retries the current part.
-- Use **Copy link** to copy the direct `domain/path/filename` URL. Opening that URL streams the R2 object as an attachment download. Use **Delete** to remove a file from R2.
+- Use **Copy link** to copy `domain/filename`. Internal folder names and legacy random object keys are never included in newly copied links. Opening that URL streams the R2 object as an attachment download. Use **Delete** to remove a file from R2.
 - The fallback Appbit-host link remains available before a custom hostname is verified.

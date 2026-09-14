@@ -987,7 +987,7 @@ body.standalone{min-height:100vh;background:radial-gradient(circle at 50% -15%,r
 @media(max-width:900px){.r2-explorer-table{min-width:700px}.r2-queue-row{grid-template-columns:1fr}.r2-queue-row>b{text-align:left}.r2-simple-account-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.r2-disk-grid{grid-template-columns:1fr}.r2-simple-account-form{grid-template-columns:1fr}.r2-dropzone{min-height:112px}.r2-explorer-table{min-width:650px}}
 
-/* Appbit V2.19 — Explorer-style disks/folders and filename-only links */
+/* Appbit V2.20 — Explorer-style disks/folders and filename-only links */
 .r2-disk-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .r2-disk-card{min-height:132px;grid-template-columns:96px minmax(0,1fr);gap:18px;align-items:center;padding:20px 22px;border-radius:16px}
 .r2-disk-icon{display:block;width:92px;height:76px;object-fit:contain;background:none;border-radius:0;padding:0;color:inherit}

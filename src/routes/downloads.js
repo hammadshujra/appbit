@@ -36,7 +36,12 @@ router.use(async(req,res,next)=>{
   if(!dedicated&&!filenameLike)return next();
   const key=decodeURIComponent(req.path.replace(/^\//,''));
   try{return await sendStream(await r2.streamByPath(key,{range:req.get('range')||'',head:req.method==='HEAD'}),res,next,req.method==='HEAD')}
-  catch(e){if(dedicated)return next(e);if(Number(e?.status||0)===404)return next();return next(e)}
+  catch(e){
+    if(dedicated||filenameLike){
+      const status=Number(e?.status||404);res.status(status).setHeader('Content-Type','text/plain; charset=utf-8');res.setHeader('Cache-Control','no-store');return res.end(status===404?'File not found.':'Download failed.');
+    }
+    return next(e)
+  }
 });
 
 module.exports=router;

@@ -60,10 +60,10 @@ test('direct public URL format is exactly domain/filename and folders are virtua
   assert.equal(mod.exports.publicUrlForKey('Tik Tok/tiktok latest.apk','downloads.example.com'),'https://downloads.example.com/tiktok%20latest.apk');
 });
 
-test('V2.19 generates filename-only links and serves them as attachment downloads',()=>{
+test('V2.20 generates filename-only links and serves them as attachment downloads',()=>{
   const service=read('src/services/r2.js'),page=read('pages/[[...path]].jsx'),downloads=read('src/routes/downloads.js');
   assert.match(service,/function publicUrlForKey/);
-  assert.match(service,/publicUrl:publicUrlForKey\(row\.object_key,downloadHost\)/);
+  assert.match(service,/publicUrl:publicUrlForFilename\(row\.filename,downloadHost\)/);
   assert.match(service,/async function streamByPath/);
   assert.match(page,/r2\.streamByPath/);
   assert.match(page,/Content-Disposition/);

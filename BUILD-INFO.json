@@ -1,7 +1,7 @@
 {
-  "version": "2.19",
-  "schemaVersion": 131,
-  "release": "V2.19 explorer folder UI and filename-only public downloads",
-  "buildId": "2.19-explorer-folders-filename-only-links",
+  "version": "2.20",
+  "schemaVersion": 132,
+  "release": "V2.20 filename links and verified download gateway",
+  "buildId": "2.20-filename-links-download-gateway-health",
   "built_at": "2026-09-14"
 }

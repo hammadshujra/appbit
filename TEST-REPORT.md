@@ -1,11 +1,11 @@
-# Appbit V2.19 — Verification Report
+# Appbit V2.20 — Verification Report
 
-- `npm test`: PASS — 103/103 tests.
+- `npm test`: PASS — 109/109 tests.
 - `npm run check`: PASS — JavaScript syntax, local module checks, file checks, and Hostinger prebuild guard.
-- File Manager regression coverage verifies the supplied folder SVG is used for disk/folder icons.
-- Disk root regression verifies folder-only browsing, no search box, no root upload zone, no duplicate root path line, and no persistent Upload Activity panel.
-- Open-folder regression verifies drag/drop multi-file upload, per-file progress rows, and the existing file metadata/action table.
-- Public-link regression verifies internal folder paths are removed from newly copied links: `internal/folder/tiktok.apk` -> `https://domain/tiktok.apk`.
-- Download routing resolves filename-only URLs and keeps V2.18 folder/path URLs plus legacy `/d/<token>` links for backward compatibility.
-- File counters exclude R2 directory-marker objects.
-- A full `next build --webpack` was not run in this workspace because the supplied source ZIP does not contain `node_modules`; Hostinger will install dependencies from `package-lock.json` before building.
+- Copy-link regression verifies the public URL is generated from `r2_objects.filename`, never from the internal R2 object key or old random object leaf.
+- Download routing regression verifies file-like URLs always resolve as downloads or return a plain 404; they never fall through to the Appbit application page.
+- Response regression verifies `Content-Disposition: attachment` remains set for public file responses and range requests.
+- Custom-domain regression verifies TXT ownership plus a live HTTPS `/api/health/public` gateway check are both required before a hostname is activated.
+- Schema 132 deactivates pre-V2.20 TXT-only custom domains once, preventing a previously broken 525/SSL hostname from continuing to be used by Copy link.
+- Explorer folder, drag/drop multi-upload, R2 account, Hostinger Webpack, collation, APK resolver, and existing regression suites all pass.
+- A full `next build --webpack` was not run in this workspace because the supplied source ZIP does not contain `node_modules`; Hostinger installs dependencies from `package-lock.json` before building.

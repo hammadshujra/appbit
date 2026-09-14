@@ -1,5 +1,5 @@
 import Head from 'next/head';
-const APP_VERSION='2.19';
+const APP_VERSION='2.20';
 
 export default function AppbitShell({appVersion}) {
   return (
@@ -74,13 +74,14 @@ export async function getServerSideProps(context){
         return {props:{appVersion:APP_VERSION}};
       }
     }catch(error){
-      if(dedicated){
+      if(dedicated||filenameLike){
         context.res.statusCode=Number(error?.status||404);
         context.res.setHeader('Content-Type','text/plain; charset=utf-8');
-        context.res.end(error?.status===404?'File not found.':'Download failed.');
+        context.res.setHeader('Cache-Control','no-store');
+        context.res.end(Number(error?.status||0)===404?'File not found.':'Download failed.');
         return {props:{appVersion:APP_VERSION}};
       }
-      if(Number(error?.status||0)!==404)console.error('[Appbit] Direct download lookup failed:',error);
+      console.error('[Appbit] Direct download lookup failed:',error);
     }
   }
   return {props:{appVersion:APP_VERSION}};

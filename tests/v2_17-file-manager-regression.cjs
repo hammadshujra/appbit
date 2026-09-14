@@ -5,7 +5,7 @@ const path=require('node:path');
 const root=path.resolve(__dirname,'..');
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
-test('V2.19 exposes a public, secret-free deployment health page',()=>{
+test('V2.20 exposes a public, secret-free deployment health page',()=>{
   assert.ok(fs.existsSync(path.join(root,'pages','health.jsx')));
   const page=read('pages/health.jsx'),backend=read('src/next-api-app.js');
   assert.match(page,/\/api\/health\/public/);
@@ -36,9 +36,9 @@ test('R2 download and folder paths remain routed without credentials',()=>{
   assert.match(cfg,/source:'\/d\/:token'/);
 });
 
-test('release has one consolidated V2.19 version note',()=>{
+test('release has one consolidated V2.20 version note',()=>{
   const notes=read('versionnotes.md'),readme=read('README.md');
-  assert.match(notes,/Appbit V2\.19/);
+  assert.match(notes,/Appbit V2\.20/);
   assert.match(notes,/10 GB/);
   assert.match(notes,/Download-only hostname/);
   assert.match(readme,/versionnotes\.md/);

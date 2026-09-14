@@ -8,7 +8,7 @@ const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
 test('R2 schema keeps V2.7 tables in current schema',()=>{
   const m=read('src/migrations.js');
-  assert.match(m,/SCHEMA_VERSION = 131/);
+  assert.match(m,/SCHEMA_VERSION = 132/);
   for(const table of ['r2_accounts','r2_objects','r2_uploads'])assert.match(m,new RegExp(`CREATE TABLE IF NOT EXISTS ${table}`));
 });
 

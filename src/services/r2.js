@@ -54,10 +54,19 @@ function routingHost(value){try{const raw=String(value||'').trim();const u=new U
 function domainJson(row,appHost=''){const host=row.hostname;const target=routingHost(appHost);return{id:Number(row.id),hostname:host,verified:Boolean(row.verified_at),verifiedAt:row.verified_at||null,active:Boolean(row.active),txtName:`_appbit-verification.${host}`,txtValue:`appbit-verification=${row.verification_token}`,cnameName:host,cnameTarget:target,publicBase:`https://${host}`,createdAt:row.created_at,updatedAt:row.updated_at}}
 async function domains(appHost=''){const[rows]=await getPool().query('SELECT * FROM r2_download_domains ORDER BY active DESC,verified_at DESC,id DESC');return rows.map(r=>domainJson(r,appHost))}
 async function addDomain(value,appHost=''){const db=getPool(),hostname=normalizeDomainHost(value),token=opaqueToken(24);await db.query(`INSERT INTO r2_download_domains(hostname,verification_token,active) VALUES (?,?,0) ON DUPLICATE KEY UPDATE verified_at=NULL,active=0`,[hostname,token]);const[[row]]=await db.query('SELECT * FROM r2_download_domains WHERE hostname=? LIMIT 1',[hostname]);return domainJson(row,appHost)}
+async function verifyDownloadGateway(hostname,appHost=''){
+  const expectedHost=routingHost(appHost);if(!expectedHost)throw httpError('Open Appbit through its public Hostinger hostname before verifying a download domain.',409);
+  let response;try{response=await fetch(`https://${hostname}/api/health/public`,{method:'GET',redirect:'manual',signal:AbortSignal.timeout(12000),headers:{'Accept':'application/json','User-Agent':'Appbit-Domain-Verify/2.20'}})}catch(e){throw httpError(`DNS TXT is correct, but HTTPS for ${hostname} is not reaching Appbit. A CNAME alone is not enough: the hostname must have a valid SSL certificate and route to the Appbit Hostinger app. Gateway check failed: ${e.message}`,409)}
+  if(!response.ok)throw httpError(`DNS TXT is correct, but HTTPS gateway check returned HTTP ${response.status}. Configure ${hostname} so https://${hostname}/api/health/public reaches this Appbit deployment, then verify again.`,409);
+  let body=null;try{body=await response.json()}catch{}
+  if(!body||typeof body!=='object'||!body.version)throw httpError(`DNS TXT is correct, but ${hostname} is not serving the Appbit gateway. Configure the hostname/SSL first, then verify again.`,409);
+  return true;
+}
 async function verifyDomain(id,appHost=''){
   const db=getPool();const[[row]]=await db.query('SELECT * FROM r2_download_domains WHERE id=? LIMIT 1',[Number(id)]);if(!row)throw httpError('Download domain not found.',404);
   const name=`_appbit-verification.${row.hostname}`,expected=`appbit-verification=${row.verification_token}`;let values=[];try{const records=await dns.resolveTxt(name);values=records.map(parts=>parts.join('').replace(/[\s\u200b]+/g,''))}catch(e){if(!['EAI_AGAIN','ECONNREFUSED','ECONNRESET','ENODATA','ENETUNREACH','ENOTFOUND','ESERVFAIL','ETIMEOUT'].includes(String(e.code||'')))throw e}
   if(!values.some(value=>value===expected))throw httpError(`TXT record not found yet. Add ${name} with value ${expected}, wait for DNS propagation, then verify again.`,409);
+  await verifyDownloadGateway(row.hostname,appHost);
   const conn=await db.getConnection();try{await conn.beginTransaction();await conn.query('UPDATE r2_download_domains SET active=0');await conn.query('UPDATE r2_download_domains SET verified_at=NOW(),active=1 WHERE id=?',[row.id]);await conn.commit()}catch(e){await conn.rollback();throw e}finally{conn.release()}
   const[[fresh]]=await db.query('SELECT * FROM r2_download_domains WHERE id=? LIMIT 1',[row.id]);return domainJson(fresh,appHost);
 }
@@ -65,7 +74,8 @@ async function removeDomain(id){const[r]=await getPool().query('DELETE FROM r2_d
 async function activeDownloadHost(){const[[row]]=await getPool().query('SELECT hostname FROM r2_download_domains WHERE active=1 AND verified_at IS NOT NULL ORDER BY id DESC LIMIT 1');return row?.hostname||''}
 function publicUrlForToken(token,host=''){return host?`https://${host}/d/${encodeURIComponent(token)}`:`/d/${encodeURIComponent(token)}`}
 function publicFilename(value){const parts=String(value||'').replace(/\\/g,'/').split('/').filter(Boolean);return sanitizeFilename(parts.pop()||'download')}
-function publicUrlForKey(key,host=''){const filename=encodeURIComponent(publicFilename(key));return host?`https://${host}/${filename}`:`/${filename}`}
+function publicUrlForFilename(filename,host=''){const leaf=encodeURIComponent(sanitizeFilename(filename));return host?`https://${host}/${leaf}`:`/${leaf}`}
+function publicUrlForKey(key,host=''){return publicUrlForFilename(publicFilename(key),host)}
 function incomingHost(value){return String(value||'').trim().toLowerCase().replace(/:\d+$/,'').replace(/^\.+|\.+$/g,'')}
 
 function xmlDecode(v){return String(v||'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&amp;/g,'&')}
@@ -101,7 +111,7 @@ async function completeUpload(token){const db=getPool(),row=await uploadByToken(
 async function abortUpload(token){const db=getPool(),row=await uploadByToken(token);if(!row)throw httpError('Upload session not found.',404);if(['completed','aborted'].includes(row.status))return uploadJson(row);const account=await accountRow(row.account_id,{secret:true});try{await request(account,{method:'DELETE',key:row.object_key,query:{uploadId:row.r2_upload_id}})}catch(e){if(e.status!==404)throw e}await db.query(`UPDATE r2_uploads SET status='aborted',error_message=NULL WHERE id=?`,[row.id]);return uploadJson(await uploadById(row.id))}
 async function getUpload(token){const row=await uploadByToken(token);return row?uploadJson(row):null}
 async function listUploads(limit=25){const[rows]=await getPool().query(`SELECT * FROM r2_uploads ORDER BY id DESC LIMIT ?`,[Math.max(1,Math.min(100,Number(limit)||25))]);return rows.map(uploadJson)}
-function objectJson(row,downloadHost=''){return{id:Number(row.id),accountId:Number(row.account_id),accountLabel:row.account_label,key:row.object_key,filename:row.filename,size:Number(row.size_bytes||0),contentType:row.content_type||'',etag:row.etag||'',lastModified:row.last_modified||null,uploadedAt:row.created_at||null,publicToken:row.public_token,publicUrl:publicUrlForKey(row.object_key,downloadHost),source:row.source||'sync'}}
+function objectJson(row,downloadHost=''){return{id:Number(row.id),accountId:Number(row.account_id),accountLabel:row.account_label,key:row.object_key,filename:row.filename,size:Number(row.size_bytes||0),contentType:row.content_type||'',etag:row.etag||'',lastModified:row.last_modified||null,uploadedAt:row.created_at||null,publicToken:row.public_token,publicUrl:publicUrlForFilename(row.filename,downloadHost),source:row.source||'sync'}}
 function folderEntries(rows,prefix=''){const base=cleanPrefix(prefix),start=base?`${base}/`:'';const found=new Map();for(const row of rows){const key=String(row.object_key||'');if(!key.startsWith(start))continue;const relative=key.slice(start.length);if(!relative)continue;const segment=relative.split('/')[0];if(!segment||!relative.includes('/'))continue;const folderKey=`${start}${segment}/`,mapKey=`${Number(row.account_id)}:${folderKey}`;if(!found.has(mapKey))found.set(mapKey,{name:segment,key:folderKey,accountId:Number(row.account_id),accountLabel:row.account_label})}return[...found.values()].sort((a,b)=>a.name.localeCompare(b.name)||a.accountId-b.accountId)}
 async function listObjects({accountId=0,q='',prefix='',limit=100,offset=0}={}){
   const db=getPool(),where=[],params=[],cleanedPrefix=cleanPrefix(prefix),search=String(q||'').trim().slice(0,180),accountNumber=Number(accountId)||0;
@@ -132,5 +142,5 @@ async function streamByPath(pathValue,{range='',head=false}={}){
   if(!obj){const[[current]]=await db.query(`SELECT o.*,a.* FROM r2_objects o JOIN r2_accounts a ON a.id=o.account_id WHERE o.filename=? AND o.object_key NOT LIKE '%/' ORDER BY o.last_modified DESC,o.id DESC LIMIT 1`,[filename]);obj=current||null}
   if(!obj)throw httpError('Download file not found.',404);return streamObject(obj,{range,head})
 }
-function objectPublicUrl(account,obj,downloadHost=''){return publicUrlForKey(obj.object_key,downloadHost)}
-module.exports={accounts,saveAccount,removeAccount,testAccount,syncAccount,state,listObjects,createFolder,deleteObject,startUpload,uploadPart,completeUpload,abortUpload,getUpload,listUploads,streamByToken,streamByPath,isActiveDownloadHost,partSizeForFile,makeObjectKey,encryptSecret,decryptSecret,endpointFor,objectPublicUrl,DEFAULT_TARGET,MAX_FILE_SIZE,MAX_PART_BUFFER,domains,addDomain,verifyDomain,removeDomain,normalizeDomainHost,publicUrlForToken,publicUrlForKey};
+function objectPublicUrl(account,obj,downloadHost=''){return publicUrlForFilename(obj.filename||publicFilename(obj.object_key),downloadHost)}
+module.exports={accounts,saveAccount,removeAccount,testAccount,syncAccount,state,listObjects,createFolder,deleteObject,startUpload,uploadPart,completeUpload,abortUpload,getUpload,listUploads,streamByToken,streamByPath,isActiveDownloadHost,partSizeForFile,makeObjectKey,encryptSecret,decryptSecret,endpointFor,objectPublicUrl,DEFAULT_TARGET,MAX_FILE_SIZE,MAX_PART_BUFFER,domains,addDomain,verifyDomain,removeDomain,normalizeDomainHost,publicUrlForToken,publicUrlForFilename,publicUrlForKey,verifyDownloadGateway};

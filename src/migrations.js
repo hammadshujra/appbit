@@ -2,7 +2,7 @@ const { getPool } = require('./db');
 const { normalizeAppbitCollations } = require('./schema-collations');
 const apkFields = require('./services/apk-fields');
 
-const SCHEMA_VERSION = 131;
+const SCHEMA_VERSION = 132;
 const RECOGNIZED_APPS_COLUMNS = Object.freeze(['id','package_id','name','source_page_url']);
 const EXISTING_APPS_MIGRATION = 'appbit_v2_15_safe_existing_apps_reconciliation';
 
@@ -602,6 +602,7 @@ async function migrate() {
       await normalizeAppbitCollations(db);
       if(currentVersion<128)await recoverFileSizesFromMetadata(db);
       if(currentVersion<131&&await tableExists(db,'r2_accounts'))await db.query('UPDATE r2_accounts SET folder_prefix=NULL WHERE folder_prefix IS NOT NULL');
+      if(currentVersion<132&&await tableExists(db,'r2_download_domains'))await db.query('UPDATE r2_download_domains SET active=0,verified_at=NULL');
       await db.query('INSERT IGNORE INTO schema_migrations (version,name) VALUES (?,?)',[SCHEMA_VERSION,EXISTING_APPS_MIGRATION]);
       return SCHEMA_VERSION;
     }
@@ -613,6 +614,7 @@ async function migrate() {
     await normalizeAppbitCollations(db);
     await recoverFileSizesFromMetadata(db);
     if(await tableExists(db,'r2_accounts'))await db.query('UPDATE r2_accounts SET folder_prefix=NULL WHERE folder_prefix IS NOT NULL');
+    if(await tableExists(db,'r2_download_domains'))await db.query('UPDATE r2_download_domains SET active=0,verified_at=NULL');
     await dropLegacyTables(db);
     await db.query('DELETE FROM schema_migrations');
     await db.query('INSERT INTO schema_migrations (version,name) VALUES (?,?)', [SCHEMA_VERSION, 'appbit_v2_8_r2_accounts_files']);
