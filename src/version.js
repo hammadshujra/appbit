@@ -4,6 +4,6 @@
 // Keep release identity inside the module so SSR/API bundles never depend on
 // runtime filesystem reads of loose release metadata.
 module.exports=Object.freeze({
-  version:'2.20',
-  buildId:'2.20-filename-links-download-gateway-health'
+  version:'2.21',
+  buildId:'2.21-sidebar-folder-icons-one-record-domain'
 });

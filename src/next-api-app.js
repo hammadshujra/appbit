@@ -31,7 +31,7 @@ app.use(helmet({
 app.use(compression());
 app.use(morgan(config.nodeEnv==='production'?'combined':'dev'));
 app.use(express.urlencoded({extended:false,limit:'256kb'}));
-app.use(express.json({limit:'512kb'}));
+app.use(express.json({limit:'2mb'}));
 app.use(cookieSession({
   name:'appbit_session',
   keys:[config.sessionSecret||'development-only-change-me'],

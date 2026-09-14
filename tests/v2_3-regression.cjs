@@ -45,7 +45,7 @@ test('header probing never treats a one-byte range body as the package size',()=
 });
 
 test('schema 128 recovery remains available in the current schema',()=>{
-  assert.match(migrations,/const SCHEMA_VERSION = 132/);
+  assert.match(migrations,/const SCHEMA_VERSION = 133/);
   assert.match(migrations,/currentVersion<128/);
   assert.match(migrations,/recoverFileSizesFromMetadata/);
   assert.match(api,/(?:apkFields\.parseBytes|firstParsedBytes)/);

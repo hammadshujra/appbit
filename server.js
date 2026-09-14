@@ -36,7 +36,7 @@ async function main(){
   app.use(compression());
   app.use(morgan(config.nodeEnv==='production'?'combined':'dev'));
   app.use(express.urlencoded({extended:false,limit:'256kb'}));
-  app.use(express.json({limit:'512kb'}));
+  app.use(express.json({limit:'2mb'}));
   app.use(cookieSession({name:'appbit_session',keys:[config.sessionSecret||'development-only-change-me'],maxAge:7*24*60*60*1000,httpOnly:true,sameSite:'lax',secure:config.nodeEnv==='production'}));
   app.use(ensureToken);
   app.use(express.static(path.join(__dirname,'public'),{maxAge:0,etag:true}));

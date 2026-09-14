@@ -1,4 +1,4 @@
-# Appbit V2.20 — Hostinger App Hosting
+# Appbit V2.21 — Hostinger App Hosting
 
 Push the repository contents to the `main` branch selected by Hostinger and use the settings below.
 
@@ -44,25 +44,25 @@ Keep `SESSION_SECRET` and `R2_CREDENTIALS_KEY` long and stable. Never place thei
 The build should contain:
 
 ```text
-[Appbit] Hostinger prebuild V2.20: API route verified — pages/api/[[...path]].js (Next.js module syntax).
-[Appbit] Hostinger output finalized for V2.20.
+[Appbit] Hostinger prebuild V2.21: API route verified — pages/api/[[...path]].js (Next.js module syntax).
+[Appbit] Hostinger output finalized for V2.21.
 ```
 
 After runtime initialization, the database line should report:
 
 ```text
-[Appbit] Database ready. Schema v131.
+[Appbit] Database ready. Schema v133.
 ```
 
 ## Existing database safety
 
-The release continues the reviewed handling for an existing Appbit database where `apps` already contains Appbit records but `schema_migrations` is empty or older. It verifies the recognized Appbit table signature, performs idempotent reconciliation, and records schema `131`.
+The release continues the reviewed handling for an existing Appbit database where `apps` already contains Appbit records but `schema_migrations` is empty or older. It verifies the recognized Appbit table signature, performs idempotent reconciliation, and records schema `133`.
 
-This path does not reset the database, delete rows, or run the old legacy migration. Do not remove the existing database variables. A partial/unrelated `apps` table or a marker newer than `131` still stops for manual review.
+This path does not reset the database, delete rows, or run the old legacy migration. Do not remove the existing database variables. A partial/unrelated `apps` table or a marker newer than `133` still stops for manual review.
 
 ## First deployment checks
 
-1. Push the V2.20 files to the exact `main` branch selected in Hostinger.
+1. Push the V2.21 files to the exact `main` branch selected in Hostinger.
 2. Start a fresh deployment with the settings above.
 3. Open `/health`. Wait until Database and Schema show passing.
 4. Open `/login` and sign in.
@@ -72,14 +72,14 @@ This path does not reset the database, delete rows, or run the old legacy migrat
 
 A hostname such as `downloads.example.com` is for download links only. It does not need a homepage, but it **does** need working HTTPS routing to the Appbit deployment. DNS ownership alone cannot create an SSL certificate or make Hostinger accept an unknown hostname.
 
-In Appbit, open **R2 Account → Accounts**, add the hostname, and copy the exact generated records:
+In Appbit, open **R2 Account → Accounts**, enter the hostname, and use the single DNS record Appbit shows:
 
-1. Add the TXT name/value to prove ownership.
-2. Point the hostname to the Appbit gateway and configure the hosting/Cloudflare side so `https://downloads.example.com/api/health/public` reaches this Appbit deployment with a valid TLS certificate.
-3. Wait for propagation and click **Verify DNS + HTTPS**.
-4. Appbit activates the hostname only after both checks pass. Newly copied links then use only the real filename, for example `https://downloads.example.com/tiktok.apk`.
+1. Create **one CNAME** record: the custom hostname as the Name and the Appbit gateway hostname as the Target. There is **no TXT record** in V2.21.
+2. If the DNS zone is on Cloudflare, keep the record **DNS only** while verifying. Cloudflare CNAME flattening is supported by the verifier.
+3. Wait for DNS propagation and click **I added the CNAME — Verify**. Appbit accepts the hostname when the CNAME/address routing resolves to the gateway or the live HTTPS gateway check succeeds.
+4. Newly copied links then use only the real filename, for example `https://downloads.example.com/tiktok.apk`.
 
-If Cloudflare shows **525 SSL handshake failed**, fix the TLS/hostname routing at the origin first; Appbit will intentionally leave that hostname inactive and fall back to its normal Hostinger domain. Schema 132 also clears old V2.19 TXT-only activations once so a previously broken hostname cannot keep generating bad links. Removing the hostname never deletes R2 objects.
+The DNS record is intentionally simple, but HTTPS still has to be valid for the custom hostname. If Cloudflare shows **525 SSL handshake failed**, the request is failing before it reaches Appbit; fix the TLS/hostname routing at the origin and verify again. Removing or deactivating the hostname never deletes R2 objects.
 
 ## Upload and link checks
 

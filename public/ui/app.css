@@ -1001,3 +1001,52 @@ body.standalone{min-height:100vh;background:radial-gradient(circle at 50% -15%,r
 .r2-explorer-table{margin-top:2px}.r2-folder-empty{margin-top:4px}
 @media(max-width:980px){.r2-disk-grid{grid-template-columns:1fr}.r2-disk-card{min-height:118px}.r2-folder-grid{grid-template-columns:repeat(auto-fill,minmax(118px,140px))}}
 @media(max-width:620px){.r2-disk-grid{grid-template-columns:1fr}.r2-disk-card{grid-template-columns:72px minmax(0,1fr);padding:16px}.r2-disk-icon{width:70px;height:58px}.r2-folder-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.r2-folder-art{width:76px;height:62px}}
+
+/* Appbit V2.21 — collapsible storage tree, app-icon folders, one-record domains */
+.r2-side-tree{margin:2px 0 10px 24px;display:grid;gap:1px}
+.r2-side-disk,.r2-side-branch{display:grid;min-width:0}
+.r2-side-row{display:grid;grid-template-columns:18px minmax(0,1fr);align-items:center;min-height:30px;min-width:0}
+.r2-side-toggle,.r2-side-toggle-spacer{width:18px;height:26px;display:grid;place-items:center}
+.r2-side-toggle{border:0;background:transparent;color:#8e8e93;padding:0;cursor:pointer;font-size:17px;line-height:1;transition:transform .15s ease,color .15s ease}
+.r2-side-toggle.open{transform:rotate(90deg);color:#d1d1d6}
+.r2-side-link{appearance:none;border:0;background:transparent;color:#b7b7bb;min-width:0;height:30px;padding:0 6px;display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:6px;border-radius:7px;text-align:left;cursor:pointer;font-size:11px}
+.r2-side-link:hover{background:#1d1d1f;color:#fff}
+.r2-side-link img{width:17px;height:15px;object-fit:contain}
+.r2-side-link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r2-side-link small{font-size:9px;color:#6e6e73;padding-left:4px}
+.r2-side-link.disk{font-weight:650;color:#d1d1d6}
+.r2-side-children{display:none;margin-left:12px;border-left:1px solid #242426;padding-left:2px}
+.r2-side-children.open{display:grid}
+
+.r2-folder-visual{position:relative;display:block;width:100px;height:84px;flex:0 0 auto}
+.r2-folder-art{position:absolute;z-index:2;left:5px;bottom:0;width:90px;height:74px;object-fit:contain;pointer-events:none;user-select:none}
+.r2-folder-app-icon{position:absolute;z-index:1;left:50%;top:3px;width:54px;height:54px;transform:translateX(-50%);border-radius:13px;object-fit:cover;background:#151517;border:1px solid rgba(255,255,255,.14);box-shadow:0 5px 14px rgba(0,0,0,.35);transition:transform .18s ease,top .18s ease}
+.r2-folder-tile:hover .r2-folder-app-icon,.r2-folder-tile:focus-visible .r2-folder-app-icon{top:-4px;transform:translateX(-50%) translateY(-2px)}
+.r2-folder-tile .r2-folder-name{display:block;max-width:100%;font-size:11px;font-weight:650;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r2-folder-tile>small{font-size:9px;color:var(--muted);margin-top:-6px}
+.r2-folder-tile{min-height:154px;gap:9px}
+.r2-folder-tile .r2-folder-art{width:90px;height:74px}
+
+.r2-icon-picker{display:grid;grid-template-columns:112px minmax(0,1fr);gap:16px;align-items:center;margin-top:7px;padding:12px;border:1px solid var(--hairline-soft);border-radius:12px;background:var(--surface-soft)}
+.r2-icon-picker>div:last-child{display:grid;gap:7px;min-width:0}.r2-icon-picker small{color:var(--muted);font-size:10px;line-height:1.45}
+.r2-icon-folder-preview{position:relative;width:104px;height:88px}
+.r2-icon-preview-folder{position:absolute;z-index:2;left:5px;bottom:0;width:94px;height:77px;object-fit:contain}
+.r2-icon-preview-app{display:none;position:absolute;z-index:1;left:50%;top:2px;width:56px;height:56px;transform:translateX(-50%);border-radius:14px;object-fit:cover;background:#161618;border:1px solid rgba(255,255,255,.14)}
+.r2-icon-preview-app.show{display:block}
+
+.r2-domain-connect .panel-body{display:grid;gap:12px}
+.r2-domain-step{display:flex;align-items:flex-start;gap:10px}
+.r2-domain-step>span{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:var(--primary);color:var(--on-primary);font-size:11px;font-weight:800;flex:0 0 auto}
+.r2-domain-step>div{display:grid;gap:2px}.r2-domain-step b{font-size:12px}.r2-domain-step small{font-size:10px;color:var(--muted);line-height:1.45}
+.r2-domain-form-clean{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;max-width:760px}
+.r2-domain-help{font-size:10px;color:var(--muted)}
+.r2-domain-simple{padding:16px}
+.r2-one-record{margin-top:12px;border:1px solid var(--hairline-soft);border-radius:12px;overflow:hidden;background:var(--surface-soft)}
+.r2-record-title{padding:11px 12px;border-bottom:1px solid var(--hairline-soft);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.r2-record-title b{font-size:11px}.r2-record-title span{font-size:9px;color:var(--muted)}
+.r2-record-grid{display:grid;grid-template-columns:90px minmax(180px,1fr) minmax(220px,1.2fr) 90px}
+.r2-record-grid>div{min-width:0;padding:11px 12px;border-right:1px solid var(--hairline-soft);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px;align-items:center}.r2-record-grid>div:last-child{border-right:0}.r2-record-grid span{grid-column:1/-1;font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.r2-record-grid strong{font-size:10px}.r2-record-grid code{font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.r2-copy-mini{appearance:none;border:0;background:transparent;color:var(--primary);font-size:9px;font-weight:700;padding:2px 0;cursor:pointer}.r2-copy-mini:hover{text-decoration:underline}
+.r2-domain-actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+
+@media(max-width:900px){.r2-record-grid{grid-template-columns:1fr 1fr}.r2-record-grid>div:nth-child(2){border-right:0}.r2-record-grid>div:nth-child(-n+2){border-bottom:1px solid var(--hairline-soft)}}
+@media(max-width:620px){.r2-side-tree{margin-left:14px}.r2-domain-form-clean{grid-template-columns:1fr}.r2-record-grid{grid-template-columns:1fr}.r2-record-grid>div{border-right:0;border-bottom:1px solid var(--hairline-soft)}.r2-record-grid>div:last-child{border-bottom:0}.r2-icon-picker{grid-template-columns:1fr}.r2-icon-folder-preview{margin:auto}}

@@ -1,11 +1,14 @@
-# Appbit V2.20 — Verification Report
+# Appbit V2.21 — Verification Report
 
-- `npm test`: PASS — 109/109 tests.
-- `npm run check`: PASS — JavaScript syntax, local module checks, file checks, and Hostinger prebuild guard.
-- Copy-link regression verifies the public URL is generated from `r2_objects.filename`, never from the internal R2 object key or old random object leaf.
-- Download routing regression verifies file-like URLs always resolve as downloads or return a plain 404; they never fall through to the Appbit application page.
-- Response regression verifies `Content-Disposition: attachment` remains set for public file responses and range requests.
-- Custom-domain regression verifies TXT ownership plus a live HTTPS `/api/health/public` gateway check are both required before a hostname is activated.
-- Schema 132 deactivates pre-V2.20 TXT-only custom domains once, preventing a previously broken 525/SSL hostname from continuing to be used by Copy link.
-- Explorer folder, drag/drop multi-upload, R2 account, Hostinger Webpack, collation, APK resolver, and existing regression suites all pass.
-- A full `next build --webpack` was not run in this workspace because the supplied source ZIP does not contain `node_modules`; Hostinger installs dependencies from `package-lock.json` before building.
+Release checks cover the Hostinger/Next.js runtime, filename-only download gateway, R2 folder-only upload model, new sidebar storage tree, custom folder icons, and the one-record custom-domain flow.
+
+Key V2.21 regressions covered:
+
+- File Manager main navigation resets to the disk list.
+- R2 accounts/folders render in a collapsible sidebar tree with file counts.
+- Optional folder app icons are stored in `r2_folder_meta` and served only to authenticated admins.
+- New custom-domain UI requires one CNAME record and no TXT record.
+- Filename-only public URLs and forced attachment downloads remain intact.
+- Existing V2.20 schema-132 safety migration remains preserved; V2.21 advances schema to 133.
+
+Validation result: **114/114 automated tests pass**, and `npm run check` passes the JavaScript/module and Hostinger prebuild guards.

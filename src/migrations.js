@@ -2,7 +2,7 @@ const { getPool } = require('./db');
 const { normalizeAppbitCollations } = require('./schema-collations');
 const apkFields = require('./services/apk-fields');
 
-const SCHEMA_VERSION = 132;
+const SCHEMA_VERSION = 133;
 const RECOGNIZED_APPS_COLUMNS = Object.freeze(['id','package_id','name','source_page_url']);
 const EXISTING_APPS_MIGRATION = 'appbit_v2_15_safe_existing_apps_reconciliation';
 
@@ -370,6 +370,20 @@ async function createCoreTables(db) {
     CONSTRAINT fk_r2_objects_account FOREIGN KEY (account_id) REFERENCES r2_accounts(id) ON DELETE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`);
 
+  await db.query(`CREATE TABLE IF NOT EXISTS r2_folder_meta (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    account_id BIGINT UNSIGNED NOT NULL,
+    folder_key_hash BINARY(32) NOT NULL,
+    folder_key TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    icon_mime VARCHAR(64) CHARACTER SET ascii COLLATE ascii_general_ci NULL,
+    icon_blob MEDIUMBLOB NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_r2_folder_meta_key (account_id,folder_key_hash),
+    INDEX idx_r2_folder_meta_account (account_id,id),
+    CONSTRAINT fk_r2_folder_meta_account FOREIGN KEY (account_id) REFERENCES r2_accounts(id) ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`);
+
   await db.query(`CREATE TABLE IF NOT EXISTS r2_uploads (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     upload_token CHAR(48) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
@@ -401,6 +415,7 @@ async function createCoreTables(db) {
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     hostname VARCHAR(253) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     verification_token CHAR(48) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    gateway_target VARCHAR(253) CHARACTER SET ascii COLLATE ascii_general_ci NULL,
     verified_at DATETIME NULL,
     active TINYINT(1) NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -603,6 +618,7 @@ async function migrate() {
       if(currentVersion<128)await recoverFileSizesFromMetadata(db);
       if(currentVersion<131&&await tableExists(db,'r2_accounts'))await db.query('UPDATE r2_accounts SET folder_prefix=NULL WHERE folder_prefix IS NOT NULL');
       if(currentVersion<132&&await tableExists(db,'r2_download_domains'))await db.query('UPDATE r2_download_domains SET active=0,verified_at=NULL');
+      if(currentVersion<133&&await tableExists(db,'r2_download_domains')&&!(await columnExists(db,'r2_download_domains','gateway_target')))await db.query("ALTER TABLE r2_download_domains ADD COLUMN gateway_target VARCHAR(253) CHARACTER SET ascii COLLATE ascii_general_ci NULL AFTER verification_token");
       await db.query('INSERT IGNORE INTO schema_migrations (version,name) VALUES (?,?)',[SCHEMA_VERSION,EXISTING_APPS_MIGRATION]);
       return SCHEMA_VERSION;
     }
@@ -615,6 +631,7 @@ async function migrate() {
     await recoverFileSizesFromMetadata(db);
     if(await tableExists(db,'r2_accounts'))await db.query('UPDATE r2_accounts SET folder_prefix=NULL WHERE folder_prefix IS NOT NULL');
     if(await tableExists(db,'r2_download_domains'))await db.query('UPDATE r2_download_domains SET active=0,verified_at=NULL');
+    if(await tableExists(db,'r2_download_domains')&&!(await columnExists(db,'r2_download_domains','gateway_target')))await db.query("ALTER TABLE r2_download_domains ADD COLUMN gateway_target VARCHAR(253) CHARACTER SET ascii COLLATE ascii_general_ci NULL AFTER verification_token");
     await dropLegacyTables(db);
     await db.query('DELETE FROM schema_migrations');
     await db.query('INSERT INTO schema_migrations (version,name) VALUES (?,?)', [SCHEMA_VERSION, 'appbit_v2_8_r2_accounts_files']);

@@ -32,15 +32,14 @@ test('V2.20 file-like URLs never fall through to the Appbit page',()=>{
   assert.match(nextPage,/Cache-Control','no-store/);
 });
 
-test('V2.20 custom domains require a live HTTPS Appbit gateway before activation',()=>{
+test('V2.21 keeps an HTTPS gateway probe as a fallback while one-record CNAME verification is primary',()=>{
   const service=read('src/services/r2.js');
   const ui=read('public/ui/app.js');
   assert.match(service,/async function verifyDownloadGateway/);
   assert.match(service,/https:\/\/\$\{hostname\}\/api\/health\/public/);
-  assert.match(service,/await verifyDownloadGateway\(row\.hostname,appHost\)/);
-  assert.match(service,/valid SSL certificate/);
-  assert.match(ui,/Verify DNS \+ HTTPS/);
-  assert.match(ui,/valid HTTPS certificate/);
+  assert.match(service,/resolveCnameTargets/);
+  assert.match(ui,/ONE DNS record/);
+  assert.doesNotMatch(ui,/Verify DNS \+ HTTPS/);
 });
 
 test('V2.20 keeps legacy token/path readers only for old links',()=>{
@@ -53,7 +52,7 @@ test('V2.20 keeps legacy token/path readers only for old links',()=>{
 
 test('V2.20 deactivates pre-V2.20 custom domains so broken TXT-only hostnames are not reused',()=>{
   const migrations=read('src/migrations.js');
-  assert.match(migrations,/SCHEMA_VERSION = 132/);
+  assert.match(migrations,/SCHEMA_VERSION = 133/);
   assert.match(migrations,/currentVersion<132/);
   assert.match(migrations,/UPDATE r2_download_domains SET active=0,verified_at=NULL/);
 });
