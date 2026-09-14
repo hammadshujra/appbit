@@ -19,7 +19,7 @@ test('V2.19 file manager opens disks and uses current-folder explorer semantics'
   const service=read('src/services/r2.js'),ui=read('public/ui/app.js');
   assert.match(ui,/Open Disk/);
   assert.match(ui,/r2-disk-grid/);
-  assert.match(ui,/New folder/);
+  assert.match(ui,/New Folder/i);
   assert.match(ui,/r2BreadcrumbHtml/);
   assert.match(service,/const parent=cleanPrefix\(prefix\)/);
   assert.match(service,/!key\.slice\(base\.length\)\.includes\('\/'\)/);

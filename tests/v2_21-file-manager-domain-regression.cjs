@@ -35,7 +35,7 @@ test('V2.21 custom download domain uses one CNAME record and no TXT setup UI',()
   const ui=read('public/ui/app.js'),service=read('src/services/r2.js');
   assert.match(ui,/ONE DNS record/);
   assert.match(ui,/CNAME/);
-  assert.match(ui,/No TXT verification record is required in V2\.21/);
+  assert.match(ui,/No TXT verification record is required/);
   assert.doesNotMatch(ui,/TXT name|TXT value|Verify DNS \+ HTTPS/);
   assert.match(service,/resolveCnameTargets/);
   assert.match(service,/Create ONE CNAME record/);
@@ -45,7 +45,7 @@ test('V2.21 custom download domain uses one CNAME record and no TXT setup UI',()
 test('V2.21 schema and release metadata are current',()=>{
   const pkg=JSON.parse(read('package.json'));
   const migration=read('src/migrations.js');
-  assert.equal(pkg.version,'2.21.0');
-  assert.equal(read('VERSION').trim(),'2.21');
+  assert.equal(pkg.version,'2.22.0');
+  assert.equal(read('VERSION').trim(),'2.22');
   assert.match(migration,/SCHEMA_VERSION = 133/);
 });

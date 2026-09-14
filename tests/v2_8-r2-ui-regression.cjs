@@ -54,11 +54,12 @@ test('download domain uses one CNAME record with simple verification',()=>{
   assert.doesNotMatch(ui,/TXT name|TXT value|Verify DNS \+ HTTPS/);
 });
 
-test('file manager keeps folders, folder-only bulk upload, resume, and delete without a search bar',()=>{
+test('file manager keeps folders, folder-only bulk upload, resume, delete, and the V2.22 search bar',()=>{
   const ui=read('public/ui/app.js');
-  assert.doesNotMatch(ui,/Search this disk/);
+  assert.match(ui,/Search all R2 files and folders/);
+  assert.match(ui,/Search this account/);
   assert.match(ui,/Drop files here to upload/);
-  assert.match(ui,/New folder/);
+  assert.match(ui,/New Folder/i);
   assert.match(ui,/\/api\/r2\/folders/);
   assert.match(ui,/appbit:r2:resume/);
   assert.match(ui,/appbit:r2:resumes/);

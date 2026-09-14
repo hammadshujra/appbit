@@ -36,11 +36,11 @@ test('R2 download and folder paths remain routed without credentials',()=>{
   assert.match(cfg,/source:'\/d\/:token'/);
 });
 
-test('release has one consolidated V2.21 version note',()=>{
+test('release has one consolidated V2.22 version note',()=>{
   const notes=read('versionnotes.md'),readme=read('README.md');
-  assert.match(notes,/Appbit V2\.21/);
-  assert.match(notes,/10 GB/);
-  assert.match(notes,/one-record CNAME/i);
-  assert.match(readme,/versionnotes\.md/);
+  assert.match(notes,/Appbit V2\.22/);
+  assert.match(notes,/approved mockup/i);
+  assert.match(notes,/right-click/i);
+  assert.match(readme,/V2\.22/);
   assert.doesNotMatch(readme,/docker-compose|Dockerfile/);
 });

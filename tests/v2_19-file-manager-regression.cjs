@@ -15,14 +15,14 @@ test('V2.19 uses the supplied folder SVG for disks and Windows-style folder tile
   assert.match(css,/\.r2-folder-art\{display:block;width:90px;height:74px/);
 });
 
-test('V2.19 disk root is folder-only with one breadcrumb and no uploader/search/activity panel',()=>{
+test('V2.22 disk root is folder-only with one breadcrumb, global search, and no root uploader/activity panel',()=>{
   const ui=read('public/ui/app.js');
-  assert.doesNotMatch(ui,/Search this disk/);
+  assert.match(ui,/Search all R2 files and folders/);
   assert.doesNotMatch(ui,/id="r2UploadPath"/);
   assert.doesNotMatch(ui,/<div class="panel-title">Upload Activity<\/div>/);
   assert.match(ui,/insideFolder=Boolean\(S\.r2\.prefix\)/);
   assert.match(ui,/uploader=insideFolder\?/);
-  assert.match(ui,/Create folders here first\. File upload is available only after you open a folder\./);
+  assert.match(ui,/Create folders here first\. App icons are added manually by you\./);
   assert.match(ui,/if\(!S\.r2\.prefix\)return folderGrid/);
 });
 

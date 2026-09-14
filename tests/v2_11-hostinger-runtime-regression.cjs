@@ -7,11 +7,11 @@ const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
 test('release identity is bundled and never reads loose VERSION at runtime',()=>{
   const version=read('src/version.js');
-  assert.match(version,/version:'2\.21'/);
-  assert.match(version,/buildId:'2\.21-sidebar-folder-icons-one-record-domain'/);
+  assert.match(version,/version:'2\.22'/);
+  assert.match(version,/buildId:'2\.22-approved-responsive-file-manager'/);
   assert.doesNotMatch(version,/readFileSync|node:fs|BUILD-INFO\.json|path\.join/);
   const page=read('pages/[[...path]].jsx');
-  assert.match(page,/APP_VERSION='2\.21'/);
+  assert.match(page,/APP_VERSION='2\.22'/);
   assert.doesNotMatch(page,/readFileSync|node:fs|BUILD-INFO\.json/);
 });
 
