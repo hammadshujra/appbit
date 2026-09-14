@@ -3,6 +3,8 @@ const { normalizeAppbitCollations } = require('./schema-collations');
 const apkFields = require('./services/apk-fields');
 
 const SCHEMA_VERSION = 130;
+const RECOGNIZED_APPS_COLUMNS = Object.freeze(['id','package_id','name','source_page_url']);
+const EXISTING_APPS_MIGRATION = 'appbit_v2_15_safe_existing_apps_reconciliation';
 
 async function tableExists(db, table) {
   const [rows] = await db.query('SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND TABLE_TYPE=\'BASE TABLE\' LIMIT 1', [table]);
@@ -13,6 +15,18 @@ async function columnExists(db, table, column) {
   if (!(await tableExists(db, table))) return false;
   const [rows] = await db.query(`SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND COLUMN_NAME=? LIMIT 1`, [table,column]);
   return rows.length > 0;
+}
+
+// A missing or old schema_migrations row is recoverable when the existing
+// apps table has the minimum Appbit identity columns. This is deliberately
+// stricter than checking only for the table name: it prevents an unrelated or
+// partially-created table from entering the non-destructive reconciliation.
+async function hasRecognizedAppsSchema(db) {
+  if (!(await tableExists(db,'apps'))) return false;
+  const [rows] = await db.query(`SELECT COLUMN_NAME FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=?`, ['apps']);
+  const columns = new Set(rows.map(row => String(row.COLUMN_NAME || '')));
+  return RECOGNIZED_APPS_COLUMNS.every(column => columns.has(column));
 }
 
 async function ensureColumn(db, table, column, definition) {
@@ -567,20 +581,27 @@ async function migrate() {
       version INT PRIMARY KEY,name VARCHAR(120) NOT NULL,applied_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`);
     const [[current]] = await db.query('SELECT MAX(version) version FROM schema_migrations');
+    const currentVersion=Number(current?.version||0);
     // Existing Android-only Appbit databases must NEVER re-enter the legacy destructive migration.
     // This includes earlier schema 100/120 installations and preserves their app/media/category records.
     const hasApps = await tableExists(db,'apps');
-    if (hasApps && Number(current?.version||0) < 100) {
-      throw new Error('An existing Appbit database has an unrecognized schema version. Automatic legacy migration was stopped to preserve its records. A reviewed migration is required.');
+    const recognizedAppsSchema = hasApps && await hasRecognizedAppsSchema(db);
+    // A missing/older marker is recoverable once the table signature has been
+    // reviewed. A future marker is not: it may belong to a newer application
+    // and must not be silently downgraded by this release.
+    const hasUnknownVersion = currentVersion > SCHEMA_VERSION;
+    if (hasApps && (!recognizedAppsSchema || hasUnknownVersion)) {
+      const marker = currentVersion ? String(currentVersion) : 'none';
+      throw new Error(`An existing Appbit database has an unrecognized schema version. Automatic legacy migration was stopped to preserve its records. A reviewed migration is required. Detected marker: ${marker}; Appbit apps signature: ${recognizedAppsSchema ? 'recognized' : 'incomplete'}.`);
     }
-    if (hasApps) {
+    if (hasApps && recognizedAppsSchema) {
       // Repair before createCoreTables: its category initialization contains
       // comparisons between existing text and ENUM columns.
       await normalizeAppbitCollations(db);
       await createCoreTables(db);
       await normalizeAppbitCollations(db);
-      if(Number(current?.version||0)<128)await recoverFileSizesFromMetadata(db);
-      await db.query('INSERT IGNORE INTO schema_migrations (version,name) VALUES (?,?)',[SCHEMA_VERSION,'appbit_v2_8_r2_accounts_files']);
+      if(currentVersion<128)await recoverFileSizesFromMetadata(db);
+      await db.query('INSERT IGNORE INTO schema_migrations (version,name) VALUES (?,?)',[SCHEMA_VERSION,EXISTING_APPS_MIGRATION]);
       return SCHEMA_VERSION;
     }
     legacyMode=true;

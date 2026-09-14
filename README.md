@@ -1,4 +1,4 @@
-# Appbit V2.14
+# Appbit V2.15
 
 Appbit is an Android APK publishing workspace built for Hostinger App Hosting with the Next.js framework preset.
 
@@ -19,7 +19,7 @@ The repository contains one Next.js API catch-all at `pages/api/[[...path]].js`.
 
 Configure the existing Hostinger environment variables listed in `hostinger.env.example`. Keep the same variable names and values already used by the application; do not commit real secrets.
 
-The database schema remains **130**. Appbit retains authentication, App Library, APK metadata resolution, Publishing, Update Center, Cloudflare R2 management and public download links.
+The database schema remains **130**. V2.15 adds a reviewed, non-destructive reconciliation for an existing Appbit `apps` database whose `schema_migrations` marker is missing or older. Existing records are preserved; the legacy migration/drop path is not used when the Appbit table signature is recognized.
 
 ## Local verification
 
@@ -36,6 +36,5 @@ The browser fallback uses the project-local Playwright browser installed during 
 ## Release files
 
 - `HOSTINGER-DEPLOY.md` — exact Hostinger setup and redeploy procedure.
-- `versionnotes.md` — the complete V2.14 change record in one file.
+- `versionnotes.md` — the complete V2.15 change record in one file.
 - `VERSION` and `BUILD-INFO.json` — release identity used by the runtime and build output.
-

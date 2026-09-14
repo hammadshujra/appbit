@@ -1,38 +1,37 @@
-# Appbit V2.14 — Version Notes
+# Appbit V2.15 — Version Notes
 
 ## Release identity
 
-- Package version: `2.14.0`
-- Visible version: `V2.14`
-- Build ID: `2.14-hostinger-clean-next-runtime`
+- Package version: `2.15.0`
+- Visible version: `V2.15`
+- Build ID: `2.15-hostinger-safe-schema-reconciliation`
 - Framework: Next.js `16.3.3`
 - React: `19.2.0`
 - Node target: `24.x`
 - Database schema: `130`
 
-## Hostinger deployment repair
+## Existing database deployment fix
+
+- Fixes the startup error raised when an existing Appbit database has an empty or older `schema_migrations` marker while its `apps` table already contains Appbit data.
+- Reviews the existing `apps` signature (`id`, `package_id`, `name`, and `source_page_url`) before accepting the safe reconciliation path.
+- Reconciles a recognized existing database idempotently and records schema `130`.
+- Never re-enters the legacy migration/drop path for a recognized existing `apps` database.
+- Continues to stop safely for a partial/unrelated `apps` table or a schema marker newer than this release.
+- Preserves existing MySQL records; the reviewed path does not delete rows, reset the database, or drop legacy tables.
+
+## Hostinger runtime
 
 - Keeps exactly one API bridge: `pages/api/[[...path]].js`.
-- Keeps the bridge in standard Next.js module syntax with `import`, `export const config`, and `export default`.
-- Removes the package-wide module classification that caused the Hostinger Webpack parse error.
-- Makes the prebuild guard remove only known stale catch-all route filenames before validating the canonical route.
-- Keeps `next build --webpack` and the managed `next start` runtime.
-- Keeps the postbuild finalizer that places `VERSION` and `BUILD-INFO.json` inside `.next/server`.
-- Points the native Next API runtime at the project-local Playwright browser path used during installation.
+- Keeps standard Next.js module syntax and the Webpack production build.
+- Uses Hostinger’s managed Next.js runtime with `next start`, Node `24.x`, npm, and `.next` output.
+- Keeps the postbuild release metadata inside `.next/server`.
+- Points the native Next API runtime at the Playwright browser path used during installation.
 
-## Cleanup
+## Cleanup and reliability
 
-- Removes deployment files and instructions for the retired local deployment path.
-- Replaces the collection of separate historical release-note and upgrade files with this single `versionnotes.md` file.
-- Adds `.gitignore` rules for dependencies, build output, local secrets, logs and generated test files.
-- Adds the generated `package-lock.json` for reproducible npm installation.
-- Removes the stale change-history manifest from the package so it cannot report obsolete file hashes.
+- Removes Docker deployment files and Docker-only instructions from the upload package.
+- Keeps one consolidated `versionnotes.md` instead of separate version-note files.
+- Adds `.gitignore` rules for dependencies, build output, local secrets, logs, and generated test files.
+- Preserves the date parsing and mixed-collation repairs from V2.14.
 
-## Reliability fix
-
-- Parses textual dates with calendar validation instead of converting local-midnight dates through UTC. This preserves dates such as `August 5, 2026` on hosts in non-UTC time zones while continuing to reject invalid dates and missing values.
-
-## Preserved application behavior
-
-Authentication, MySQL migrations, App Library, APK source resolution, media refresh, Publishing, Update Center, user roles, Cloudflare R2 accounts/file management and public download links remain in the package.
-
+Authentication, App Library, APK source resolution, media refresh, Publishing, Update Center, user roles, Cloudflare R2 accounts/file management, and public download links remain in the package.

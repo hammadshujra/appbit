@@ -1,7 +1,7 @@
 {
-  "version": "2.14",
+  "version": "2.15",
   "schemaVersion": 130,
-  "release": "V2.14 Hostinger-only Next.js deployment cleanup",
-  "buildId": "2.14-hostinger-clean-next-runtime",
+  "release": "V2.15 safe existing-database schema reconciliation",
+  "buildId": "2.15-hostinger-safe-schema-reconciliation",
   "built_at": "2026-09-14"
 }
