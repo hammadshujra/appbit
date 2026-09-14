@@ -986,3 +986,18 @@ body.standalone{min-height:100vh;background:radial-gradient(circle at 50% -15%,r
 .r2-simple-account-form{grid-template-columns:repeat(3,minmax(0,1fr))}.r2-simple-account-form .r2-form-actions{align-self:end}
 @media(max-width:900px){.r2-explorer-table{min-width:700px}.r2-queue-row{grid-template-columns:1fr}.r2-queue-row>b{text-align:left}.r2-simple-account-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.r2-disk-grid{grid-template-columns:1fr}.r2-simple-account-form{grid-template-columns:1fr}.r2-dropzone{min-height:112px}.r2-explorer-table{min-width:650px}}
+
+/* Appbit V2.19 — Explorer-style disks/folders and filename-only links */
+.r2-disk-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.r2-disk-card{min-height:132px;grid-template-columns:96px minmax(0,1fr);gap:18px;align-items:center;padding:20px 22px;border-radius:16px}
+.r2-disk-icon{display:block;width:92px;height:76px;object-fit:contain;background:none;border-radius:0;padding:0;color:inherit}
+.r2-disk-copy{gap:6px}.r2-disk-copy>b{font-size:15px}.r2-disk-copy>small{font-size:10px}
+.r2-folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,148px));gap:16px;padding:8px 2px 14px;justify-content:start}
+.r2-folder-tile{appearance:none;border:1px solid transparent;background:transparent;color:var(--body);border-radius:14px;min-height:132px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;text-align:center;transition:background .15s ease,border-color .15s ease,transform .15s ease}
+.r2-folder-tile:hover,.r2-folder-tile:focus-visible{background:var(--surface-soft);border-color:var(--hairline);outline:none;transform:translateY(-1px)}
+.r2-folder-art{display:block;width:90px;height:74px;object-fit:contain;pointer-events:none;user-select:none}
+.r2-folder-tile span{display:block;max-width:100%;font-size:11px;font-weight:650;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r2-file-browser{gap:14px}.r2-browser-toolbar{padding-bottom:12px}.r2-files-tools{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.r2-explorer-table{margin-top:2px}.r2-folder-empty{margin-top:4px}
+@media(max-width:980px){.r2-disk-grid{grid-template-columns:1fr}.r2-disk-card{min-height:118px}.r2-folder-grid{grid-template-columns:repeat(auto-fill,minmax(118px,140px))}}
+@media(max-width:620px){.r2-disk-grid{grid-template-columns:1fr}.r2-disk-card{grid-template-columns:72px minmax(0,1fr);padding:16px}.r2-disk-icon{width:70px;height:58px}.r2-folder-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.r2-folder-art{width:76px;height:62px}}

@@ -1,7 +1,7 @@
 {
-  "version": "2.18",
+  "version": "2.19",
   "schemaVersion": 131,
-  "release": "V2.18 disk file manager and direct filename downloads",
-  "buildId": "2.18-disk-file-manager-direct-links",
+  "release": "V2.19 explorer folder UI and filename-only public downloads",
+  "buildId": "2.19-explorer-folders-filename-only-links",
   "built_at": "2026-09-14"
 }

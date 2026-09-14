@@ -1,9 +1,11 @@
-# Appbit V2.18 — Verification Report
+# Appbit V2.19 — Verification Report
 
-- `npm run check`: PASS.
-- `npm test`: PASS (97 tests).
-- Direct URL regression verifies `https://example.com/tiktok.apk` and encoded nested real filenames.
-- R2 file-manager regressions cover disk labels, removal of the hidden root-folder setting, immediate-folder browsing, New folder, drag-and-drop multi-file queues, separate progress bars, metadata columns, Copy link, Delete, and direct-path downloads.
-- Existing `/d/<token>` download links remain covered for backward compatibility only.
-- Existing schema-131 reconciliation and Hostinger collation compatibility remain covered.
-- `npm run build` could not be rerun in this sandbox after dependency cleanup because the npm registry DNS lookup returned `EAI_AGAIN`. Hostinger installs the dependencies from `package-lock.json` and runs the configured `next build --webpack` command during deployment.
+- `npm test`: PASS — 103/103 tests.
+- `npm run check`: PASS — JavaScript syntax, local module checks, file checks, and Hostinger prebuild guard.
+- File Manager regression coverage verifies the supplied folder SVG is used for disk/folder icons.
+- Disk root regression verifies folder-only browsing, no search box, no root upload zone, no duplicate root path line, and no persistent Upload Activity panel.
+- Open-folder regression verifies drag/drop multi-file upload, per-file progress rows, and the existing file metadata/action table.
+- Public-link regression verifies internal folder paths are removed from newly copied links: `internal/folder/tiktok.apk` -> `https://domain/tiktok.apk`.
+- Download routing resolves filename-only URLs and keeps V2.18 folder/path URLs plus legacy `/d/<token>` links for backward compatibility.
+- File counters exclude R2 directory-marker objects.
+- A full `next build --webpack` was not run in this workspace because the supplied source ZIP does not contain `node_modules`; Hostinger will install dependencies from `package-lock.json` before building.

@@ -1,4 +1,4 @@
-# Appbit V2.18 — Hostinger App Hosting
+# Appbit V2.19 — Hostinger App Hosting
 
 Push the repository contents to the `main` branch selected by Hostinger and use the settings below.
 
@@ -44,8 +44,8 @@ Keep `SESSION_SECRET` and `R2_CREDENTIALS_KEY` long and stable. Never place thei
 The build should contain:
 
 ```text
-[Appbit] Hostinger prebuild V2.18: API route verified — pages/api/[[...path]].js (Next.js module syntax).
-[Appbit] Hostinger output finalized for V2.18.
+[Appbit] Hostinger prebuild V2.19: API route verified — pages/api/[[...path]].js (Next.js module syntax).
+[Appbit] Hostinger output finalized for V2.19.
 ```
 
 After runtime initialization, the database line should report:
@@ -62,7 +62,7 @@ This path does not reset the database, delete rows, or run the old legacy migrat
 
 ## First deployment checks
 
-1. Push the V2.18 files to the exact `main` branch selected in Hostinger.
+1. Push the V2.19 files to the exact `main` branch selected in Hostinger.
 2. Start a fresh deployment with the settings above.
 3. Open `/health`. Wait until Database and Schema show passing.
 4. Open `/login` and sign in.

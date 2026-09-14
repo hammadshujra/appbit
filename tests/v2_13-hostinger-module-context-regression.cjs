@@ -23,11 +23,11 @@ test('V2.17 has exactly one Hostinger API catch-all and no legacy module route',
 test('package does not force CommonJS classification over Next page sources',()=>{
   const pkg=JSON.parse(read('package.json'));
   assert.equal(pkg.type,undefined);
-  assert.equal(pkg.version,'2.18.0');
+  assert.equal(pkg.version,'2.19.0');
   assert.equal(pkg.scripts.prebuild,'node scripts/hostinger-prebuild.js');
   assert.equal(pkg.scripts.build,'next build --webpack');
   assert.equal(pkg.scripts.start,'next start');
-  assert.equal(read('VERSION').trim(),'2.18');
+  assert.equal(read('VERSION').trim(),'2.19');
   assert.match(read('next.config.js'),/pageExtensions:\['js','jsx'\]/);
 });
 

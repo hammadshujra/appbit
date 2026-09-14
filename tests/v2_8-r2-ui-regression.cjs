@@ -55,9 +55,9 @@ test('download domain creates TXT verification and CNAME instructions',()=>{
   assert.match(ui,/Activate download hostname/);
 });
 
-test('file manager keeps search, folders, bulk upload, resume, and delete',()=>{
+test('file manager keeps folders, folder-only bulk upload, resume, and delete without a search bar',()=>{
   const ui=read('public/ui/app.js');
-  assert.match(ui,/Search this disk/);
+  assert.doesNotMatch(ui,/Search this disk/);
   assert.match(ui,/Drop files here to upload/);
   assert.match(ui,/New folder/);
   assert.match(ui,/\/api\/r2\/folders/);

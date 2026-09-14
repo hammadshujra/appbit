@@ -4,6 +4,6 @@
 // Keep release identity inside the module so SSR/API bundles never depend on
 // runtime filesystem reads of loose release metadata.
 module.exports=Object.freeze({
-  version:'2.18',
-  buildId:'2.18-disk-file-manager-direct-links'
+  version:'2.19',
+  buildId:'2.19-explorer-folders-filename-only-links'
 });

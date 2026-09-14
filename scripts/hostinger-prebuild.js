@@ -24,7 +24,7 @@ function removeStaleRoutes(){
   }
   return removed;
 }
-if(version!=='2.18')fail(`expected VERSION 2.18, found ${version}`);
+if(version!=='2.19')fail(`expected VERSION 2.19, found ${version}`);
 if(Object.prototype.hasOwnProperty.call(pkg,'type'))fail('package.json must not force a package-wide module type for the Next.js Pages build.');
 const removed=removeStaleRoutes();
 if(!fs.existsSync(route))fail('pages/api/[[...path]].js is missing.');

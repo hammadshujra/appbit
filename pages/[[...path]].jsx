@@ -1,5 +1,5 @@
 import Head from 'next/head';
-const APP_VERSION='2.18';
+const APP_VERSION='2.19';
 
 export default function AppbitShell({appVersion}) {
   return (
@@ -53,9 +53,9 @@ async function streamDownloadResponse(context,key){
 }
 
 // Hostinger runs the native Next.js Pages runtime. The catch-all page therefore
-// also acts as the public filename gateway. A verified download hostname treats
-// every non-empty path as a file path; on the normal Appbit host, filename-like
-// paths (for example /tiktok.apk) are also resolved before the UI is rendered.
+// also acts as the public filename gateway. Current copied links are filename-only
+// (for example /tiktok.apk); legacy folder/path links are still accepted by the
+// R2 service for backward compatibility.
 export async function getServerSideProps(context){
   const parts=Array.isArray(context.params?.path)?context.params.path:[];
   const key=parts.map(part=>String(part)).join('/');

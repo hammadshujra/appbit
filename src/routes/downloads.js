@@ -25,7 +25,7 @@ async function servePath(req,res,next,head=false){try{return sendStream(await r2
 router.get('/d/:token',(req,res,next)=>serveToken(req,res,next,false));
 router.head('/d/:token',(req,res,next)=>serveToken(req,res,next,true));
 
-// Direct filename/path links for the custom server runtime. Hostinger's native
+// Filename-only public links for the custom server runtime. Legacy folder/path URLs stay readable. Hostinger's native
 // Next.js runtime performs the same resolution in pages/[[...path]].jsx.
 router.use(async(req,res,next)=>{
   if(!['GET','HEAD'].includes(req.method))return next();

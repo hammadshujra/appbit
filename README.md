@@ -1,41 +1,33 @@
-# Appbit V2.18
+# Appbit V2.19
 
-Appbit is an Android APK publishing workspace prepared for Hostinger App Hosting with the Next.js framework preset.
+Appbit V2.19 keeps the Hostinger-managed Next.js deployment from V2.18 and refines the Cloudflare R2 File Manager around an Explorer-style workflow.
 
-## Hostinger settings
+## Hostinger runtime
 
-- Framework preset: **Next.js**
-- Branch: **main**
-- Node.js: **24.x**
-- Root directory: **./**
-- Build command: **npm run build**
-- Package manager: **npm**
-- Output directory: **.next**
-- Managed runtime: **next start**
+- Framework: Next.js `16.3.3`
+- React: `19.2.0`
+- Build: `next build --webpack`
+- Start: `next start`
+- Supported Node: `>=20.9 <25` (Hostinger Node 24.x is supported)
+- Database schema: `131`
 
-The repository contains one Next.js API catch-all at `pages/api/[[...path]].js`. Appbit’s existing Express services run behind that native API route, and the production build explicitly uses Webpack for Hostinger compatibility.
+## V2.19 focus
 
-## Environment
+- The File Manager landing page shows two R2 disks per desktop row.
+- The supplied `folder-icon.svg` is used for both disk cards and folder tiles.
+- Opening a disk root shows folders only. Root-level file upload is intentionally disabled.
+- Folders use large Explorer-style tiles with the folder name below the icon.
+- The file-manager search bar and the separate Upload Activity panel are removed.
+- Only one breadcrumb is shown. The duplicate `Account / root` helper path is gone.
+- Drag/drop and multi-file upload appear only after opening a folder.
+- Upload queue progress remains visible directly below the drop zone while files are uploading.
+- File rows inside folders keep Name, Modified, Uploaded, Type, Size, Copy link, and Delete.
+- Public download links are filename-only. Internal folders never appear in newly copied links.
+- Example: internal `apk/TikTok/tiktok.apk` -> public `https://example.com/tiktok.apk`.
+- Old V2.18 folder/path links and older `/d/<token>` links remain readable for backward compatibility.
 
-Keep the same Hostinger environment variable names and existing secret values in `hostinger.env.example`. Do not commit real credentials. Do not add a `PORT` variable for the managed runtime.
+## Deploy
 
-## V2.18 focus
+Use the Hostinger Next.js preset, install from `package-lock.json`, and run `npm run build`.
 
-- Windows-style R2 file browsing where the Account Label is the disk name; there is no hidden Disk Root Folder.
-- Drag-and-drop or multi-select resumable uploads with a separate progress row for every file, supporting files up to 10 GB.
-- Direct filename/path links such as `https://downloads.example.com/tiktok.apk`, with Copy link and Delete actions in File Manager.
-- Download-only hostname instructions for TXT verification and CNAME routing; no website or homepage is required.
-- Dedicated public `/health` deployment screen and repaired responsive `/login` card.
-- Existing MySQL data and the reviewed schema-131 reconciliation remain protected.
-
-## Verification
-
-```bash
-npm install
-npm run check
-npm test
-npm run build
-npm start
-```
-
-Open `/health` after deployment, then `/login`. The complete V2.18 release record is in `versionnotes.md`.
+Open `/health` after deployment, then `/login`. The complete V2.19 release record is in `versionnotes.md`.
