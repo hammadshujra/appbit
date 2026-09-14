@@ -32,12 +32,18 @@ function unique(table,name,parts){return parts.map((part,i)=>({TABLE_NAME:table,
 test('repairs exact reported mixed-collation category comparison, including ENUMs',async()=>{
   const db=fakeDb({tables:[{TABLE_NAME:'apk_categories',TABLE_COLLATION:modern}],columns:[column('apk_categories','slug','varchar(160)',unicode,{nullable:false}),column('apk_categories','section',"enum('apps','games')",modern,{defaultValue:'apps'}),column('apk_categories','parent_slug','varchar(160)',modern,{nullable:true})],indexes:unique('apk_categories','uniq_apk_category',['section','slug'])});
   const result=await normalizeAppbitCollations(db);assert.equal(result.alteredColumns,2);
-  const alter=db.calls.find(c=>c.sql.startsWith('ALTER TABLE'))?.sql;
+ const alter=db.calls.find(c=>c.sql.startsWith('ALTER TABLE'))?.sql;
   assert.match(alter,/MODIFY COLUMN `section` enum\('apps','games'\) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'apps'/);
   assert.match(alter,/MODIFY COLUMN `parent_slug` varchar\(160\).* NULL/);
   assert.doesNotMatch(alter,/MODIFY COLUMN `slug`/);
   assert.match(db.calls.find(c=>c.sql.includes('HAVING COUNT(*)>1')).sql,/CONVERT\(`section` USING utf8mb4\) COLLATE utf8mb4_unicode_ci/);
-  assert.deepEqual(await normalizeAppbitCollations(db),{alteredTables:0,alteredColumns:0});
+ assert.deepEqual(await normalizeAppbitCollations(db),{alteredTables:0,alteredColumns:0});
+});
+test('collation metadata query is portable to Hostinger database engines without STATISTICS.EXPRESSION',async()=>{
+ const db=fakeDb({tables:[{TABLE_NAME:'apps',TABLE_COLLATION:modern}],columns:[column('apps','package_id','varchar(190)',unicode)],indexes:unique('apps','uniq_package',['package_id'])});
+ await normalizeAppbitCollations(db);
+ const indexQuery=db.calls.find(c=>c.sql.includes('FROM information_schema.STATISTICS'))?.sql||'';
+ assert.doesNotMatch(indexQuery,/\bEXPRESSION\b/);
 });
 test('preserves ASCII text length, Unicode characters, literal defaults and comments',async()=>{
  const db=fakeDb({tables:[{TABLE_NAME:'apps',TABLE_COLLATION:unicode}],columns:[column('apps','package_id','varchar(190)','ascii_general_ci',{comment:"App's key",defaultValue:"a'b"}),column('apps','description','mediumtext',modern,{nullable:true})],indexes:unique('apps','PRIMARY',['package_id'])});

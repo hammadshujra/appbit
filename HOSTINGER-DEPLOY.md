@@ -1,4 +1,4 @@
-# Appbit V2.15 — Hostinger App Hosting
+# Appbit V2.16 — Hostinger App Hosting
 
 This package is prepared for Hostinger’s managed Next.js runtime. Push the repository contents to the `main` branch and use the settings below.
 
@@ -47,13 +47,13 @@ Keep the existing Hostinger values and variable names:
 The log should contain this line before Next.js compilation:
 
 ```text
-[Appbit] Hostinger prebuild V2.15: API route verified — pages/api/[[...path]].js (Next.js module syntax).
+[Appbit] Hostinger prebuild V2.16: API route verified — pages/api/[[...path]].js (Next.js module syntax).
 ```
 
 The completed build should contain:
 
 ```text
-[Appbit] Hostinger output finalized for V2.15.
+[Appbit] Hostinger output finalized for V2.16.
 ```
 
 After the first successful runtime initialization, the log should also contain:
@@ -72,11 +72,11 @@ The prebuild guard removes only the three known stale API catch-all filenames be
 
 ## Redeploy procedure
 
-1. Replace the repository contents with this V2.15 package.
+1. Replace the repository contents with this V2.16 package.
 2. Commit and push the files to the exact `main` branch selected in Hostinger.
-3. Confirm the deployment commit is the new V2.15 commit.
+3. Confirm the deployment commit is the new V2.16 commit.
 4. Start a fresh deployment with the settings above.
-5. Confirm the V2.15 build lines and `Database ready. Schema v130.` appear.
+5. Confirm the V2.16 build lines and `Database ready. Schema v130.` appear.
 6. Open the domain in a private browser window and sign in.
 
 If the log still reports an older route filename or the old schema error, Hostinger is building an older commit or a different branch. Check the repository selection and branch first, then start a new deployment. Do not erase the MySQL database to resolve it.

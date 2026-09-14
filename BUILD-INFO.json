@@ -1,7 +1,7 @@
 {
-  "version": "2.15",
+  "version": "2.16",
   "schemaVersion": 130,
-  "release": "V2.15 safe existing-database schema reconciliation",
-  "buildId": "2.15-hostinger-safe-schema-reconciliation",
+  "release": "V2.16 portable Hostinger database metadata inspection",
+  "buildId": "2.16-hostinger-portable-collation-metadata",
   "built_at": "2026-09-14"
 }

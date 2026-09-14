@@ -49,7 +49,10 @@ async function inspect(db) {
   const [columns] = await db.query(`SELECT TABLE_NAME,COLUMN_NAME,COLUMN_TYPE,IS_NULLABLE,COLUMN_DEFAULT,COLUMN_COMMENT,EXTRA,GENERATION_EXPRESSION,CHARACTER_SET_NAME,COLLATION_NAME,ORDINAL_POSITION
     FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME IN (${TABLES.map(() => '?').join(',')})
     AND CHARACTER_SET_NAME IS NOT NULL ORDER BY TABLE_NAME,ORDINAL_POSITION`, TABLES);
-  const [indexes] = await db.query(`SELECT TABLE_NAME,INDEX_NAME,SEQ_IN_INDEX,COLUMN_NAME,SUB_PART,EXPRESSION
+  // Hostinger may expose MariaDB/older MySQL metadata where STATISTICS does
+  // not have the MySQL-only EXPRESSION column. COLUMN_NAME=NULL still lets us
+  // reject functional unique indexes without making the query engine-specific.
+  const [indexes] = await db.query(`SELECT TABLE_NAME,INDEX_NAME,SEQ_IN_INDEX,COLUMN_NAME,SUB_PART
     FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME IN (${TABLES.map(() => '?').join(',')})
     AND NON_UNIQUE=0 ORDER BY TABLE_NAME,INDEX_NAME,SEQ_IN_INDEX`, TABLES);
   const owned = new Set(tables.filter(row => TABLES.includes(row.TABLE_NAME)).map(row => row.TABLE_NAME));
@@ -70,7 +73,7 @@ async function assertUniqueKeysSafe(db, table, columns, indexes, changing) {
     if (!parts.some(part => changing.has(part.COLUMN_NAME))) continue;
     const expressions = [];
     for (const part of parts) {
-      if (!part.COLUMN_NAME || part.EXPRESSION) throw new Error(`Functional unique index ${table}.${name} needs manual review before collation repair.`);
+      if (!part.COLUMN_NAME) throw new Error(`Functional unique index ${table}.${name} needs manual review before collation repair.`);
       const col = identifier(part.COLUMN_NAME);
       const meta = byName.get(part.COLUMN_NAME);
       // Non-text columns retain their existing comparison semantics.
