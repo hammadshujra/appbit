@@ -1,5 +1,5 @@
 import Head from 'next/head';
-const APP_VERSION='2.16';
+const APP_VERSION='2.17';
 
 export default function AppbitShell({appVersion}) {
   return (

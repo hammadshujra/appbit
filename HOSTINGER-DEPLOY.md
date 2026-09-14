@@ -1,6 +1,6 @@
-# Appbit V2.16 — Hostinger App Hosting
+# Appbit V2.17 — Hostinger App Hosting
 
-This package is prepared for Hostinger’s managed Next.js runtime. Push the repository contents to the `main` branch and use the settings below.
+Push the repository contents to the `main` branch selected by Hostinger and use the settings below.
 
 ## Build configuration
 
@@ -12,14 +12,11 @@ This package is prepared for Hostinger’s managed Next.js runtime. Push the rep
 - Package manager: **npm**
 - Output directory: **.next**
 
-You do not need a custom Entry File. Hostinger should start the saved build with its managed Next.js runtime (`next start`).
-
-`npm run build` runs the release guard, `next build --webpack`, and the output finalizer automatically. Keep the build command exactly as shown.
-Do **not** replace it with plain `next build`.
+Hostinger should use its managed Next.js runtime (`next start`). You do not need a custom Entry File and you do not need a `PORT` variable. Keep `npm run build` exactly as shown; it runs the release guard, `next build --webpack`, and the output finalizer. Do **not** replace it with plain `next build`.
 
 ## Environment variables
 
-Keep the existing Hostinger values and variable names:
+Keep the existing Hostinger variable names and values:
 
 - `NODE_ENV=production`
 - `SESSION_SECRET`
@@ -40,23 +37,18 @@ Keep the existing Hostinger values and variable names:
 - `APK_RESOLVER_MAX_ITEMS`
 - `APK_RESOLVER_REQUEST_GAP_MS`
 
-`SESSION_SECRET` and `R2_CREDENTIALS_KEY` must be long, stable secrets. Never place their real values in GitHub or this ZIP.
+Keep `SESSION_SECRET` and `R2_CREDENTIALS_KEY` long and stable. Never place their real values in GitHub or this package.
 
 ## Build log checks
 
-The log should contain this line before Next.js compilation:
+The build should contain:
 
 ```text
-[Appbit] Hostinger prebuild V2.16: API route verified — pages/api/[[...path]].js (Next.js module syntax).
+[Appbit] Hostinger prebuild V2.17: API route verified — pages/api/[[...path]].js (Next.js module syntax).
+[Appbit] Hostinger output finalized for V2.17.
 ```
 
-The completed build should contain:
-
-```text
-[Appbit] Hostinger output finalized for V2.16.
-```
-
-After the first successful runtime initialization, the log should also contain:
+After runtime initialization, the database line should report:
 
 ```text
 [Appbit] Database ready. Schema v130.
@@ -64,27 +56,34 @@ After the first successful runtime initialization, the log should also contain:
 
 ## Existing database safety
 
-This release handles the existing database error where `apps` is present but `schema_migrations` has no recognized current marker. It first verifies the existing Appbit table signature (`id`, `package_id`, `name`, and `source_page_url`), then performs the existing idempotent reconciliation and records schema `130`.
+The release continues the reviewed handling for an existing Appbit database where `apps` already contains Appbit records but `schema_migrations` is empty or older. It verifies the recognized Appbit table signature, performs idempotent reconciliation, and records schema `130`.
 
-That path does not delete rows, reset the database, drop legacy tables, or run the legacy import. Do not create a new database and do not remove the existing database environment variables. A partial Appbit table or a schema marker newer than `130` still stops for manual review.
+This path does not reset the database, delete rows, or run the old legacy migration. Do not remove the existing database variables. A partial/unrelated `apps` table or a marker newer than `130` still stops for manual review.
 
-The prebuild guard removes only the three known stale API catch-all filenames before checking the canonical route. This prevents an older repository file from recreating the reported route conflict.
+## First deployment checks
 
-## Redeploy procedure
+1. Push the V2.17 files to the exact `main` branch selected in Hostinger.
+2. Start a fresh deployment with the settings above.
+3. Open `/health`. Wait until Database and Schema show passing.
+4. Open `/login` and sign in.
+5. If the app still shows the old schema error, verify Hostinger is building the new commit/branch; do not erase MySQL data.
 
-1. Replace the repository contents with this V2.16 package.
-2. Commit and push the files to the exact `main` branch selected in Hostinger.
-3. Confirm the deployment commit is the new V2.16 commit.
-4. Start a fresh deployment with the settings above.
-5. Confirm the V2.16 build lines and `Database ready. Schema v130.` appear.
-6. Open the domain in a private browser window and sign in.
+## R2 download hostname
 
-If the log still reports an older route filename or the old schema error, Hostinger is building an older commit or a different branch. Check the repository selection and branch first, then start a new deployment. Do not erase the MySQL database to resolve it.
+A hostname such as `downloads.example.com` is for download links only. It does not need a website, homepage, separate hosting, or an A record for Appbit.
 
-## Runtime checks
+In Appbit, open **R2 Account → Accounts**, add the hostname, and copy the exact generated records:
 
-- `/login` should load the sign-in page.
-- `/api/session/csrf` should return a JSON CSRF response.
-- The Appbit interface should load after successful sign-in.
-- `/api/health` is available to the administrator after the database is ready.
-- Public R2 links continue to use `/d/<token>` through the Next.js rewrite.
+1. Add the TXT name/value to prove ownership.
+2. Add the CNAME from the subdomain to the Appbit Hostinger hostname.
+3. Wait for propagation and click **Check DNS again**.
+4. When active, newly copied links use `https://downloads.example.com/d/<token>`.
+
+TXT verification and CNAME routing are separate. If a hostname is deleted and later added again, copy the new displayed TXT record before verifying. Removing the hostname never deletes R2 objects, but old links using the removed hostname cannot resolve until that hostname is active again.
+
+## Upload and link checks
+
+- File Manager supports folders, search, bulk selection, and files up to 10 GB per file.
+- Uploads are sent as small multipart requests through the Appbit API; a temporary network failure retries the current part.
+- Use **Download** for the automatic APK download, **Copy link** to share it, and **Open** to inspect the endpoint in a new tab.
+- The fallback Appbit-host link remains available before a custom hostname is verified.

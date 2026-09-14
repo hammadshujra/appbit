@@ -26,11 +26,13 @@ export default function Login(){
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
       <link rel="stylesheet" href="/css/app.css" />
     </Head>
-    <main>
+    <main className="login-shell">
       <div className="login-card">
-        <div className="brand-row login-brand"><img className="brand-logo-img" src="/logo.svg" alt="Appbit"/><div className="brand-sub">APK Publishing Workspace</div></div>
-        <h1>Sign in</h1>
-        <p>Use the email and password assigned to your Appbit Admin or Partner account.</p>
+        <div className="login-brand">
+          <img className="login-logo" src="/logo.svg" alt="Appbit"/>
+          <div className="login-kicker">APK Publishing Workspace</div>
+        </div>
+        <div className="login-heading"><h1>Welcome back</h1><p>Sign in to manage APK releases, storage, and download links.</p></div>
         {error?<div className="error-box">{error}</div>:null}
         <form method="post" action="/api/auth/login" className="stack-form">
           <input type="hidden" name="_csrf" value={csrf}/>
@@ -39,7 +41,7 @@ export default function Login(){
           <label>Password<input name="password" type="password" required autoComplete="current-password"/></label>
           <button className="btn btn-primary btn-block" type="submit" disabled={!csrf}>Sign in</button>
         </form>
-        <div className="login-help">Appbit · Admin + Partner access</div>
+        <div className="login-help"><span>Admin + Partner access</span><a href="/health">System health</a></div>
       </div>
     </main>
   </>;

@@ -1,38 +1,58 @@
-# Appbit V2.16 — Version Notes
+# Appbit V2.17 — Version Notes
 
 ## Release identity
 
-- Package version: `2.16.0`
-- Visible version: `V2.16`
-- Build ID: `2.16-hostinger-portable-collation-metadata`
+- Package version: `2.17.0`
+- Visible version: `V2.17`
+- Build ID: `2.17-file-manager-download-health`
 - Framework: Next.js `16.3.3`
 - React: `19.2.0`
 - Node target: `24.x`
 - Database schema: `130`
 
-## Existing database and Hostinger compatibility fix
+## File Manager
 
-- Fixes the startup error raised when an existing Appbit database has an empty or older `schema_migrations` marker while its `apps` table already contains Appbit data.
-- Reviews the existing `apps` signature (`id`, `package_id`, `name`, and `source_page_url`) before accepting the safe reconciliation path.
-- Reconciles a recognized existing database idempotently and records schema `130`.
-- Never re-enters the legacy migration/drop path for a recognized existing `apps` database.
-- Continues to stop safely for a partial/unrelated `apps` table or a schema marker newer than this release.
-- Preserves existing MySQL records; the reviewed path does not delete rows, reset the database, or drop legacy tables.
-- Removes the MySQL-only `STATISTICS.EXPRESSION` field from the collation inspection query. Hostinger engines that do not expose that metadata column can now initialize normally.
+- Treats each saved R2 account as a storage disk.
+- Adds folder prefixes, breadcrumb navigation, an Up action, and a New folder action.
+- Creates folders as zero-byte R2 directory markers; this uses the existing `r2_objects` table and does not reset or rewrite existing records.
+- Keeps account, object key, file name, size, and added date visible.
+- Adds server-side account/prefix/search filtering.
+- Removes the visible replacement workflow from normal file rows; the existing object key and public token remain stable.
 
-## Hostinger runtime
+## Upload reliability
 
-- Keeps exactly one API bridge: `pages/api/[[...path]].js`.
-- Keeps standard Next.js module syntax and the Webpack production build.
-- Uses Hostinger’s managed Next.js runtime with `next start`, Node `24.x`, npm, and `.next` output.
-- Keeps the postbuild release metadata inside `.next/server`.
-- Points the native Next API runtime at the Playwright browser path used during installation.
+- Supports selecting multiple files and processes them through a controlled queue.
+- Keeps multipart uploads resumable per file and per folder/account context.
+- Shows real progress fill, current bytes, part number, queue status, and pause/error feedback.
+- Retries only the failed part up to eight times with backoff.
+- Waits for the browser to come back online instead of restarting the file.
+- Uses a 5 MiB starting part size, a 70 MiB API body ceiling, and a 10 GiB (10 GB) file limit.
 
-## Cleanup and reliability
+## Public download links
 
-- Removes Docker deployment files and Docker-only instructions from the upload package.
-- Keeps one consolidated `versionnotes.md` instead of separate version-note files.
-- Adds `.gitignore` rules for dependencies, build output, local secrets, logs, and generated test files.
-- Preserves the date parsing, mixed-collation, and safe schema reconciliation repairs from V2.14/V2.15.
+- R2 objects are served through the opaque `/d/<token>` gateway.
+- The gateway sends `Content-Disposition: attachment`, `Content-Type`, range headers, and `nosniff`, so APK links download instead of exposing storage credentials.
+- The file manager now puts Download first, followed by Copy link and Open.
+- A deleted custom hostname no longer appears in newly copied links; the R2 object remains safe. Re-adding a deleted hostname produces a fresh DNS record, which must be copied to the DNS provider.
 
-Authentication, App Library, APK source resolution, media refresh, Publishing, Update Center, user roles, Cloudflare R2 accounts/file management, and public download links remain in the package.
+## Download-only hostname DNS
+
+- A hostname such as `downloads.example.com` is a download endpoint, not a website.
+- No homepage, website files, or separate A record are required for Appbit.
+- The generated TXT record proves hostname control.
+- The generated CNAME points the hostname to the Appbit Hostinger hostname and routes `/d/<token>`.
+- DNS verification normalizes split TXT fragments and treats temporary DNS resolver errors as retryable verification waits.
+
+## Login and health
+
+- Replaces the unconstrained login layout with a responsive card, bounded logo, accessible fields, and a health link.
+- Adds a public, secret-free `/health` page that polls deployment, database, schema, and gateway status.
+- Keeps detailed `/api/health` checks administrator-only.
+- Keeps the existing Hostinger native Next.js runtime and API route structure.
+
+## Data safety
+
+- Schema version remains `130`.
+- Existing Appbit records are preserved.
+- The recognized existing-apps reconciliation remains non-destructive.
+- No database reset or legacy data deletion was added.

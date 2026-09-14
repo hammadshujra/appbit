@@ -4,6 +4,6 @@
 // Keep release identity inside the module so SSR/API bundles never depend on
 // runtime filesystem reads of loose release metadata.
 module.exports=Object.freeze({
-  version:'2.16',
-  buildId:'2.16-hostinger-portable-collation-metadata'
+  version:'2.17',
+  buildId:'2.17-file-manager-download-health'
 });

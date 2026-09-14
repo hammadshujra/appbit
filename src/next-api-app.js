@@ -12,6 +12,7 @@ const helmet=require('helmet');
 const morgan=require('morgan');
 const config=require('./config');
 const state=require('./state');
+const {hasDbConfig}=require('./db');
 const {startDatabaseInitialization}=require('./init');
 const {startBackupWorker}=require('./services/backups');
 const {ensureToken}=require('./middleware/csrf');
@@ -65,6 +66,22 @@ app.use((req,res,next)=>{startWorkersOnce();next();});
 app.get('/api/session/csrf',(req,res)=>{
   res.setHeader('Cache-Control','no-store');
   res.json({ok:true,csrfToken:req.session.csrfToken,version:config.appVersion});
+});
+
+// Public, secret-free deployment probe used by /health. The authenticated
+// /api/health endpoint remains available for the detailed admin check.
+app.get('/api/health/public',(req,res)=>{
+  const configured=hasDbConfig();
+  const checks=[
+    {name:'Runtime',status:'pass',detail:`Node ${process.version}`},
+    {name:'Database configuration',status:configured?'pass':'fail',detail:configured?'Environment variables found':'DB_HOST, DB_NAME, and DB_USER are required'},
+    {name:'Database connection',status:state.dbReady?'pass':'fail',detail:state.dbReady?'Connected':'Waiting for the database connection'},
+    {name:'Schema',status:state.schemaVersion>=123?'pass':state.dbReady?'fail':'pending',detail:state.schemaVersion?`Appbit schema ${state.schemaVersion}`:'Waiting for schema initialization'},
+    {name:'Download gateway',status:'pass',detail:'Public file links are routed through Appbit'}
+  ];
+  const ok=checks.every(check=>check.status==='pass');
+  res.setHeader('Cache-Control','no-store');
+  res.status(ok?200:503).json({ok,version:config.appVersion,buildId:config.buildId,checks,checkedAt:new Date().toISOString()});
 });
 
 // Reuse the existing authentication POST handlers under an API-safe prefix.

@@ -51,15 +51,19 @@ test('download domain creates TXT verification and CNAME instructions',()=>{
   assert.match(ui,/TXT name/);
   assert.match(ui,/TXT value/);
   assert.match(ui,/CNAME/);
-  assert.match(ui,/Verify DNS & Use/);
+  assert.match(ui,/Check DNS again/);
+  assert.match(ui,/Activate download hostname/);
 });
 
-test('file manager keeps search, upload, resume, replace and delete',()=>{
+test('file manager keeps search, folders, bulk upload, resume, and delete',()=>{
   const ui=read('public/ui/app.js');
   assert.match(ui,/Search files by name/);
-  assert.match(ui,/Upload File/);
+  assert.match(ui,/Upload files/);
+  assert.match(ui,/New folder/);
+  assert.match(ui,/\/api\/r2\/folders/);
   assert.match(ui,/appbit:r2:resume/);
-  assert.match(ui,/Replace/);
+  assert.match(ui,/appbit:r2:resumes/);
+  assert.doesNotMatch(ui,/data-r2-replace/);
   assert.match(ui,/Delete/);
-  assert.match(ui,/keyMode:'opaque'/);
+  assert.match(ui,/keyMode:replaceObjectId\?'opaque':'name'/);
 });

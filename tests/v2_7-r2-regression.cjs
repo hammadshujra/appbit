@@ -27,8 +27,9 @@ test('SigV4 request signing is deterministic',()=>{
 test('R2 service implements encrypted secrets and multipart lifecycle',()=>{
   const r=read('src/services/r2.js');
   assert.match(r,/aes-256-gcm/);
-  for(const name of ['startUpload','uploadPart','completeUpload','abortUpload','syncAccount','deleteObject','streamByToken'])assert.match(r,new RegExp(`function ${name}\\b|async function ${name}\\b`));
+  for(const name of ['startUpload','uploadPart','completeUpload','abortUpload','syncAccount','createFolder','deleteObject','streamByToken'])assert.match(r,new RegExp(`function ${name}\\b|async function ${name}\\b`));
   assert.match(r,/DEFAULT_PART=5\*MiB/);
+  assert.match(r,/MAX_FILE_SIZE=10\*GiB/);
   assert.match(r,/timeoutMs:15\*60\*1000/);
   assert.match(r,/Content-MD5/);
   assert.match(r,/file_size_bytes/);
@@ -36,7 +37,7 @@ test('R2 service implements encrypted secrets and multipart lifecycle',()=>{
 
 test('R2 API is admin-only and supports account, sync, upload, replace/delete flows',()=>{
   const api=read('src/routes/api.js');
-  for(const route of ["/r2/state","/r2/accounts","/r2/objects","/r2/uploads/start","/r2/uploads/:token/complete"])assert.ok(api.includes(route),route);
+  for(const route of ["/r2/state","/r2/accounts","/r2/folders","/r2/objects","/r2/uploads/start","/r2/uploads/:token/complete"])assert.ok(api.includes(route),route);
   assert.match(api,/express\.raw\(\{type:'application\/octet-stream',limit:'70mb'\}\)/);
   assert.match(api,/requireAdmin/);
 });
@@ -54,9 +55,13 @@ test('R2 UI is nested under Update Center and has resumable multipart upload',()
   assert.match(ui,/navItem\('r2-accounts','Accounts','cloud','',true\)/);
   assert.match(ui,/navItem\('r2-files','File Manager','android','',true\)/);
   assert.match(ui,/appbit:r2:resume/);
-  assert.match(ui,/for\(let attempt=1;attempt<=5/);
+  assert.match(ui,/for\(let attempt=1;attempt<=8/);
   assert.match(ui,/navigator\.connection\?\.effectiveType/);
-    assert.match(ui,/Replace/);
+  assert.match(ui,/multiple/);
+  assert.match(ui,/data-r2-folder/);
+  assert.match(ui,/appbit:r2:resumes/);
+  assert.match(ui,/download="/);
+  assert.doesNotMatch(ui,/data-r2-replace/);
   assert.match(ui,/Delete/);
 });
 

@@ -1,6 +1,6 @@
-# Appbit V2.16
+# Appbit V2.17
 
-Appbit is an Android APK publishing workspace built for Hostinger App Hosting with the Next.js framework preset.
+Appbit is an Android APK publishing workspace prepared for Hostinger App Hosting with the Next.js framework preset.
 
 ## Hostinger settings
 
@@ -11,17 +11,24 @@ Appbit is an Android APK publishing workspace built for Hostinger App Hosting wi
 - Build command: **npm run build**
 - Package manager: **npm**
 - Output directory: **.next**
-- Runtime command: **next start**
+- Managed runtime: **next start**
 
-The repository contains one Next.js API catch-all at `pages/api/[[...path]].js`. The existing Appbit Express services run behind that native API route. The production build explicitly uses Webpack for Hostinger compatibility.
+The repository contains one Next.js API catch-all at `pages/api/[[...path]].js`. Appbit’s existing Express services run behind that native API route, and the production build explicitly uses Webpack for Hostinger compatibility.
 
-## Production environment
+## Environment
 
-Configure the existing Hostinger environment variables listed in `hostinger.env.example`. Keep the same variable names and values already used by the application; do not commit real secrets.
+Keep the same Hostinger environment variable names and existing secret values in `hostinger.env.example`. Do not commit real credentials. Do not add a `PORT` variable for the managed runtime.
 
-The database schema remains **130**. V2.16 keeps the reviewed, non-destructive reconciliation for an existing Appbit `apps` database and makes its collation metadata inspection compatible with Hostinger’s database engine. Existing records are preserved.
+## V2.17 focus
 
-## Local verification
+- Windows-style R2 file browsing with account disks, folders, breadcrumbs, search, and metadata.
+- Bulk selection and resumable multipart uploads with visible progress and per-part retries, supporting files up to 10 GB.
+- Explicit Download, Copy link, and Open actions for generated public file links.
+- Download-only hostname instructions for TXT verification and CNAME routing; no website or homepage is required.
+- Dedicated public `/health` deployment screen and repaired responsive `/login` card.
+- Existing MySQL data and the reviewed schema-130 reconciliation remain protected.
+
+## Verification
 
 ```bash
 npm install
@@ -31,10 +38,4 @@ npm run build
 npm start
 ```
 
-The browser fallback uses the project-local Playwright browser installed during `npm install` when the host permits it. Direct metadata requests remain available if a browser cannot be installed.
-
-## Release files
-
-- `HOSTINGER-DEPLOY.md` — exact Hostinger setup and redeploy procedure.
-- `versionnotes.md` — the complete V2.16 change record in one file.
-- `VERSION` and `BUILD-INFO.json` — release identity used by the runtime and build output.
+Open `/health` after deployment, then `/login`. The complete V2.17 release record is in `versionnotes.md`.
