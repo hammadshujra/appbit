@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+.env
+.env.*
+!.env.example
+!hostinger.env.example
+backups/
+*.log
+playwright-report/
+test-results/
+.DS_Store

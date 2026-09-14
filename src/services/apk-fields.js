@@ -314,9 +314,14 @@ function parseDate(value,{now=new Date()}={}){
   if(!m){m=raw.match(/\b(\d{1,2})[/.](\d{1,2})[/.](20\d{2})\b/);if(m){const a=Number(m[1]),b=Number(m[2]);if(a>12)return checkedDate(Number(m[3]),b,a);if(b>12)return checkedDate(Number(m[3]),a,b);return null}}
   if(m)return checkedDate(Number(m[1]),Number(m[2]),Number(m[3]));
   if(!/[a-z]/i.test(raw))return null;
-  const month=raw.match(/\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i);
+  const month=raw.match(/\b(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b/i);
   if(!month)return null;
-  const d=new Date(raw);return Number.isNaN(d.getTime())?null:d.toISOString().slice(0,10);
+  const monthNumbers={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+  const day=raw.match(/\b(\d{1,2})(?:st|nd|rd|th)?\b/i);
+  if(!day)return null;
+  const year=raw.match(/\b(20\d{2})\b/);
+  const monthNumber=monthNumbers[month[1].slice(0,3).toLowerCase()];
+  return checkedDate(year?Number(year[1]):new Date(now).getUTCFullYear(),monthNumber,Number(day[1]));
 }
 function checkedDate(y,m,d){const date=new Date(Date.UTC(y,m-1,d));return date.getUTCFullYear()===y&&date.getUTCMonth()===m-1&&date.getUTCDate()===d?date.toISOString().slice(0,10):null}
 function normalizeVersion(value){const v=validValue(value);if(!v)return null;return v.replace(/^v(?=\d)/i,'').replace(/\s+\(.+$/,'').trim().slice(0,120)||null}

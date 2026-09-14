@@ -7,11 +7,11 @@ const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
 test('release identity is bundled and never reads loose VERSION at runtime',()=>{
   const version=read('src/version.js');
-  assert.match(version,/version:'2\.13'/);
-  assert.match(version,/buildId:'2\.13-hostinger-next-esm-route-repair'/);
+  assert.match(version,/version:'2\.14'/);
+  assert.match(version,/buildId:'2\.14-hostinger-clean-next-runtime'/);
   assert.doesNotMatch(version,/readFileSync|node:fs|BUILD-INFO\.json|path\.join/);
   const page=read('pages/[[...path]].jsx');
-  assert.match(page,/APP_VERSION='2\.13'/);
+  assert.match(page,/APP_VERSION='2\.14'/);
   assert.doesNotMatch(page,/readFileSync|node:fs|BUILD-INFO\.json/);
 });
 
@@ -28,6 +28,7 @@ test('Hostinger Next preset starts native Next and has an API catch-all around t
   assert.match(backend,/app\.use\('\/api\/auth',require\('\.\/routes\/auth'\)\)/);
   assert.match(backend,/app\.use\('\/api\/_download',require\('\.\/routes\/downloads'\)\)/);
   assert.match(backend,/startDatabaseInitialization\(\)/);
+  assert.match(backend,/PLAYWRIGHT_BROWSERS_PATH/);
 });
 
 test('native Next login and R2 public download routes are wired for managed Hostinger runtime',()=>{

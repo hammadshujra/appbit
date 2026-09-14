@@ -1,58 +1,41 @@
-# Appbit V2.13
+# Appbit V2.14
 
-Current release: **V2.13**. This Hostinger repair keeps the managed Next.js deployment and fixes the API-route module classification that prevented the newer build from replacing the last successful deployment.
+Appbit is an Android APK publishing workspace built for Hostinger App Hosting with the Next.js framework preset.
 
-V2.13 uses one standard Next.js Pages API catch-all at `pages/api/[[...path]].js`. The route uses Next.js module syntax only, while `package.json` no longer forces all `.js` files into CommonJS mode. A prebuild guard now rejects stale/duplicate catch-all routes before Webpack starts.
+## Hostinger settings
 
-## Hostinger runtime
+- Framework preset: **Next.js**
+- Branch: **main**
+- Node.js: **24.x**
+- Root directory: **./**
+- Build command: **npm run build**
+- Package manager: **npm**
+- Output directory: **.next**
+- Runtime command: **next start**
 
-- Framework preset: Next.js
-- Node.js: 24.x
-- Build command: `npm run build`
-- Production bundler: Webpack (`next build --webpack`)
-- Output directory: `.next`
-- Runtime: Hostinger-managed `next start`
-- API bridge: `pages/api/[[...path]].js`
-- Prebuild validation: `scripts/hostinger-prebuild.js`
-- Postbuild finalizer: `scripts/hostinger-postbuild.js`
+The repository contains one Next.js API catch-all at `pages/api/[[...path]].js`. The existing Appbit Express services run behind that native API route. The production build explicitly uses Webpack for Hostinger compatibility.
 
-# Appbit V2.11
+## Production environment
 
-**APK Publishing Workspace — Hostinger Native Next.js Runtime**
+Configure the existing Hostinger environment variables listed in `hostinger.env.example`. Keep the same variable names and values already used by the application; do not commit real secrets.
 
-V2.11 fixes the Hostinger production 500 reported after the successful V2.10 Webpack build. Hostinger's managed Next.js runtime executes compiled server modules from `.next/server`; V2.10 still attempted to read a loose `VERSION` file from that directory and failed with `ENOENT`. V2.11 bundles release identity into the server code and runs Appbit's backend through native Next.js API routes.
+The database schema remains **130**. Appbit retains authentication, App Library, APK metadata resolution, Publishing, Update Center, Cloudflare R2 management and public download links.
 
-## Hostinger architecture
-
-- Next.js **16.3.3** / React **19.2**.
-- Production build: `next build --webpack`.
-- Production runtime: `next start`.
-- Hostinger Framework preset: **Next.js**.
-- Output directory: **.next**.
-- Existing Appbit Express routers/services are hosted behind `pages/api/[[...path]].js`.
-- MySQL schema remains **130**.
-- Existing APK resolver, Publishing, Update Center, R2 Accounts/File Manager, authentication, backups and app metadata functionality are preserved.
-
-## Current navigation
-
-- Dashboard
-- App Library
-- Publishing
-- Update Center
-- R2 Account
-  - Accounts
-  - File Manager
-- Settings
-
-## Local production
+## Local verification
 
 ```bash
 npm install
 npm run check
+npm test
 npm run build
 npm start
 ```
 
-`npm run build` intentionally uses Webpack on Next.js 16 for Hostinger compatibility.
+The browser fallback uses the project-local Playwright browser installed during `npm install` when the host permits it. Direct metadata requests remain available if a browser cannot be installed.
 
-Visible release version: **V2.13**.
+## Release files
+
+- `HOSTINGER-DEPLOY.md` — exact Hostinger setup and redeploy procedure.
+- `versionnotes.md` — the complete V2.14 change record in one file.
+- `VERSION` and `BUILD-INFO.json` — release identity used by the runtime and build output.
+

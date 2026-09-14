@@ -4,6 +4,6 @@
 // Keep release identity inside the module so SSR/API bundles never depend on
 // runtime filesystem reads of loose release metadata.
 module.exports=Object.freeze({
-  version:'2.13',
-  buildId:'2.13-hostinger-next-esm-route-repair'
+  version:'2.14',
+  buildId:'2.14-hostinger-clean-next-runtime'
 });

@@ -1,5 +1,10 @@
 'use strict';
 
+// Hostinger installs Playwright's browser beside the package. Keep the native
+// Next.js runtime pointed at that same location when the source fallback is
+// used after deployment.
+if(!process.env.PLAYWRIGHT_BROWSERS_PATH)process.env.PLAYWRIGHT_BROWSERS_PATH='0';
+
 const express=require('express');
 const cookieSession=require('cookie-session');
 const compression=require('compression');

@@ -1,8 +1,8 @@
-# Appbit V2.13 — Hostinger Next.js Deployment
+# Appbit V2.14 — Hostinger App Hosting
 
-V2.13 fixes the module-parse failure reported for `pages/api/[[...path]].js`. The failing V2.11 route mixed CommonJS and ESM while the package explicitly declared `"type": "commonjs"`. V2.13 removes that package-wide module classification and ships one standard Next.js API route using Next.js `import`/`export` syntax only.
+This package is prepared for Hostinger’s managed Next.js runtime. Push the repository contents to the `main` branch and use the settings below.
 
-## Hostinger settings
+## Build configuration
 
 - Framework preset: **Next.js**
 - Branch: **main**
@@ -12,29 +12,14 @@ V2.13 fixes the module-parse failure reported for `pages/api/[[...path]].js`. Th
 - Package manager: **npm**
 - Output directory: **.next**
 
-You do not need a custom Entry File. Hostinger should run the managed Next.js runtime.
+You do not need a custom Entry File. Hostinger should start the saved build with its managed Next.js runtime (`next start`).
 
-`npm run build` automatically runs the V2.13 prebuild guard, then `next build --webpack`, then the postbuild finalizer. Do **not** replace it with plain `next build`.
-
-## What you must see in the build log
-
-Before Next.js compilation starts, the log must contain:
-
-```text
-[Appbit] Hostinger prebuild V2.13: API route verified — pages/api/[[...path]].js (Next.js module syntax).
-```
-
-Near the end of a successful build, it must contain:
-
-```text
-[Appbit] Hostinger output finalized for V2.13.
-```
-
-If the log still names `pages/api/[...path].mjs`, or shows an older V2.11 route without the V2.13 prebuild line, Hostinger is building an older commit/package.
+`npm run build` runs the release guard, `next build --webpack`, and the output finalizer automatically. Keep the build command exactly as shown.
+Do **not** replace it with plain `next build`.
 
 ## Environment variables
 
-Keep the same production variables already configured in Hostinger:
+Keep the existing Hostinger values and variable names:
 
 - `NODE_ENV=production`
 - `SESSION_SECRET`
@@ -49,16 +34,45 @@ Keep the same production variables already configured in Hostinger:
 - `DB_PASSWORD`
 - `DB_SSL=false`
 - `TRUST_PROXY=1`
+- `WORK_LOCK_TIMEOUT_SECONDS`
+- `APK_RESOLVER_DAILY_PAGES`
+- `APK_RESOLVER_FULL_PAGES`
+- `APK_RESOLVER_MAX_ITEMS`
+- `APK_RESOLVER_REQUEST_GAP_MS`
 
-## Redeploy
+`SESSION_SECRET` and `R2_CREDENTIALS_KEY` must be long, stable secrets. Never place their real values in GitHub or this ZIP.
 
-1. Replace the repository/application files with the V2.13 package.
-2. Commit and push the V2.13 files to the exact branch Hostinger deploys.
-3. Start a **new deployment**. Failed deployments leave the previous successful runtime active.
-4. Confirm the V2.13 prebuild line appears before compilation.
-5. Confirm `Hostinger output finalized for V2.13.` appears after the build.
-6. After deployment, open the site in a private/incognito window.
+## Build log checks
 
-## Expected result
+The log should contain this line before Next.js compilation:
 
-The build must no longer fail on `import`/`export` in `pages/api/[[...path]].js`. The login page should load instead of the previous 500, `/api/session/csrf` should be served by the native Next.js API bridge, and runtime requests must not depend on a loose root `VERSION` file.
+```text
+[Appbit] Hostinger prebuild V2.14: API route verified — pages/api/[[...path]].js (Next.js module syntax).
+```
+
+The completed build should contain:
+
+```text
+[Appbit] Hostinger output finalized for V2.14.
+```
+
+The prebuild guard removes only the three known stale API catch-all filenames before checking the canonical route. This prevents an older repository file from recreating the reported route conflict.
+
+## Redeploy procedure
+
+1. Replace the repository contents with this V2.14 package.
+2. Commit and push the files to the exact `main` branch selected in Hostinger.
+3. Confirm the deployment commit is the new V2.14 commit.
+4. Start a fresh deployment with the settings above.
+5. Confirm both V2.14 log lines appear.
+6. Open the domain in a private browser window and sign in.
+
+If the log still reports an older route filename, Hostinger is building an older commit or a different branch. Check the repository selection and branch first, then start a new deployment.
+
+## Runtime checks
+
+- `/login` should load the sign-in page.
+- `/api/session/csrf` should return a JSON CSRF response.
+- The Appbit interface should load after successful sign-in.
+- `/api/health` is available to the administrator after the database is ready.
+- Public R2 links continue to use `/d/<token>` through the Next.js rewrite.

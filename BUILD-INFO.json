@@ -1,7 +1,7 @@
 {
-  "version": "2.13",
+  "version": "2.14",
   "schemaVersion": 130,
-  "release": "V2.13 Hostinger Next.js module-context repair",
-  "buildId": "2.13-hostinger-next-esm-route-repair",
-  "built_at": "2026-09-13"
+  "release": "V2.14 Hostinger-only Next.js deployment cleanup",
+  "buildId": "2.14-hostinger-clean-next-runtime",
+  "built_at": "2026-09-14"
 }
