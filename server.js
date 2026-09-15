@@ -62,15 +62,15 @@ async function main(){
   });
 
   app.use((err,req,res,nextMiddleware)=>{
-    console.error('[Appbit] Request error:',err);
+    console.error('[Happy Cloud] Request error:',err);
     if(res.headersSent)return nextMiddleware(err);
     const status=Number(err.status||500),r2Request=req.originalUrl.startsWith('/api/r2/');
     if(req.originalUrl.startsWith('/api/')||req.path.startsWith('/api/')||req.accepts(['json','html'])==='json')return res.status(status).json({ok:false,error:status>=500&&config.nodeEnv==='production'&&!r2Request?'The request failed. Check Runtime Logs for details.':(err.message||'Request failed.')});
-    return res.status(status).render('error',{title:'Error',active:'',message:status>=500&&config.nodeEnv==='production'?'The request failed. Check Appbit Health and Hostinger logs.':(err.message||'Request failed.')});
+    return res.status(status).render('error',{title:'Error',active:'',message:status>=500&&config.nodeEnv==='production'?'The request failed. Check Happy Cloud Studio Manager Health and Hostinger logs.':(err.message||'Request failed.')});
   });
 
   const server=app.listen(config.port,'0.0.0.0',()=>{
-    console.log(`[Appbit] V${config.appVersion} (${config.buildId}) Next.js workspace listening on port ${config.port}`);
+    console.log(`[Happy Cloud] V${config.appVersion} (${config.buildId}) Next.js workspace listening on port ${config.port}`);
     startDatabaseInitialization();
     startBackupWorker();
     startApkResolverWorker();
@@ -79,4 +79,4 @@ async function main(){
   server.headersTimeout=65*60*1000;
 }
 
-main().catch(err=>{console.error('[Appbit] Failed to start Next.js runtime:',err);process.exitCode=1});
+main().catch(err=>{console.error('[Happy Cloud] Failed to start Next.js runtime:',err);process.exitCode=1});

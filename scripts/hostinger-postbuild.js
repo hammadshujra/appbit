@@ -12,4 +12,4 @@ const version=fs.readFileSync(path.join(root,'VERSION'),'utf8').trim();
 const buildInfo=fs.readFileSync(path.join(root,'BUILD-INFO.json'),'utf8');
 fs.writeFileSync(path.join(serverDir,'VERSION'),version+'\n','utf8');
 fs.writeFileSync(path.join(serverDir,'BUILD-INFO.json'),buildInfo,'utf8');
-console.log(`[Appbit] Hostinger output finalized for V${version}.`);
+console.log(`[Happy Cloud] Hostinger output finalized for V${version}.`);

@@ -11,7 +11,7 @@ const staleRoutes=[
   path.join(root,'pages','api','[[...path]].mjs')
 ];
 function fail(message){
-  console.error(`[Appbit] Hostinger prebuild failed: ${message}`);
+  console.error(`[Happy Cloud] Hostinger prebuild failed: ${message}`);
   process.exit(1);
 }
 function removeStaleRoutes(){
@@ -33,4 +33,4 @@ if(!/export\s+default\s+function\s+appbitApi/.test(source))fail('API route does 
 if(!/export\s+const\s+config/.test(source))fail('API route is missing the Next.js API config export.');
 if(/\brequire\s*\(|module\.exports|exports\./.test(source))fail('API route mixes CommonJS syntax into the Next.js ESM source route.');
 const cleanup=removed.length?` Removed stale route(s): ${removed.join(', ')}.`:'';
-console.log(`[Appbit] Hostinger prebuild V${version}: API route verified — pages/api/[[...path]].js (Next.js module syntax).${cleanup}`);
+console.log(`[Happy Cloud] Hostinger prebuild V${version}: API route verified — pages/api/[[...path]].js (Next.js module syntax).${cleanup}`);

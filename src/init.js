@@ -20,11 +20,11 @@ async function initializeDatabase() {
     state.dbError = null;
     apkResolver.startApkResolverWorker();
     apkUpdates.startUpdateWorker();
-    console.log(`[Appbit] Database ready. Schema v${state.schemaVersion}.`);
+    console.log(`[Happy Cloud] Database ready. Schema v${state.schemaVersion}.`);
   } catch (err) {
     state.dbReady = false;
     state.dbError = err?.message || String(err);
-    console.error('[Appbit] Database initialization failed:', state.dbError);
+    console.error('[Happy Cloud] Database initialization failed:', state.dbError);
   } finally {
     running = false;
   }

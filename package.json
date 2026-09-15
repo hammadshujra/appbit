@@ -1,8 +1,8 @@
 {
-  "name": "appbit",
+  "name": "happy-cloud-studio-manager",
   "version": "2.6.0",
   "private": true,
-  "description": "Appbit Studio Manager \u2014 private app publishing, release, update, storage, and team workspace.",
+  "description": "Happy Cloud Studio Manager \u2014 private app publishing, release, update, storage, file management, and team workspace.",
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",

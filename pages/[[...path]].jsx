@@ -1,22 +1,22 @@
 import Head from 'next/head';
 const APP_VERSION='2.6';
 
-export default function AppbitShell({appVersion}) {
+export default function HappyCloudShell({appVersion}) {
   return (
     <>
       <Head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <meta name="theme-color" content="#f6f9ff" />
-        <meta name="description" content="Appbit Studio Manager — private apps, releases, updates, storage, accounts, and team workspace." />
+        <meta name="description" content="Happy Cloud Studio Manager — private apps, releases, updates, storage, accounts, and team workspace." />
         <link rel="icon" href="/favicon.svg?v=260" type="image/svg+xml" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href={`/ui/app.css?v=${encodeURIComponent(appVersion)}&r=260`} />
-        <title>Appbit Studio Manager</title>
+        <title>Happy Cloud Studio Manager</title>
       </Head>
-      <div id="app"><div className="boot">Loading Appbit…</div></div>
+      <div id="app"><div className="boot">Loading Happy Cloud…</div></div>
       <script src={`/ui/app.js?v=${encodeURIComponent(appVersion)}&r=260`} defer></script>
     </>
   );
@@ -81,7 +81,7 @@ export async function getServerSideProps(context){
         context.res.end(Number(error?.status||0)===404?'File not found.':'Download failed.');
         return {props:{appVersion:APP_VERSION}};
       }
-      console.error('[Appbit] Direct download lookup failed:',error);
+      console.error('[Happy Cloud] Direct download lookup failed:',error);
     }
   }
   return {props:{appVersion:APP_VERSION}};

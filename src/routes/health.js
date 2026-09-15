@@ -6,11 +6,11 @@ const router=express.Router();
 router.get('/health',async(req,res,next)=>{try{
   if(state.dbReady){const userId=Number(req.session?.user?.id||0);if(!userId)return res.redirect('/login?next=%2Fhealth');const[[user]]=await getPool().query('SELECT role,is_active FROM users WHERE id=? LIMIT 1',[userId]);if(!user||!user.is_active){req.session=null;return res.redirect('/login?next=%2Fhealth')}if(user.role!=='admin')return res.status(403).render('error',{title:'Access denied',active:'',message:'Database Health is available to the Admin only.'})}
   const checks=[
-    ['Appbit version','pass',`V${config.appVersion} · ${config.buildId}`],
+    ['Happy Cloud version','pass',`V${config.appVersion} · ${config.buildId}`],
     ['Node.js version','pass',process.version],
     ['Database environment',hasDbConfig()?'pass':'fail',hasDbConfig()?'Configured':'DB_HOST / DB_NAME / DB_USER required'],
     ['Database connection',state.dbReady?'pass':'fail',state.dbReady?'Connected':(state.dbError||'Waiting for connection')],
-    ['Schema',state.schemaVersion>=100?'pass':'fail',state.schemaVersion?`Appbit schema ${state.schemaVersion}`:'Not initialized'],
+    ['Schema',state.schemaVersion>=100?'pass':'fail',state.schemaVersion?`Happy Cloud schema ${state.schemaVersion}`:'Not initialized'],
     ['Workspace','pass','Android APK publishing only'],
     ['APK resolver','pass','Public Android source metadata resolver enabled'],
     ['Theme','pass','Concept 4 light Studio Manager interface'],

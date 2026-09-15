@@ -12,7 +12,7 @@ const router = express.Router();
 const loginLimiter = rateLimit({ windowMs: 10 * 60 * 1000, limit: 20, standardHeaders: true, legacyHeaders: false });
 
 router.get('/login', guestOnly, async (req, res) => {
-  if (req.baseUrl === '/api/auth') return res.status(405).json({ ok: false, error: 'Use the Appbit sign-in page.' });
+  if (req.baseUrl === '/api/auth') return res.status(405).json({ ok: false, error: 'Use the Happy Cloud Studio Manager sign-in page.' });
   let hasUsers = false;
   if (state.dbReady) {
     try { const [[row]] = await getPool().query('SELECT COUNT(*) AS c FROM users WHERE is_active=1'); hasUsers = Number(row.c) > 0; } catch {}

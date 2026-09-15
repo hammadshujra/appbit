@@ -1,4 +1,4 @@
-# Appbit V2.5 — Hostinger App Hosting
+# Happy Cloud V2.5 — Hostinger App Hosting
 
 Push the repository contents to the `main` branch selected by Hostinger and use the settings below.
 
@@ -44,19 +44,19 @@ Keep `SESSION_SECRET` and `R2_CREDENTIALS_KEY` long and stable. Never place thei
 The build should contain:
 
 ```text
-[Appbit] Hostinger prebuild V2.5: API route verified — pages/api/[[...path]].js (Next.js module syntax).
-[Appbit] Hostinger output finalized for V2.5.
+[Happy Cloud] Hostinger prebuild V2.5: API route verified — pages/api/[[...path]].js (Next.js module syntax).
+[Happy Cloud] Hostinger output finalized for V2.5.
 ```
 
 After runtime initialization, the database line should report:
 
 ```text
-[Appbit] Database ready. Schema v133.
+[Happy Cloud] Database ready. Schema v133.
 ```
 
 ## Existing database safety
 
-The release continues the reviewed handling for an existing Appbit database where `apps` already contains Appbit records but `schema_migrations` is empty or older. It verifies the recognized Appbit table signature, performs idempotent reconciliation, and records schema `133`.
+The release continues the reviewed handling for an existing Happy Cloud Studio Manager database where `apps` already contains Happy Cloud Studio Manager records but `schema_migrations` is empty or older. It verifies the recognized Happy Cloud table signature, performs idempotent reconciliation, and records schema `133`.
 
 This path does not reset the database, delete rows, or run the old legacy migration. Do not remove the existing database variables. A partial/unrelated `apps` table or a marker newer than `133` still stops for manual review.
 
@@ -70,20 +70,20 @@ This path does not reset the database, delete rows, or run the old legacy migrat
 
 ## R2 download hostname
 
-A hostname such as `downloads.example.com` is for download links only. It does not need a homepage, but it **does** need working HTTPS routing to the Appbit deployment. DNS ownership alone cannot create an SSL certificate or make Hostinger accept an unknown hostname.
+A hostname such as `downloads.example.com` is for download links only. It does not need a homepage, but it **does** need working HTTPS routing to the Happy Cloud Studio Manager deployment. DNS ownership alone cannot create an SSL certificate or make Hostinger accept an unknown hostname.
 
-In Appbit, open **Accounts**, enter the hostname, and use the single DNS record Appbit shows:
+In Happy Cloud, open **Accounts**, enter the hostname, and use the single DNS record Happy Cloud shows:
 
-1. Create **one CNAME** record: the custom hostname as the Name and the Appbit gateway hostname as the Target. There is **no TXT record** in V2.5.
+1. Create **one CNAME** record: the custom hostname as the Name and the Happy Cloud gateway hostname as the Target. There is **no TXT record** in V2.5.
 2. If the DNS zone is on Cloudflare, keep the record **DNS only** while verifying. Cloudflare CNAME flattening is supported by the verifier.
-3. Wait for DNS propagation and click **I added the CNAME — Verify**. Appbit accepts the hostname when the CNAME/address routing resolves to the gateway or the live HTTPS gateway check succeeds.
+3. Wait for DNS propagation and click **I added the CNAME — Verify**. Happy Cloud accepts the hostname when the CNAME/address routing resolves to the gateway or the live HTTPS gateway check succeeds.
 4. Newly copied links then use only the real filename, for example `https://downloads.example.com/tiktok.apk`.
 
-The DNS record is intentionally simple, but HTTPS still has to be valid for the custom hostname. If Cloudflare shows **525 SSL handshake failed**, the request is failing before it reaches Appbit; fix the TLS/hostname routing at the origin and verify again. Removing or deactivating the hostname never deletes R2 objects.
+The DNS record is intentionally simple, but HTTPS still has to be valid for the custom hostname. If Cloudflare shows **525 SSL handshake failed**, the request is failing before it reaches Happy Cloud; fix the TLS/hostname routing at the origin and verify again. Removing or deactivating the hostname never deletes R2 objects.
 
 ## Upload and link checks
 
 - File Manager shows each R2 account as a disk, supports Windows-style folders, drag-and-drop multi-file queues inside folders, and files up to 10 GB per file.
-- Uploads are sent as small multipart requests through the Appbit API; a temporary network failure retries the current part.
+- Uploads are sent as small multipart requests through the Happy Cloud Studio Manager API; a temporary network failure retries the current part.
 - Use **Copy link** to copy `domain/filename`. Internal folder names and legacy random object keys are never included in newly copied links. Opening that URL streams the R2 object as an attachment download. Use **Delete** to remove a file from R2.
-- The fallback Appbit-host link remains available before a custom hostname is verified.
+- The fallback Happy Cloud-host link remains available before a custom hostname is verified.

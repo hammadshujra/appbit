@@ -17,12 +17,12 @@ async function finish(db,st){if(st.status!=='running')return st;let queue=[];try
 async function step(){await recover();if(busy)return state();busy=true;try{const db=getPool();let st=await state();if(st.status!=='running')return st;let queue=[];try{queue=JSON.parse(st.queue_json||'[]')}catch{}if(!queue.length)return finish(db,st);const id=queue[0],runId=st.run_id;const c=new AbortController();controller=c;const [claimed]=await db.query("UPDATE apk_update_state SET current_app_id=? WHERE scan_key=? AND run_id=? AND status='running'",[id,SCAN_KEY,runId]);if(!claimed.affectedRows)return state();try{const [[app]]=await db.query('SELECT * FROM apps WHERE id=? LIMIT 1',[id]);let available=false;if(app){const checked=await resolver.checkUpdateForApp(app,{signal:c.signal});available=Boolean(checked.available)}if(c.signal.aborted)return state();await db.query("UPDATE apk_update_state SET queue_json=?,processed_count=processed_count+1,update_count=update_count+?,current_app_id=NULL,last_error=NULL WHERE scan_key=? AND run_id=? AND status='running'",[JSON.stringify(queue.slice(1)),available?1:0,SCAN_KEY,runId]);}catch(err){if(c.signal.aborted||err.code==='SOURCE_STOPPED')return state();const message=toMessage(err);const pauseSource=['SOURCE_RATE_LIMITED','SOURCE_UNAVAILABLE','SOURCE_NETWORK','SOURCE_TIMEOUT'].includes(err.code);if(pauseSource){await db.query("UPDATE apk_update_state SET status='paused',last_error=?,current_app_id=NULL WHERE scan_key=? AND run_id=? AND status='running'",[message,SCAN_KEY,runId])}else{await db.query('UPDATE apps SET last_checked_at=NOW(),update_error=? WHERE id=?',[message,id]);await db.query("UPDATE apk_update_state SET queue_json=?,processed_count=processed_count+1,failed_count=failed_count+1,last_error=?,current_app_id=NULL WHERE scan_key=? AND run_id=? AND status='running'",[JSON.stringify(queue.slice(1)),message,SCAN_KEY,runId])}}finally{if(controller===c)controller=null}return finish(db,await state())}finally{busy=false}}
 
 async function autoTick(){
-  try{const st=await state();if(st.status==='running')await step()}catch(err){console.error('[Appbit] update worker:',toMessage(err))}
+  try{const st=await state();if(st.status==='running')await step()}catch(err){console.error('[Happy Cloud] update worker:',toMessage(err))}
 }
 function startUpdateWorker(){
   if(workerStarted)return;workerStarted=true;
   const first=setTimeout(autoTick,5000);if(first.unref)first.unref();
   const timer=setInterval(autoTick,WORKER_INTERVAL_MS);if(timer.unref)timer.unref();
-  console.log('[Appbit] update worker started. Running scans continue in the background.');
+  console.log('[Happy Cloud] update worker started. Running scans continue in the background.');
 }
 module.exports={state,start,stop,step,startUpdateWorker,markUpdated:resolver.markUpdated};

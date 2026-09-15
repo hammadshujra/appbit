@@ -1401,13 +1401,13 @@ async function step() {
 }
 async function autoTick() {
   if(!state.dbReady||workerBusy)return;
-  try{await recoverSync();const st=await getSyncState();if(st.status==='running')await step()}catch(err){console.error('[Appbit] APK resolver worker:',err.message||err)}
+  try{await recoverSync();const st=await getSyncState();if(st.status==='running')await step()}catch(err){console.error('[Happy Cloud] APK resolver worker:',err.message||err)}
 }
 function startApkResolverWorker() {
   if(workerStarted)return;workerStarted=true;
   const first=setTimeout(autoTick,12000);if(first.unref)first.unref();
   const timer=setInterval(autoTick,WORKER_INTERVAL_MS);if(timer.unref)timer.unref();
-  console.log('[Appbit] APK resolver worker started (explicit imports only).');
+  console.log('[Happy Cloud] APK resolver worker started (explicit imports only).');
 }
 
 module.exports={

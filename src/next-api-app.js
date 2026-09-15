@@ -55,7 +55,7 @@ function startWorkersOnce(){
   workersStarted=true;
   startDatabaseInitialization();
   startBackupWorker();
-  console.log(`[Appbit] V${config.appVersion} (${config.buildId}) native Next.js API runtime initialized.`);
+  console.log(`[Happy Cloud] V${config.appVersion} (${config.buildId}) native Next.js API runtime initialized.`);
 }
 // Start only on a real runtime request; Next may import route modules at build time.
 app.use((req,res,next)=>{startWorkersOnce();next();});
@@ -76,8 +76,8 @@ app.get('/api/health/public',(req,res)=>{
     {name:'Runtime',status:'pass',detail:`Node ${process.version}`},
     {name:'Database configuration',status:configured?'pass':'fail',detail:configured?'Environment variables found':'DB_HOST, DB_NAME, and DB_USER are required'},
     {name:'Database connection',status:state.dbReady?'pass':'fail',detail:state.dbReady?'Connected':'Waiting for the database connection'},
-    {name:'Schema',status:state.schemaVersion>=123?'pass':state.dbReady?'fail':'pending',detail:state.schemaVersion?`Appbit schema ${state.schemaVersion}`:'Waiting for schema initialization'},
-    {name:'Download gateway',status:'pass',detail:'Public file links are routed through Appbit'}
+    {name:'Schema',status:state.schemaVersion>=123?'pass':state.dbReady?'fail':'pending',detail:state.schemaVersion?`Happy Cloud schema ${state.schemaVersion}`:'Waiting for schema initialization'},
+    {name:'Download gateway',status:'pass',detail:'Public file links are routed through Happy Cloud Studio Manager'}
   ];
   const ok=checks.every(check=>check.status==='pass');
   res.setHeader('Cache-Control','no-store');
@@ -100,7 +100,7 @@ app.use('/api',require('./routes/api'));
 // Health route remains available as JSON in /api/health via routes/api.js.
 app.use((req,res)=>res.status(404).json({ok:false,error:'Not found.'}));
 app.use((err,req,res,next)=>{
-  console.error('[Appbit Next API] Request error:',err);
+  console.error('[Happy Cloud Next API] Request error:',err);
   if(res.headersSent)return next(err);
   const status=Number(err.status||500);
   const isR2=req.originalUrl.startsWith('/api/r2/');

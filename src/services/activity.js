@@ -30,7 +30,7 @@ function activityJson(row){const meta=humanizeAction(row.action);return{id:Numbe
 
 async function record(userId,action,{appId=null,targetUserId=null,details=null}={}){
   try{const [r]=await getPool().query('INSERT INTO activity_log (user_id,action,app_id,target_user_id,details_json) VALUES (?,?,?,?,?)',[userId?Number(userId):null,String(action).slice(0,80),appId?Number(appId):null,targetUserId?Number(targetUserId):null,details?JSON.stringify(details):null]);return Number(r.insertId||0)}
-  catch(err){console.error('[Appbit] Activity log failed:',err?.message||err);return 0}
+  catch(err){console.error('[Happy Cloud] Activity log failed:',err?.message||err);return 0}
 }
 function safeDate(value,endOfDay=false){const raw=String(value||'').trim();if(!raw)return null;const m=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);const d=m?new Date(Number(m[1]),Number(m[2])-1,Number(m[3]),endOfDay?23:0,endOfDay?59:0,endOfDay?59:0,endOfDay?999:0):new Date(raw);return Number.isNaN(d.getTime())?null:d}
 async function list({viewer,limit=20,offset=0,action='',userId=null,q='',from='',to='',includeTransient=false}={}){
