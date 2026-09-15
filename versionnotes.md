@@ -63,5 +63,16 @@ This pass fixes the first post-redesign UI breaks without changing database sche
 - New Folder is now a single-instance modal and no longer duplicates/flickers.
 - Fixed File Manager search icon contrast and responsive tree sizing.
 - Fixed System Health button hover contrast.
-- Switched the studio navigation icon layer to Mage Icons (Apache 2.0) through Iconify SVG masks.
+- Replaced the earlier remote icon layer with bundled local SVG navigation icons so the UI does not depend on an external icon API.
 - Database schema stays at 133; no destructive migration is introduced.
+
+
+## V2.5 UI repair hotfix 2
+- Hard-contained App Detail artwork. App icon, cover and screenshots now have fixed responsive dimensions and cannot stretch the page or create horizontal overflow.
+- Rebuilt collapsed sidebar as a dedicated 82 px icon rail with a clean edge toggle and stable icon sizing.
+- Replaced the remote navigation icon dependency with bundled local SVG icons; Accounts is no longer able to render without an icon because of a network/icon-name failure.
+- Restored Cloudflare branding on active R2 account headers and disk cards.
+- Rebuilt the Health page into the same split light experience as Sign In.
+- Removed white button hover states: secondary actions hover light blue and primary actions stay blue.
+- Added a new asset revision so Hostinger/browser caches cannot keep the broken pre-hotfix CSS/JS after deployment.
+- Database schema remains 133 and no user data migration is introduced.

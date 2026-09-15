@@ -33,6 +33,7 @@ test('File Manager tree uses constrained Cloudflare/app icons',()=>{
 test('R2 account cards and active account use Cloudflare brand asset',()=>{
   const refs=(app.match(/\/cloudflare\.svg/g)||[]).length;
   assert.ok(refs>=3,`expected multiple Cloudflare references, got ${refs}`);
+  assert.match(uiCss,/\.r2-account-heading-icon img\{display:block!important/);
 });
 
 test('new folder modal is single-instance and stable',()=>{
@@ -47,13 +48,28 @@ test('search icon and responsive File Manager styles remain visible',()=>{
   assert.match(uiCss,/@media\(max-width:/);
 });
 
-test('Mage Icons are wired into the UI',()=>{
-  assert.match(app,/api\.iconify\.design\/mage\//);
-  assert.match(app,/MAGE_ICONS=/);
-  assert.match(uiCss,/\.mage-icon\{/);
+test('navigation icons are bundled locally and do not depend on remote icon APIs',()=>{
+  assert.match(app,/const UI_ICON_PATHS=/);
+  assert.match(app,/const localIcon=/);
+  assert.doesNotMatch(app,/api\.iconify\.design/);
+  assert.match(uiCss,/\.ui-svg-icon/);
 });
 
-test('health action hover preserves readable contrast',()=>{
-  assert.match(pageCss,/\.health-actions \.btn:hover\{color:#18305d!important/);
-  assert.match(pageCss,/\.health-actions \.btn-primary:hover\{color:#fff!important/);
+test('health and sign-in buttons never turn white on hover',()=>{
+  assert.match(pageCss,/\.btn:hover\{background:#e8f0ff!important/);
+  assert.match(pageCss,/\.btn-primary:hover\{background:linear-gradient/);
+  assert.match(pageCss,/\.health-secondary:hover\{background:#e9f1ff!important/);
+});
+
+test('app detail artwork is hard-contained and cannot overflow the workspace',()=>{
+  assert.match(uiCss,/\.record-artwork-row\{display:grid!important/);
+  assert.match(uiCss,/\.record-cover-preview>img\{display:block;width:100%!important;height:158px!important/);
+  assert.match(uiCss,/\.record-shot-preview>img\{display:block;width:220px!important;height:124px!important/);
+  assert.match(uiCss,/html,body,#app\{overflow-x:hidden\}/);
+});
+
+test('collapsed sidebar uses a dedicated compact rail layout',()=>{
+  assert.match(uiCss,/\.sidebar-collapsed\{--sidebar:82px\}/);
+  assert.match(uiCss,/\.sidebar-collapsed \.nav-btn\{height:44px;width:48px/);
+  assert.match(app,/chevron-right/);
 });

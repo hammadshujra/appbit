@@ -8,12 +8,12 @@ const read=p=>fs.readFileSync(path.join(ROOT,p),'utf8');
 
 test('login and health use the light Studio Manager standalone UI and cache-isolated logo',()=>{
   const login=read('pages/login.jsx'),health=read('pages/health.jsx'),css=read('public/css/app.css');
-  assert.match(login,/auth-page/); assert.match(login,/auth-visual/); assert.match(login,/studio-logo\.svg\?v=251/);
-  assert.match(health,/health-hero/); assert.match(health,/studio-logo\.svg\?v=251/);
-  assert.match(css,/\.auth-page\{/); assert.match(css,/\.health-page\{/);
+  assert.match(login,/auth-page/); assert.match(login,/auth-visual/); assert.match(login,/studio-logo\.svg\?v=252/);
+  assert.match(health,/health-split-page/); assert.match(health,/health-visual-panel/); assert.match(health,/studio-logo\.svg\?v=252/);
+  assert.match(css,/\.auth-page\{/); assert.match(css,/\.health-split-page\{/);
 });
 
-test('main shell has no duplicate bottom profile card and includes File Manager under Accounts',()=>{
+test('main shell has no duplicate bottom profile card and includes File Manager as top-level navigation',()=>{
   const js=read('public/ui/app.js');
   const shell=js.match(/function shell\(\).*?(?=function bindShell\()/s)?.[0]||'';
   assert.doesNotMatch(shell,/sidebar-foot/);
@@ -76,5 +76,5 @@ test('Workspace app tables separate Version and Size columns',()=>{
 test('V2.5 identity and schema remain non-destructive',()=>{
   assert.equal(read('VERSION').trim(),'2.5');
   assert.match(read('src/version.js'),/version:'2\.5'/);
-  assert.match(read('src/version.js'),/ui-stabilization/);
+  assert.match(read('src/version.js'),/2\.5-ui-repair-2/);
 });

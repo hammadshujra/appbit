@@ -9,15 +9,15 @@ export default function AppbitShell({appVersion}) {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <meta name="theme-color" content="#f6f9ff" />
         <meta name="description" content="Appbit Studio Manager — private apps, releases, updates, storage, accounts, and team workspace." />
-        <link rel="icon" href="/favicon.svg?v=251" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.svg?v=252" type="image/svg+xml" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
-        <link rel="stylesheet" href={`/ui/app.css?v=${encodeURIComponent(appVersion)}`} />
+        <link rel="stylesheet" href={`/ui/app.css?v=${encodeURIComponent(appVersion)}&r=252`} />
         <title>Appbit Studio Manager</title>
       </Head>
       <div id="app"><div className="boot">Loading Appbit…</div></div>
-      <script src={`/ui/app.js?v=${encodeURIComponent(appVersion)}`} defer></script>
+      <script src={`/ui/app.js?v=${encodeURIComponent(appVersion)}&r=252`} defer></script>
     </>
   );
 }
