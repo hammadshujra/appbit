@@ -54,3 +54,14 @@ This pass fixes the first post-redesign UI breaks without changing database sche
 - Simplified File Manager disk cards to account label + usage bar + percent used/remaining; bucket text is no longer duplicated on the disk card.
 - Enlarged File Manager search and removed the visible Ctrl-K badge from the File Manager search box.
 - Added responsive spacing/margin fixes for account forms, team rows, import controls, tables, and File Manager controls.
+
+## V2.5 Accounts + File Manager hotfix
+- Restored the missing `bindR2AccountsPage`, account test/sync action handler, and inline R2 account save binding.
+- Accounts and File Manager are independent top-level navigation items. File Manager owns its expandable account/folder tree.
+- Restored Cloudflare branding on R2 account cards, account headings, and File Manager account-tree roots.
+- Rebuilt File Manager sidebar sizing constraints so app/folder artwork cannot expand the sidebar.
+- New Folder is now a single-instance modal and no longer duplicates/flickers.
+- Fixed File Manager search icon contrast and responsive tree sizing.
+- Fixed System Health button hover contrast.
+- Switched the studio navigation icon layer to Mage Icons (Apache 2.0) through Iconify SVG masks.
+- Database schema stays at 133; no destructive migration is introduced.

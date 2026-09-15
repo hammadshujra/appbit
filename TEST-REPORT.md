@@ -25,3 +25,8 @@ A full `next build --webpack` was not executed in this clean packaging directory
 - Database schema remains **133**.
 - No destructive migration was introduced.
 - Existing app records, R2 account records, folder/object indexes, download domains, publishing/update data, and Admin/Partner records are preserved by the update.
+
+## V2.5 Accounts / File Manager hotfix validation
+- `npm run check`: PASS
+- `npm test`: PASS (54/54)
+- Added regressions for R2 Accounts binding, test/sync actions, top-level File Manager routing, Cloudflare branding, single-instance folder modal, responsive sidebar icon constraints, Mage icon wiring, search visibility, and Health hover contrast.

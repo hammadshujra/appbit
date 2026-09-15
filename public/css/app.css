@@ -4,3 +4,6 @@
 @media(max-width:900px){.auth-page{grid-template-columns:1fr}.auth-visual{min-height:390px;padding:30px}.auth-visual-copy{margin-top:80px}.auth-art{opacity:.45}.auth-form-panel{padding:34px 20px}.health-page{padding:16px}.health-hero{grid-template-columns:1fr;gap:20px}.health-state{justify-self:start}.health-checks{grid-template-columns:1fr}}@media(max-width:560px){.auth-visual-copy h1{font-size:39px}.auth-feature-grid{grid-template-columns:1fr 1fr}.auth-art{display:none}.health-main{padding:20px}.health-hero{padding:28px 22px}.health-hero-brand{left:22px;top:22px}.health-hero h1{font-size:37px}.health-actions,.health-foot{flex-wrap:wrap}}
 
 .standalone-card{width:min(560px,100%);margin:10vh auto;background:#fff;border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:var(--shadow)}.brand-logo-img{width:62px;height:62px}.brand-logo-img.large{width:82px;height:82px}.standalone-card h1{font-size:30px;margin:20px 0 8px}.standalone-card p{color:var(--muted);line-height:1.6}
+
+/* V2.5.1 health/action contrast fix */
+.health-actions .btn:hover{color:#18305d!important;background:#f4f8ff}.health-actions .btn-primary:hover{color:#fff!important;background:linear-gradient(135deg,#2476f3,#4558df)!important}.btn-primary:hover{color:#fff!important}

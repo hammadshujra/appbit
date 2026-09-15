@@ -1,0 +1,5 @@
+Mage Icons
+Source: https://github.com/Mage-Icons/mage-icons
+Used through the Iconify SVG API (mage collection) for Appbit UI navigation/action icons.
+License: Apache License 2.0.
+Cloudflare brand mark is used only to identify Cloudflare R2 connections.

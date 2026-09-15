@@ -32,7 +32,7 @@ async function main(){
   app.set('views',path.join(__dirname,'views'));
   app.disable('x-powered-by');
 
-  app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],imgSrc:["'self'",'data:','blob:'],styleSrc:["'self'","'unsafe-inline'",'https://fonts.googleapis.com'],fontSrc:["'self'",'data:','https://fonts.gstatic.com'],scriptSrc:["'self'","'unsafe-inline'"],connectSrc:["'self'"],objectSrc:["'none'"],frameAncestors:["'none'"]}},crossOriginResourcePolicy:{policy:'cross-origin'}}));
+  app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],imgSrc:["'self'",'data:','blob:','https://api.iconify.design'],styleSrc:["'self'","'unsafe-inline'",'https://fonts.googleapis.com'],fontSrc:["'self'",'data:','https://fonts.gstatic.com'],scriptSrc:["'self'","'unsafe-inline'"],connectSrc:["'self'"],objectSrc:["'none'"],frameAncestors:["'none'"]}},crossOriginResourcePolicy:{policy:'cross-origin'}}));
   app.use(compression());
   app.use(morgan(config.nodeEnv==='production'?'combined':'dev'));
   app.use(express.urlencoded({extended:false,limit:'256kb'}));

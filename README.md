@@ -53,3 +53,14 @@ See `HOSTINGER-DEPLOY.md` for the existing Hostinger deployment and custom downl
 ## V2.5 UI stabilization
 
 The current package includes a post-redesign UI stabilization pass: new Concept 4 login/health screens, top-only profile control, File Manager under Accounts, active-only import progress, real Analytics charting, improved R2 account setup guidance, Admin/Partner profile photos, simplified File Manager disk cards, and spacing/icon consistency fixes. Schema remains 133.
+
+## V2.5 Accounts + File Manager hotfix
+- Restored the missing `bindR2AccountsPage`, account test/sync action handler, and inline R2 account save binding.
+- Accounts and File Manager are independent top-level navigation items. File Manager owns its expandable account/folder tree.
+- Restored Cloudflare branding on R2 account cards, account headings, and File Manager account-tree roots.
+- Rebuilt File Manager sidebar sizing constraints so app/folder artwork cannot expand the sidebar.
+- New Folder is now a single-instance modal and no longer duplicates/flickers.
+- Fixed File Manager search icon contrast and responsive tree sizing.
+- Fixed System Health button hover contrast.
+- Switched the studio navigation icon layer to Mage Icons (Apache 2.0) through Iconify SVG masks.
+- Database schema stays at 133; no destructive migration is introduced.
