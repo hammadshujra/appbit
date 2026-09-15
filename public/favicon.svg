@@ -1,25 +1,19 @@
-<svg width="421" height="269" viewBox="0 0 421 269" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g filter="url(#filter0_i_656_411)">
-<path d="M29.672 77.416L23.912 97H2.12L24.776 27.4H37.544H44.36H79.208H86.504H98.792L121.448 97H99.752L93.992 77.416H29.672ZM39.944 42.568L34.088 62.152H89.48L83.72 42.568H39.944ZM145.803 75.4V97H126.219C126.219 73.768 126.219 50.536 126.219 27.4C153.771 27.4 181.227 27.4 208.779 27.4C224.523 27.496 234.411 35.176 234.411 51.4C234.411 67.528 224.523 75.208 208.779 75.304C187.755 75.4 166.827 75.4 145.803 75.4ZM145.803 42.568V60.136C165.579 60.136 185.259 60.136 205.035 60.136C211.275 60.136 214.059 57.448 214.059 51.4C214.059 45.352 211.275 42.568 205.035 42.568C185.259 42.568 165.579 42.568 145.803 42.568ZM259.709 75.4V97H240.125V27.4C253.181 27.4 266.141 27.4 279.101 27.4C294.941 27.496 304.829 35.272 304.829 51.4C304.829 67.528 294.941 75.208 279.101 75.4C272.669 75.4 266.141 75.4 259.709 75.4ZM259.709 42.664V60.136C264.989 60.136 270.173 60.136 275.453 60.136C281.693 60.136 284.477 57.448 284.477 51.4C284.477 45.352 281.693 42.664 275.453 42.664C270.173 42.664 264.989 42.664 259.709 42.664Z" fill="url(#paint0_linear_656_411)"/>
-<path d="M211.997 198.765C211.997 229.825 187.111 236 164.284 236H0V100.344H159.98C182.808 100.344 207.693 106.332 207.693 137.392C207.693 152.736 200.022 162.091 190.292 167.517C201.893 172.195 211.997 181.364 211.997 198.765ZM38.1707 129.908V153.297H154.741C171.207 153.297 171.207 129.908 154.741 129.908H38.1707ZM38.1707 206.249H159.044C175.51 206.249 175.51 182.86 159.044 182.86H38.1707V206.249ZM261.461 236H223.291V197.829V100.344H261.461V236ZM321.745 236V130.095H276.464V100.344C319.312 100.344 362.348 100.344 405.196 100.344V130.095H359.916V236H321.745Z" fill="url(#paint1_linear_656_411)"/>
-</g>
-<defs>
-<filter id="filter0_i_656_411" x="0" y="27.4004" width="405.196" height="208.6" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feOffset dy="3"/>
-<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0.8 0 0 0 0 1 0 0 0 1 0"/>
-<feBlend mode="normal" in2="shape" result="effect1_innerShadow_656_411"/>
-</filter>
-<linearGradient id="paint0_linear_656_411" x1="158" y1="0" x2="158" y2="114" gradientUnits="userSpaceOnUse">
-<stop stop-color="#0066FF"/>
-<stop offset="1" stop-color="#7EB2FF"/>
-</linearGradient>
-<linearGradient id="paint1_linear_656_411" x1="210.5" y1="46" x2="210.5" y2="269" gradientUnits="userSpaceOnUse">
-<stop stop-color="#0066FF"/>
-<stop offset="1" stop-color="#7EB2FF"/>
-</linearGradient>
-</defs>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ab1" x1="11" y1="8" x2="42" y2="58" gradientUnits="userSpaceOnUse"><stop stop-color="#45D9FF"/><stop offset=".55" stop-color="#2781FF"/><stop offset="1" stop-color="#2455F4"/></linearGradient>
+    <linearGradient id="ab2" x1="30" y1="10" x2="58" y2="52" gradientUnits="userSpaceOnUse"><stop stop-color="#345CFF"/><stop offset=".48" stop-color="#5C55F6"/><stop offset="1" stop-color="#A56EF4"/></linearGradient>
+    <linearGradient id="ab3" x1="23" y1="28" x2="54" y2="58" gradientUnits="userSpaceOnUse"><stop stop-color="#18C9F5"/><stop offset=".45" stop-color="#4867F4"/><stop offset="1" stop-color="#9A6BEF"/></linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#2948B8" flood-opacity=".16"/></filter>
+  </defs>
+  <g filter="url(#soft)">
+    <!-- A: one continuous folded ribbon -->
+    <path d="M8.8 48.6 25.7 11.2c1.6-3.6 6.6-4.2 9.1-1.1l5.2 6.5-15.6 35.2c-1.5 3.3-5.5 4.6-8.6 2.8l-4.3-2.5a4.1 4.1 0 0 1-2.7-3.5Z" fill="url(#ab1)"/>
+    <!-- shared A/B spine -->
+    <path d="M28.3 13.3c1.9-4.1 7.5-4.7 10.2-1.1l12.2 16.2c1.5 2 1.6 4.7.3 6.8l-4.4 6.8-20-26.5 1.7-2.2Z" fill="url(#ab2)"/>
+    <!-- B lower loop / A crossbar fold -->
+    <path d="M22.6 38.4h22.1c6.3 0 11.4 4.2 11.4 9.4s-5.1 9.4-11.4 9.4H27.1c-4.5 0-8.2-3.7-8.2-8.2 0-3.1 1.4-6.1 3.7-8.2v-2.4Zm7.9 7.2c-1.8 0-3.3 1.4-3.3 3.2 0 1.8 1.5 3.2 3.3 3.2h13.7c2.2 0 4-1.4 4-3.2 0-1.8-1.8-3.2-4-3.2H30.5Z" fill="url(#ab3)" fill-rule="evenodd"/>
+    <!-- B upper loop -->
+    <path d="M39.1 17.9h5c6.6 0 11.9 4.3 11.9 9.7 0 4.6-3.9 8.4-9.3 9.4l-4.8-6.4h2.2c2.4 0 4.2-1.3 4.2-3 0-1.7-1.8-3-4.2-3h-.1l-4.9-6.7Z" fill="url(#ab2)"/>
+    <path d="M16.8 39h12.6l-3.4 7.4H13.5L16.8 39Z" fill="#1E62F0" opacity=".95"/>
+  </g>
 </svg>

@@ -13,7 +13,7 @@ router.get('/health',async(req,res,next)=>{try{
     ['Schema',state.schemaVersion>=100?'pass':'fail',state.schemaVersion?`Appbit schema ${state.schemaVersion}`:'Not initialized'],
     ['Workspace','pass','Android APK publishing only'],
     ['APK resolver','pass','Public Android source metadata resolver enabled'],
-    ['Theme','pass','Dark-only Appbit interface'],
+    ['Theme','pass','Concept 4 light Studio Manager interface'],
     ['Admin account',state.adminReady?'pass':'fail',state.adminReady?'Ready':'Set ADMIN_EMAIL and ADMIN_PASSWORD before first run'],
     ['Session secret',config.sessionSecret.length>=24?'pass':'fail',config.sessionSecret.length>=24?'Configured':'SESSION_SECRET should be at least 24 characters']
   ];

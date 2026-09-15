@@ -30,9 +30,9 @@ export default function Login(){
       <div className="login-card">
         <div className="login-brand">
           <img className="login-logo" src="/logo.svg" alt="Appbit"/>
-          <div className="login-kicker">APK Publishing Workspace</div>
+          <div className="login-kicker">Private Studio Manager</div>
         </div>
-        <div className="login-heading"><h1>Welcome back</h1><p>Sign in to manage APK releases, storage, and download links.</p></div>
+        <div className="login-heading"><h1>Welcome back</h1><p>Sign in to manage your apps, releases, storage, accounts, and team.</p></div>
         {error?<div className="error-box">{error}</div>:null}
         <form method="post" action="/api/auth/login" className="stack-form">
           <input type="hidden" name="_csrf" value={csrf}/>

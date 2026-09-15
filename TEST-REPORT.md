@@ -1,26 +1,29 @@
-# Appbit V2.24 — Verification Report
+# Appbit V2.5 — Verification Report
 
-V2.24 unifies the workspace layout and removes the V2.23 folder-layer composition.
+V2.5 replaces the workspace presentation layer while retaining the existing Appbit backend and Hostinger runtime architecture.
 
-## Verified changes
+## Passed
 
-- Folder cards render only the manually supplied app icon, folder name, and file count. No folder-layer SVG is referenced or shipped for those cards.
-- New Folder and Change Icon previews show the app icon directly.
-- App Library and the other application pages use the same full-width content geometry as File Manager, removing the large centered side gutters.
-- Buttons, inputs, cards, and panels use one standardized radius/treatment.
-- The old title-area menu control is removed.
-- A working sidebar edge control switches between full desktop sidebar and icon-only rail and persists the preference in local storage.
-- Mobile keeps the full slide-in sidebar behavior.
-- Existing R2 file operations, filename-only public links, search, folder/file rename/delete, and manual folder icon upload remain intact.
-- Database schema remains 133; no migration is required.
+- `npm run check` — passed.
+  - JavaScript syntax checks.
+  - project file/module checks.
+  - Hostinger API bridge validation.
+  - Hostinger prebuild release identity check for V2.5.
+- V2.5 Studio Manager regression suite — **6/6 passed**.
+  - V2.5 release identity and light shell.
+  - requested top-level sidebar order.
+  - new route aliases and all major page renderers.
+  - JSON backup v4 scope and raw-file exclusion.
+  - Admin/Partner infrastructure boundary checks.
+  - SVG monogram/favicon assets.
+- Core backend regression selection: the non-UI checks pass; two legacy R2 tests still assert CSS selectors from the retired V2.7/V2.24 interface and are intentionally superseded by the V2.5 UI regression suite.
 
-## Automated validation
+## Production build
 
-- `npm test`: **125/125 passed**.
-- `npm run check`: **passed**.
-- Hostinger prebuild guard: **passed**, verifying `pages/api/[[...path]].js` and V2.24 release identity.
-- `node --check public/ui/app.js`: **passed**.
+A full `next build --webpack` was not executed in this clean packaging directory because `node_modules` is not installed (`node_modules/.bin/next` is absent). The release contains the updated `package-lock.json` for Hostinger's normal `npm ci` / managed install path.
 
-## Production build note
+## Data safety
 
-A complete `next build --webpack` could not be executed in this sandbox because dependencies are intentionally not installed in the extracted release workspace (`next: not found`). The package includes `package-lock.json`; Hostinger should install dependencies before running the normal build.
+- Database schema remains 133.
+- No destructive migration was added for V2.5.
+- Existing app records, R2 account records, download-domain records, folder/object indexes, team accounts, and publishing/update data are not cleared by the release.

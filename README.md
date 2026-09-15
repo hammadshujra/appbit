@@ -1,18 +1,51 @@
-# Appbit V2.24
+# Appbit Studio Manager V2.5
 
-V2.24 unifies the whole Appbit workspace around the finalized R2 File Manager layout and removes the layered folder artwork from app folders.
+V2.5 is a complete UI replacement built around the approved Concept 4 direction. The existing Appbit backend, database schema, APK resolver, publishing workflow, update scanner, Cloudflare R2 integration, filename-only download gateway, and custom-domain system remain in place.
 
-## V2.24 focus
+## Studio navigation
 
-- Folder cards no longer render any folder SVG/background layer. A folder shows only the app icon that you upload manually, plus the folder name and file count.
-- New Folder and Change Icon previews now show the app icon itself rather than a folder composition.
-- The R2 sidebar tree uses the manual app icon when one exists; Account/Disk identity keeps its normal disk/folder icon.
-- All major pages now use the same full-width content geometry as File Manager, eliminating the large unused side gutters seen in App Library.
-- Panels/cards/buttons/inputs now share one consistent corner radius and visual treatment across Dashboard, App Library, Publishing, Update Center, R2, and Settings.
-- The old title-bar menu control was removed. A real sidebar edge toggle now supports a compact icon-only desktop rail and a full sidebar. The preference is persisted in local storage.
-- On mobile/tablet the same edge control opens the complete sidebar rather than forcing the desktop icon-only rail.
-- Existing R2 uploads, filename-only download links, global search, folder rename/delete, custom icons, and right-click actions remain intact.
+The primary sidebar is now:
+
+1. **Workspace** — private studio dashboard and activity overview.
+2. **Apps** — replaces the old App Library while retaining import, search, taxonomy, app details, media refresh, draft/publish state, and app locking.
+3. **Release** — replaces the old Publishing page and shows published/release workflows.
+4. **Update** — a separate top-level update center for scans and available app updates.
+5. **Analytics** — private operational analytics derived from the studio's app/release/update/account data.
+6. **Accounts** — Admin-only connected storage/download services, Cloudflare R2 accounts, download domains, storage usage, and File Manager access.
+7. **Team** — Admin-only Admin/Partner management.
+8. **Settings** — Admin-only studio settings, health, maintenance, and JSON backup/restore.
+
+## Roles
+
+- **Admin:** full access to apps, releases, updates, analytics, connected accounts, R2/File Manager, team management, backup/restore, health, and maintenance.
+- **Partner:** app/release/update/analytics work only. Partners cannot manage infrastructure credentials, connected R2 accounts, team members, backup/restore, or destructive maintenance.
+
+## JSON studio backup
+
+V2.5 backup format version 4 is intentionally metadata-focused. It includes:
+
+- published/released apps and version metadata;
+- connected R2 account configuration required to reconnect the studio;
+- custom download-domain configuration;
+- Admin/Partner team structure (the current Admin password is never replaced during restore);
+- organized R2 folder hierarchy and folder metadata/icons;
+- studio settings.
+
+It does **not** copy APK binaries or raw objects stored in Cloudflare R2. The R2 object list is read only to derive the folder hierarchy. Because a portable backup can contain connection credentials and Partner password hashes, backup JSON files must be stored securely.
+
+## Logo and favicon
+
+`public/logo.svg` is the V2.5 A+B vector monogram. The same vector is used for `favicon.svg`, with PNG icon variants included for compatibility.
 
 ## Deployment
 
-Use Node 20–24 with the included lockfile and the normal Hostinger Next.js build. Database schema remains 133; V2.24 does not require a new database migration.
+Use Node 20–24 with the included lockfile and the normal Hostinger managed Next.js build. Database schema remains **133**; V2.5 does not apply a destructive database migration.
+
+```bash
+npm ci
+npm run check
+npm run build
+npm start
+```
+
+See `HOSTINGER-DEPLOY.md` for the existing Hostinger deployment and custom download-domain setup.

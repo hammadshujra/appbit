@@ -1,4 +1,4 @@
-# Appbit V2.24 — Hostinger App Hosting
+# Appbit V2.5 — Hostinger App Hosting
 
 Push the repository contents to the `main` branch selected by Hostinger and use the settings below.
 
@@ -44,8 +44,8 @@ Keep `SESSION_SECRET` and `R2_CREDENTIALS_KEY` long and stable. Never place thei
 The build should contain:
 
 ```text
-[Appbit] Hostinger prebuild V2.24: API route verified — pages/api/[[...path]].js (Next.js module syntax).
-[Appbit] Hostinger output finalized for V2.24.
+[Appbit] Hostinger prebuild V2.5: API route verified — pages/api/[[...path]].js (Next.js module syntax).
+[Appbit] Hostinger output finalized for V2.5.
 ```
 
 After runtime initialization, the database line should report:
@@ -62,7 +62,7 @@ This path does not reset the database, delete rows, or run the old legacy migrat
 
 ## First deployment checks
 
-1. Push the V2.24 files to the exact `main` branch selected in Hostinger.
+1. Push the V2.5 files to the exact `main` branch selected in Hostinger.
 2. Start a fresh deployment with the settings above.
 3. Open `/health`. Wait until Database and Schema show passing.
 4. Open `/login` and sign in.
@@ -72,9 +72,9 @@ This path does not reset the database, delete rows, or run the old legacy migrat
 
 A hostname such as `downloads.example.com` is for download links only. It does not need a homepage, but it **does** need working HTTPS routing to the Appbit deployment. DNS ownership alone cannot create an SSL certificate or make Hostinger accept an unknown hostname.
 
-In Appbit, open **R2 Account → Accounts**, enter the hostname, and use the single DNS record Appbit shows:
+In Appbit, open **Accounts**, enter the hostname, and use the single DNS record Appbit shows:
 
-1. Create **one CNAME** record: the custom hostname as the Name and the Appbit gateway hostname as the Target. There is **no TXT record** in V2.24.
+1. Create **one CNAME** record: the custom hostname as the Name and the Appbit gateway hostname as the Target. There is **no TXT record** in V2.5.
 2. If the DNS zone is on Cloudflare, keep the record **DNS only** while verifying. Cloudflare CNAME flattening is supported by the verifier.
 3. Wait for DNS propagation and click **I added the CNAME — Verify**. Appbit accepts the hostname when the CNAME/address routing resolves to the gateway or the live HTTPS gateway check succeeds.
 4. Newly copied links then use only the real filename, for example `https://downloads.example.com/tiktok.apk`.

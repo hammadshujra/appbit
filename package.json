@@ -1,8 +1,8 @@
 {
   "name": "appbit",
-  "version": "2.24.0",
+  "version": "2.5.0",
   "private": true,
-  "description": "Appbit APK Publishing Workspace — Hostinger-managed Next.js runtime.",
+  "description": "Appbit Studio Manager — private app publishing, release, update, storage, and team workspace.",
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
@@ -14,7 +14,8 @@
     "postinstall": "node scripts/install-playwright.js",
     "build:hostinger": "npm run build",
     "postbuild": "node scripts/hostinger-postbuild.js",
-    "prebuild": "node scripts/hostinger-prebuild.js"
+    "prebuild": "node scripts/hostinger-prebuild.js",
+    "test:v25": "node --test tests/v2_5-studio-manager-regression.cjs"
   },
   "engines": {
     "node": ">=20.9 <25"
