@@ -1,29 +1,27 @@
-# Appbit V2.5 — Verification Report
+# Appbit V2.5 — UI Stabilization Verification Report
 
-V2.5 replaces the workspace presentation layer while retaining the existing Appbit backend and Hostinger runtime architecture.
+This package is the Concept 4 V2.5 UI stabilization pass. It keeps schema 133 and the existing backend/data model intact.
 
 ## Passed
 
 - `npm run check` — passed.
   - JavaScript syntax checks.
-  - project file/module checks.
+  - source/module checks.
   - Hostinger API bridge validation.
-  - Hostinger prebuild release identity check for V2.5.
-- V2.5 Studio Manager regression suite — **6/6 passed**.
-  - V2.5 release identity and light shell.
-  - requested top-level sidebar order.
-  - new route aliases and all major page renderers.
-  - JSON backup v4 scope and raw-file exclusion.
-  - Admin/Partner infrastructure boundary checks.
-  - SVG monogram/favicon assets.
-- Core backend regression selection: the non-UI checks pass; two legacy R2 tests still assert CSS selectors from the retired V2.7/V2.24 interface and are intentionally superseded by the V2.5 UI regression suite.
+  - Hostinger prebuild validation for V2.5.
+- Current regression suite — **46/46 passed**.
+  - database/collation safeguards.
+  - app detail, metadata, import, source and media behavior.
+  - filename-only R2 download gateway behavior.
+  - Concept 4 V2.5 shell, routes, backup scope and Admin/Partner boundaries.
+  - new V2.5 UI stabilization checks for login, health, profile header, import progress, analytics graph, Accounts/R2 guide, profile photos, File Manager search/disk cards, and separate Version/Size columns.
 
 ## Production build
 
-A full `next build --webpack` was not executed in this clean packaging directory because `node_modules` is not installed (`node_modules/.bin/next` is absent). The release contains the updated `package-lock.json` for Hostinger's normal `npm ci` / managed install path.
+A full `next build --webpack` was not executed in this clean packaging directory because `node_modules` is not included. The package contains the lockfile used by Hostinger's dependency install/build path.
 
 ## Data safety
 
-- Database schema remains 133.
-- No destructive migration was added for V2.5.
-- Existing app records, R2 account records, download-domain records, folder/object indexes, team accounts, and publishing/update data are not cleared by the release.
+- Database schema remains **133**.
+- No destructive migration was introduced.
+- Existing app records, R2 account records, folder/object indexes, download domains, publishing/update data, and Admin/Partner records are preserved by the update.

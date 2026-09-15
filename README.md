@@ -49,3 +49,7 @@ npm start
 ```
 
 See `HOSTINGER-DEPLOY.md` for the existing Hostinger deployment and custom download-domain setup.
+
+## V2.5 UI stabilization
+
+The current package includes a post-redesign UI stabilization pass: new Concept 4 login/health screens, top-only profile control, File Manager under Accounts, active-only import progress, real Analytics charting, improved R2 account setup guidance, Admin/Partner profile photos, simplified File Manager disk cards, and spacing/icon consistency fixes. Schema remains 133.

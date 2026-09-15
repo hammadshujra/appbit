@@ -3,5 +3,5 @@
 // not need loose metadata files at runtime.
 module.exports=Object.freeze({
   version:'2.5',
-  buildId:'2.5-concept4-studio-manager'
+  buildId:'2.5.1-ui-stabilization'
 });

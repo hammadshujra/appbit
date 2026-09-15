@@ -1,48 +1,8 @@
 import Head from 'next/head';
 import {useEffect,useState} from 'react';
-
 export default function Login(){
-  const [csrf,setCsrf]=useState('');
-  const [error,setError]=useState('');
-  useEffect(()=>{
-    document.body.classList.add('standalone');
-    const code=new URLSearchParams(window.location.search).get('error');
-    if(code==='invalid')setError('Invalid email or password.');
-    else if(code==='db')setError('Appbit is waiting for the database. Check the Hostinger database environment variables and retry.');
-    fetch('/api/session/csrf',{credentials:'same-origin'})
-      .then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d?.error||'Unable to start sign-in.');return d})
-      .then(d=>setCsrf(d.csrfToken||''))
-      .catch(e=>setError(e.message));
-    return()=>document.body.classList.remove('standalone');
-  },[]);
+  const [csrf,setCsrf]=useState(''); const [error,setError]=useState('');
+  useEffect(()=>{document.body.classList.add('standalone'); const code=new URLSearchParams(window.location.search).get('error'); if(code==='invalid')setError('Invalid email or password.'); else if(code==='db')setError('Appbit is waiting for the database. Check the Hostinger database environment variables and retry.'); fetch('/api/session/csrf',{credentials:'same-origin'}).then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d?.error||'Unable to start sign-in.');return d}).then(d=>setCsrf(d.csrfToken||'')).catch(e=>setError(e.message)); return()=>document.body.classList.remove('standalone')},[]);
   const next=typeof window==='undefined'?'/':(new URLSearchParams(window.location.search).get('next')||'/');
-  return <>
-    <Head>
-      <title>Sign in · Appbit</title>
-      <meta name="viewport" content="width=device-width,initial-scale=1" />
-      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
-      <link rel="stylesheet" href="/css/app.css" />
-    </Head>
-    <main className="login-shell">
-      <div className="login-card">
-        <div className="login-brand">
-          <img className="login-logo" src="/logo.svg" alt="Appbit"/>
-          <div className="login-kicker">Private Studio Manager</div>
-        </div>
-        <div className="login-heading"><h1>Welcome back</h1><p>Sign in to manage your apps, releases, storage, accounts, and team.</p></div>
-        {error?<div className="error-box">{error}</div>:null}
-        <form method="post" action="/api/auth/login" className="stack-form">
-          <input type="hidden" name="_csrf" value={csrf}/>
-          <input type="hidden" name="next" value={next}/>
-          <label>Email<input name="email" type="email" required autoComplete="username"/></label>
-          <label>Password<input name="password" type="password" required autoComplete="current-password"/></label>
-          <button className="btn btn-primary btn-block" type="submit" disabled={!csrf}>Sign in</button>
-        </form>
-        <div className="login-help"><span>Admin + Partner access</span><a href="/health">System health</a></div>
-      </div>
-    </main>
-  </>;
+  return <><Head><title>Sign in · Appbit Studio</title><meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="icon" href="/favicon.svg" type="image/svg+xml"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/><link rel="stylesheet" href="/css/app.css?v=251"/></Head><main className="auth-page"><section className="auth-visual"><div className="auth-brand"><img src="/studio-logo.svg?v=251" alt="Appbit"/><div><b>APPBIT</b><span>Private Studio Manager</span></div></div><div className="auth-visual-copy"><span className="auth-eyebrow">PRIVATE APP WORKSPACE</span><h1>Build, organize, release.<br/>All in one studio.</h1><p>Your private control room for apps, Cloudflare storage, releases, updates, partners, and backups.</p><div className="auth-feature-grid"><div><b>Apps</b><span>Catalog & metadata</span></div><div><b>Release</b><span>Publishing workflow</span></div><div><b>Storage</b><span>R2 organization</span></div><div><b>Team</b><span>Admin + Partners</span></div></div></div><div className="auth-art"><span className="orb o1"></span><span className="orb o2"></span><span className="orb o3"></span><div className="auth-art-card c1">Apps</div><div className="auth-art-card c2">R2</div><div className="auth-art-card c3">Release</div></div></section><section className="auth-form-panel"><div className="auth-form-wrap"><div className="auth-form-heading"><span>WELCOME BACK</span><h2>Sign in to your studio</h2><p>Use your Admin or Partner account to continue.</p></div>{error?<div className="error-box">{error}</div>:null}<form method="post" action="/api/auth/login" className="stack-form"><input type="hidden" name="_csrf" value={csrf}/><input type="hidden" name="next" value={next}/><label>Email address<input name="email" type="email" required autoComplete="username" placeholder="you@example.com"/></label><label>Password<input name="password" type="password" required autoComplete="current-password" placeholder="Enter your password"/></label><button className="btn btn-primary btn-block" type="submit" disabled={!csrf}>Sign in</button></form><div className="login-help"><span>Private workspace · Admin + Partner access</span><a href="/health">System health</a></div></div></section></main></>;
 }

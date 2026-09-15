@@ -34,3 +34,23 @@ V2.5 is the Concept 4 Studio Manager redesign and private-workspace release.
 Backs up released app metadata, connected-account configuration, custom download domains, Partner/team structure, studio settings, and the organized R2 folder hierarchy. Raw APK/R2 object contents are intentionally excluded.
 
 Database schema remains 133. This release is a UI/service upgrade and does not wipe existing records.
+
+## V2.5 UI stabilization pass
+
+This pass fixes the first post-redesign UI breaks without changing database schema 133 or resetting working backend data.
+
+- Rebuilt `/login` as a full Concept 4 light Studio Manager sign-in page with a visual panel plus sign-in panel.
+- Rebuilt `/health` in the same light Studio Manager design.
+- Added cache-isolated `studio-logo.svg` usage so stale old-brand assets do not remain visible after deployment.
+- Removed the duplicate bottom sidebar user/profile card. The top user control now shows role, name, and email and contains sign-out/profile actions.
+- Added File Manager directly under Accounts in the sidebar.
+- Replaced the main navigation icon set with a smoother consistent stroke icon family.
+- Apps auto-import progress is hidden while idle and only appears during active/paused work; it disappears after completion.
+- Workspace Recent Apps / Release Health tables now show Version and Size in separate columns.
+- Analytics now includes a real 7-day SVG activity graph based on app updated/published timestamps.
+- Improved R2 connected-account spacing and Cloudflare visual treatment.
+- Added an explicit step-by-step Cloudflare R2 credential guide beside the connection form.
+- Added Admin/Partner profile editing and profile-photo upload/removal UI using the existing secure avatar endpoints.
+- Simplified File Manager disk cards to account label + usage bar + percent used/remaining; bucket text is no longer duplicated on the disk card.
+- Enlarged File Manager search and removed the visible Ctrl-K badge from the File Manager search box.
+- Added responsive spacing/margin fixes for account forms, team rows, import controls, tables, and File Manager controls.
