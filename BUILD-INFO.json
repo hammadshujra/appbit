@@ -1,7 +1,7 @@
 {
-  "version": "2.5",
+  "version": "2.6",
   "schemaVersion": 133,
-  "release": "V2.5 Concept 4 Studio Manager \u2014 UI repair hotfix 2",
-  "buildId": "2.5-ui-repair-2",
+  "release": "V2.6 App Detail + LiteAPKs Size Resolver",
+  "buildId": "2.6-app-detail-resolver",
   "built_at": "2026-09-15"
 }

@@ -1,3 +1,7 @@
+## Appbit V2.6
+
+V2.6 reorganizes the app workspace and fixes compact LiteAPKs file-size parsing (`M` = MB, `G` = GB).
+
 # Appbit Studio Manager V2.5
 
 V2.5 is a complete UI replacement built around the approved Concept 4 direction. The existing Appbit backend, database schema, APK resolver, publishing workflow, update scanner, Cloudflare R2 integration, filename-only download gateway, and custom-domain system remain in place.

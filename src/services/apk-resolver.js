@@ -273,7 +273,7 @@ function sourceContentData($, appName='', schemaApp={}) {
 }
 function normalizeSourceText(value){return cleanText(value).toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
 
-const SIZE_TOKEN_RE=/\b\d+(?:[.,]\d+)?\s*(?:bytes?|[kmgt]i?b|kilo(?:byte)?s?|mega(?:byte)?s?|giga(?:byte)?s?|tera(?:byte)?s?)\b/i;
+const SIZE_TOKEN_RE=/\b\d+(?:[.,]\d+)?\s*(?:bytes?|[kmgt]i?b|[kmgt]|kilo(?:byte)?s?|mega(?:byte)?s?|giga(?:byte)?s?|tera(?:byte)?s?)\b/i;
 const BROWSER_UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36';
 function rawHtmlSizeCandidates(html){
   const raw=String(html||''),out=[];
@@ -281,8 +281,8 @@ function rawHtmlSizeCandidates(html){
   const textPatterns=[
     /(?:data-(?:file-?)?size|data-download-size|contentSize|fileSize|downloadSize|apkSize|appSize|packageSize)\s*[=:]\s*["']([^"']{1,80})["']/gi,
     /["'](?:contentSize|fileSize|downloadSize|apkSize|appSize|packageSize)["']\s*:\s*["']([^"']{1,80})["']/gi,
-    /(?:\bSIZE\b|\bFILE\s+SIZE\b|\bAPK\s+SIZE\b)[\s\S]{0,220}?((?:\d+(?:[.,]\d+)?)\s*(?:bytes?|[kmgt]i?b|kilo(?:byte)?s?|mega(?:byte)?s?|giga(?:byte)?s?|tera(?:byte)?s?))/gi,
-    /((?:\d+(?:[.,]\d+)?)\s*(?:bytes?|[kmgt]i?b|kilo(?:byte)?s?|mega(?:byte)?s?|giga(?:byte)?s?|tera(?:byte)?s?))[\s\S]{0,220}?\bSIZE\b/gi
+    /(?:\bSIZE\b|\bFILE\s+SIZE\b|\bAPK\s+SIZE\b)[\s\S]{0,220}?((?:\d+(?:[.,]\d+)?)\s*(?:bytes?|[kmgt]i?b|[kmgt]|kilo(?:byte)?s?|mega(?:byte)?s?|giga(?:byte)?s?|tera(?:byte)?s?))/gi,
+    /((?:\d+(?:[.,]\d+)?)\s*(?:bytes?|[kmgt]i?b|[kmgt]|kilo(?:byte)?s?|mega(?:byte)?s?|giga(?:byte)?s?|tera(?:byte)?s?))[\s\S]{0,220}?\bSIZE\b/gi
   ];
   for(const re of textPatterns){let m;let guard=0;while((m=re.exec(raw))&&guard++<30)add(m[1],'source:raw-html')}
   const bytePatterns=[/["'](?:fileSizeBytes|file_size_bytes|contentLength|content_length)["']\s*:\s*(\d{4,})/gi,/(?:data-file-size-bytes|data-content-length)\s*=\s*["']?(\d{4,})/gi];

@@ -8,8 +8,8 @@ const read=p=>fs.readFileSync(path.join(ROOT,p),'utf8');
 
 test('login and health use the light Studio Manager standalone UI and cache-isolated logo',()=>{
   const login=read('pages/login.jsx'),health=read('pages/health.jsx'),css=read('public/css/app.css');
-  assert.match(login,/auth-page/); assert.match(login,/auth-visual/); assert.match(login,/studio-logo\.svg\?v=252/);
-  assert.match(health,/health-split-page/); assert.match(health,/health-visual-panel/); assert.match(health,/studio-logo\.svg\?v=252/);
+  assert.match(login,/auth-page/); assert.match(login,/auth-visual/); assert.match(login,/studio-logo\.svg\?v=260/);
+  assert.match(health,/health-split-page/); assert.match(health,/health-visual-panel/); assert.match(health,/studio-logo\.svg\?v=260/);
   assert.match(css,/\.auth-page\{/); assert.match(css,/\.health-split-page\{/);
 });
 
@@ -74,7 +74,7 @@ test('Workspace app tables separate Version and Size columns',()=>{
 });
 
 test('V2.5 identity and schema remain non-destructive',()=>{
-  assert.equal(read('VERSION').trim(),'2.5');
-  assert.match(read('src/version.js'),/version:'2\.5'/);
-  assert.match(read('src/version.js'),/2\.5-ui-repair-2/);
+  assert.equal(read('VERSION').trim(),'2.6');
+  assert.match(read('src/version.js'),/version:'2\.6'/);
+  assert.match(read('src/version.js'),/2\.6-app-detail-resolver/);
 });

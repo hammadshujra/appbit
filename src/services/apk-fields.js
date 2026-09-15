@@ -99,7 +99,7 @@ function sourceStatistics($) {
         const date=parseDate(value);if(date){out.set(key,value);break}
       }
       if(key==='size'){
-        const m=value.match(/\b\d+(?:[.,]\d+)?\s*(?:bytes?|[kmgt]i?b)\b/i);if(m)value=m[0];
+        const m=value.match(/\b\d+(?:[.,]\d+)?\s*(?:bytes?|[kmgt]i?b|[kmgt])\b/i);if(m)value=m[0];
       }
       if(key==='views'||key==='downloads'){
         const m=value.match(/\b\d+(?:\.\d+)?\s*(?:k|m|b|thousand|million|billion)?\s*\+?/i);if(m)value=m[0];
@@ -150,7 +150,7 @@ function visibleStatFallback($, map) {
   // extraction deliberately skips it. Recover only strongly typed values adjacent
   // to a known stat label, never arbitrary numbers from the page.
   const specs={
-    size:/\b\d+(?:[.,]\d+)?\s*(?:bytes?|[kmgt]i?b|[kmgt]bytes?)\b/i,
+    size:/\b\d+(?:[.,]\d+)?\s*(?:bytes?|[kmgt]i?b|[kmgt]|[kmgt]bytes?)\b/i,
     version:/\bv?\d+(?:\.\d+)+(?:[A-Za-z0-9._+-]*)?/i,
     views:/\b\d+(?:\.\d+)?\s*(?:k|m|b|thousand|million|billion)?\s*\+?\b/i,
     downloads:/\b\d+(?:\.\d+)?\s*(?:k|m|b|thousand|million|billion)?\s*\+?\b/i
@@ -186,7 +186,7 @@ function visibleStatFallback($, map) {
   // require both a recognized label and a typed value immediately around it.
   const text=clean($('body').text());
   const patterns={
-    size:[/\b(\d+(?:[.,]\d+)?\s*(?:bytes?|[kmgt]i?b))\s+SIZE\b/i,/\bSIZE\s+(\d+(?:[.,]\d+)?\s*(?:bytes?|[kmgt]i?b))\b/i],
+    size:[/\b(\d+(?:[.,]\d+)?\s*(?:bytes?|[kmgt]i?b|[kmgt]))\s+SIZE\b/i,/\bSIZE\s+(\d+(?:[.,]\d+)?\s*(?:bytes?|[kmgt]i?b|[kmgt]))\b/i],
     views:[/\b(\d+(?:\.\d+)?\s*(?:K|M|B)?\s*\+?)\s+(?:Views?\s+)?REACHED\b/i,/\bREACHED\s+(\d+(?:\.\d+)?\s*(?:K|M|B)?\s*\+?)/i],
     downloads:[/\b(\d+(?:\.\d+)?\s*(?:K|M|B)?\s*\+?)\s+DOWNLOADS?\b/i,/\bDOWNLOADS?\s+(\d+(?:\.\d+)?\s*(?:K|M|B)?\s*\+?)/i]
   };
@@ -264,7 +264,7 @@ function parseBytes(value){
   if(n!=null)return parseBytes(String(n)+' '+(value.unitText||value.unitCode||value.unit||'bytes'));
  }
  const raw=clean(value);if(!raw)return null;
- const m=raw.match(/((?:\d{1,3}(?:[ ,]\d{3})+|\d+)(?:[.,]\d+)?)\s*(bytes?|[kmgt]i?b|[kmgt]bytes?|kilo(?:byte)?s?|mega(?:byte)?s?|giga(?:byte)?s?|tera(?:byte)?s?)\b/i);
+ const m=raw.match(/((?:\d{1,3}(?:[ ,]\d{3})+|\d+)(?:[.,]\d+)?)\s*(bytes?|[kmgt]i?b|[kmgt]|[kmgt]bytes?|kilo(?:byte)?s?|mega(?:byte)?s?|giga(?:byte)?s?|tera(?:byte)?s?)\b/i);
  if(!m)return null;
  let number=m[1].replace(/ /g,'');
  if(number.includes(',')&&number.includes('.'))number=number.replace(/,/g,'');

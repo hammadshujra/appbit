@@ -220,6 +220,15 @@ async function mediaPack(row) {
     }
   }
   if (!entries.length) throw Object.assign(new Error('The APK media links were present, but no valid images could be downloaded.'), { status: 502 });
+  const manifest = {
+    app: row.name,
+    generatedAt: new Date().toISOString(),
+    icon: media.iconUrl || null,
+    cover: media.coverImageUrl || null,
+    screenshots: media.screenshots,
+    downloadedFiles: entries.map(entry => entry.name)
+  };
+  entries.push({ name:'media-manifest.json', data:Buffer.from(JSON.stringify(manifest,null,2),'utf8') });
   const zip = makeZip(entries);
   return {
     buffer: zip,

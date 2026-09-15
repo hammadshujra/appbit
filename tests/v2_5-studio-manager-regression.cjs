@@ -7,10 +7,10 @@ const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
 test('V2.5 release identity and Concept 4 light shell are wired',()=>{
   const pkg=JSON.parse(read('package.json'));
-  assert.equal(pkg.version,'2.5.0');
-  assert.equal(read('VERSION').trim(),'2.5');
+  assert.equal(pkg.version,'2.6.0');
+  assert.equal(read('VERSION').trim(),'2.6');
   const page=read('pages/[[...path]].jsx');
-  assert.match(page,/const APP_VERSION='2\.5'/);
+  assert.match(page,/const APP_VERSION='2\.6'/);
   assert.match(page,/theme-color" content="#f6f9ff/);
   assert.match(page,/Appbit Studio Manager/);
   const css=read('public/ui/app.css');
